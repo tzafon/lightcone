@@ -1,0 +1,43 @@
+[build-system]
+requires = ["maturin>=1.6.0,<2.0.0"]
+build-backend = "maturin"
+
+[project]
+name = "lightcone"
+version = "0.1.0"
+description = "A streamlined computer-use agent harness."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dependencies = [
+    "fastapi>=0.115.0",
+    "openai>=2.11.0",
+    "pillow>=12.0.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.32.0",
+    "tzafon>=2.8.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6.0,<1.0.0",
+    "pytest>=8.0.0",
+    "maturin>=1.6.0",
+]
+
+[project.scripts]
+lightcone = "lightcone.cli:main"
+
+[tool.maturin]
+manifest-path = "native/Cargo.toml"
+module-name = "lightcone._rust"
+python-source = "src"
+bindings = "pyo3"
+include = [
+    "src/lightcone/prompts/*.md",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
