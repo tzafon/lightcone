@@ -1,175 +1,382 @@
-<div align="center">
+# Lightcone Python API library
 
-# Northstar CUA Fast
+<!-- prettier-ignore -->
+[![PyPI version](https://img.shields.io/pypi/v/tzafon.svg?label=pypi%20(stable))](https://pypi.org/project/tzafon/)
 
-### Fast, Lightweight Computer-Use Intelligence
+The Lightcone Python library provides convenient access to the Lightcone REST API from any Python 3.9+
+application. The library includes type definitions for all request params and response fields,
+and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
-[API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Discord](https://discord.gg/tzafon) | [X (Twitter)](https://x.com/tzafon_company)
+It is generated with [Stainless](https://www.stainless.com/).
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+## Documentation
 
-</div>
+The REST API documentation can be found on [docs.tzafon.ai](https://docs.tzafon.ai). The full API of this library can be found in [api.md](api.md).
 
----
+## Installation
 
-## 1. Model Introduction
+```sh
+# install from this staging repo
+pip install git+ssh://git@github.com/stainless-sdks/lightcone-python.git
+```
 
-Northstar CUA Fast is a 4B-parameter computer-use agent model developed by Tzafon. It is purpose-built for GUI automation — interpreting screenshots, reasoning about UI state, and producing structured actions (clicks, typing, scrolling) to operate a desktop autonomously.
+> [!NOTE]
+> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install tzafon`
 
-Despite its small size, Northstar CUA Fast is optimised for real-time agentic loops where latency matters: each step requires a full model call, so a faster model directly translates to a faster agent.
+## Usage
 
-### Key Features
-
-- **4B parameters** — small enough to run on a single GPU, fast enough for real-time desktop automation.
-- **Structured tool calling** — outputs normalised actions in a 0-999 coordinate grid, scaled to any viewport.
-- **Built for agentic loops** — designed for the screenshot-think-act cycle, not just single-turn QA.
-
-## 2. Model Summary
-
-| | |
-|---|---|
-| **Architecture** | Dense Transformer |
-| **Parameters** | 4B |
-| **Context Length** | 64K |
-| **Input** | Text + Image (screenshot) |
-| **Output** | Structured tool calls (JSON) |
-| **Coordinate System** | Normalised 0-999 grid |
-| **Training Data** | Desktop GUI interaction traces |
-| **License** | MIT |
-
-## 3. Evaluation Results
-
-### OSWorld Benchmark
-
-Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world computer tasks across desktop applications, web browsing, file management, and terminal operations.
-
-#### Per-Domain Breakdown
-
-| Domain | UI-TARS 2 | Qwen3 Flash | Northstar CUA Fast (4B) |
-|---|---|---|---|
-| **Overall** | **53.1%** | 41.6% | 37.01% |
-| Chrome | 62.96% | 56.43% | 55.30% |
-| Thunderbird | 73.33% | 66.67% | 62.40% |
-| LibreOffice Writer | 60.87% | 56.52% | 56.94% |
-| OS | 41.67% | 54.17% | 46.26% |
-| VLC | 49.94% | 34.41% | 43.87% |
-| VS Code | 73.91% | 69.57% | 43.82% |
-| GIMP | 50.00% | 42.31% | 41.58% |
-| LibreOffice Impress | 56.38% | 50.98% | 37.50% |
-| LibreOffice Calc | 65.96% | 23.04% | 30.64% |
-| Multi-Apps | 34.13% | 22.01% | 15.55% |
-
-## 4. Quickstart
-
-### API Access
-
-Northstar CUA Fast is available via the [Tzafon API](https://docs.tzafon.ai/api-reference/introduction), which is OpenAI-compatible:
+The full API of this library can be found in [api.md](api.md).
 
 ```python
-from openai import OpenAI
+import os
+from tzafon import Lightcone
 
-client = OpenAI(
-    api_key="your-api-key",
-    base_url="https://api.tzafon.ai/v1",
+client = Lightcone(
+    api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
 )
 
-response = client.chat.completions.create(
-    model="tzafon.northstar-cua-fast",
-    messages=[
-        {"role": "system", "content": "You are a desktop automation agent."},
-        {"role": "user", "content": [
-            {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}},
-            {"type": "text", "text": "Click on the Firefox icon."},
-        ]},
-    ],
-    temperature=0.3,
-    max_tokens=512,
+response = client.agent.tasks.start()
+print(response.task_id)
+```
+
+While you can provide an `api_key` keyword argument,
+we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
+to add `TZAFON_API_KEY="My API Key"` to your `.env` file
+so that your API Key is not stored in source control.
+
+## Async usage
+
+Simply import `AsyncLightcone` instead of `Lightcone` and use `await` with each API call:
+
+```python
+import os
+import asyncio
+from tzafon import AsyncLightcone
+
+client = AsyncLightcone(
+    api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
 )
-print(response.choices[0].message.content)
+
+
+async def main() -> None:
+    response = await client.agent.tasks.start()
+    print(response.task_id)
+
+
+asyncio.run(main())
 ```
 
-## 5. Agent Harness
+Functionality between the synchronous and asynchronous clients is otherwise identical.
 
-This repository includes **Lightcone**, an agent harness that wraps Northstar CUA Fast into a full desktop automation loop: screenshot, think, act, repeat.
+### With aiohttp
 
-### Install
+By default, the async client uses `httpx` for HTTP requests. However, for improved concurrency performance you may also use `aiohttp` as the HTTP backend.
 
-```bash
-# Requires Python 3.12+ and a Rust toolchain
-git clone https://github.com/tzafon/lightcone.git
-cd lightcone
-uv venv && uv sync --extra dev
-uv run maturin develop -m native/Cargo.toml
+You can enable this by installing `aiohttp`:
+
+```sh
+# install from this staging repo
+pip install 'tzafon[aiohttp] @ git+ssh://git@github.com/stainless-sdks/lightcone-python.git'
 ```
 
-### Run a Task
+Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
 
-```bash
-export LIGHTCONE_API_KEY="your-api-key"
+```python
+import os
+import asyncio
+from tzafon import DefaultAioHttpClient
+from tzafon import AsyncLightcone
 
-# CLI
-lightcone run --task "Open Firefox and search for 'hello world'"
 
-# Python
-from lightcone.agent import CUAAgent
+async def main() -> None:
+    async with AsyncLightcone(
+        api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
+        http_client=DefaultAioHttpClient(),
+    ) as client:
+        response = await client.agent.tasks.start()
+        print(response.task_id)
 
-agent = CUAAgent(prompt_profile="browser")
-status, result = agent.run(task="Navigate to https://example.com")
+
+asyncio.run(main())
 ```
 
-### Start the Server
+## Using types
 
-```bash
-lightcone serve --port 8000
+Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typing.html#typing.TypedDict). Responses are [Pydantic models](https://docs.pydantic.dev) which also provide helper methods for things like:
 
-# SSE streaming
-curl -N -X POST http://localhost:8000/tasks/stream \
-  -H "Authorization: Bearer $LIGHTCONE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"instruction": "Open Firefox"}'
+- Serializing back into JSON, `model.to_json()`
+- Converting to a dictionary, `model.to_dict()`
+
+Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
+
+## Nested params
+
+Nested parameters are dictionaries, typed using `TypedDict`, for example:
+
+```python
+from tzafon import Lightcone
+
+client = Lightcone()
+
+computer_response = client.computers.create(
+    display={},
+)
+print(computer_response.display)
 ```
 
-### Architecture
+## Handling errors
 
-```
-screenshot → Northstar CUA Fast → parse action → execute on computer → repeat
-```
+When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `tzafon.APIConnectionError` is raised.
 
-- **Pure-async FastAPI** server with SSE streaming.
-- **Sliding-window context management** — automatically shrinks history on context-length errors.
-- **Rust-accelerated image processing** — screenshot decode, resize, and encode in a single GIL-free call.
-- **Auto-discovering tool registry** — add new tools by dropping a file.
+When the API returns a non-success status code (that is, 4xx or 5xx
+response), a subclass of `tzafon.APIStatusError` is raised, containing `status_code` and `response` properties.
 
-## 6. Configuration
+All errors inherit from `tzafon.APIError`.
 
-All settings are loaded from environment variables (prefixed `LIGHTCONE_`):
+```python
+import tzafon
+from tzafon import Lightcone
 
-| Variable | Default | Description |
-|---|---|---|
-| `LIGHTCONE_API_KEY` | — | API key (required) |
-| `LIGHTCONE_LLM_MODEL` | `auto` | Model name or alias |
-| `LIGHTCONE_LLM_BASE_URL` | `https://api.tzafon.ai/v1` | LLM endpoint |
-| `LIGHTCONE_MAX_STEPS` | `150` | Max agent steps per task |
-| `LIGHTCONE_MAX_HISTORY_TURNS` | `4` | Sliding window size |
-| `LIGHTCONE_PROMPT_PROFILE` | `default` | Prompt profile (`default`, `browser`, `terminal`, `desktop`) |
+client = Lightcone()
 
-## 7. License
-
-The code in this repository is released under the [MIT License](LICENSE).
-
-Model weights are available exclusively via the [Tzafon API](https://docs.tzafon.ai/api-reference/introduction).
-
-## 8. Citation
-
-```bibtex
-@misc{tzafon2026northstarcuafast,
-    title={Northstar CUA Fast: Lightweight Computer-Use Agent Model},
-    author={Tzafon Team},
-    year={2026},
-    url={https://github.com/tzafon/lightcone},
-}
+try:
+    client.agent.tasks.start()
+except tzafon.APIConnectionError as e:
+    print("The server could not be reached")
+    print(e.__cause__)  # an underlying Exception, likely raised within httpx.
+except tzafon.RateLimitError as e:
+    print("A 429 status code was received; we should back off a bit.")
+except tzafon.APIStatusError as e:
+    print("Another non-200-range status code was received")
+    print(e.status_code)
+    print(e.response)
 ```
 
-## 9. Contact
+Error codes are as follows:
 
-Questions or feedback? Reach out at **support@tzafon.ai** or open an issue.
+| Status Code | Error Type                 |
+| ----------- | -------------------------- |
+| 400         | `BadRequestError`          |
+| 401         | `AuthenticationError`      |
+| 403         | `PermissionDeniedError`    |
+| 404         | `NotFoundError`            |
+| 422         | `UnprocessableEntityError` |
+| 429         | `RateLimitError`           |
+| >=500       | `InternalServerError`      |
+| N/A         | `APIConnectionError`       |
+
+### Retries
+
+Certain errors are automatically retried 2 times by default, with a short exponential backoff.
+Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict,
+429 Rate Limit, and >=500 Internal errors are all retried by default.
+
+You can use the `max_retries` option to configure or disable retry settings:
+
+```python
+from tzafon import Lightcone
+
+# Configure the default for all requests:
+client = Lightcone(
+    # default is 2
+    max_retries=0,
+)
+
+# Or, configure per-request:
+client.with_options(max_retries=5).agent.tasks.start()
+```
+
+### Timeouts
+
+By default requests time out after 1 minute. You can configure this with a `timeout` option,
+which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
+
+```python
+from tzafon import Lightcone
+
+# Configure the default for all requests:
+client = Lightcone(
+    # 20 seconds (default is 1 minute)
+    timeout=20.0,
+)
+
+# More granular control:
+client = Lightcone(
+    timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
+)
+
+# Override per-request:
+client.with_options(timeout=5.0).agent.tasks.start()
+```
+
+On timeout, an `APITimeoutError` is thrown.
+
+Note that requests that time out are [retried twice by default](#retries).
+
+## Advanced
+
+### Logging
+
+We use the standard library [`logging`](https://docs.python.org/3/library/logging.html) module.
+
+You can enable logging by setting the environment variable `LIGHTCONE_LOG` to `info`.
+
+```shell
+$ export LIGHTCONE_LOG=info
+```
+
+Or to `debug` for more verbose logging.
+
+### How to tell whether `None` means `null` or missing
+
+In an API response, a field may be explicitly `null`, or missing entirely; in either case, its value is `None` in this library. You can differentiate the two cases with `.model_fields_set`:
+
+```py
+if response.my_field is None:
+  if 'my_field' not in response.model_fields_set:
+    print('Got json like {}, without a "my_field" key present at all.')
+  else:
+    print('Got json like {"my_field": null}.')
+```
+
+### Accessing raw response data (e.g. headers)
+
+The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
+
+```py
+from tzafon import Lightcone
+
+client = Lightcone()
+response = client.agent.tasks.with_raw_response.start()
+print(response.headers.get('X-My-Header'))
+
+task = response.parse()  # get the object that `agent.tasks.start()` would have returned
+print(task.task_id)
+```
+
+These methods return an [`APIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/tzafon/_response.py) object.
+
+The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/tzafon/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+
+#### `.with_streaming_response`
+
+The above interface eagerly reads the full response body when you make the request, which may not always be what you want.
+
+To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
+
+```python
+with client.agent.tasks.with_streaming_response.start() as response:
+    print(response.headers.get("X-My-Header"))
+
+    for line in response.iter_lines():
+        print(line)
+```
+
+The context manager is required so that the response will reliably be closed.
+
+### Making custom/undocumented requests
+
+This library is typed for convenient access to the documented API.
+
+If you need to access undocumented endpoints, params, or response properties, the library can still be used.
+
+#### Undocumented endpoints
+
+To make requests to undocumented endpoints, you can make requests using `client.get`, `client.post`, and other
+http verbs. Options on the client will be respected (such as retries) when making this request.
+
+```py
+import httpx
+
+response = client.post(
+    "/foo",
+    cast_to=httpx.Response,
+    body={"my_param": True},
+)
+
+print(response.headers.get("x-foo"))
+```
+
+#### Undocumented request params
+
+If you want to explicitly send an extra param, you can do so with the `extra_query`, `extra_body`, and `extra_headers` request
+options.
+
+#### Undocumented response properties
+
+To access undocumented response properties, you can access the extra fields like `response.unknown_prop`. You
+can also get all the extra fields on the Pydantic model as a dict with
+[`response.model_extra`](https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel.model_extra).
+
+### Configuring the HTTP client
+
+You can directly override the [httpx client](https://www.python-httpx.org/api/#client) to customize it for your use case, including:
+
+- Support for [proxies](https://www.python-httpx.org/advanced/proxies/)
+- Custom [transports](https://www.python-httpx.org/advanced/transports/)
+- Additional [advanced](https://www.python-httpx.org/advanced/clients/) functionality
+
+```python
+import httpx
+from tzafon import Lightcone, DefaultHttpxClient
+
+client = Lightcone(
+    # Or use the `LIGHTCONE_BASE_URL` env var
+    base_url="http://my.test.server.example.com:8083",
+    http_client=DefaultHttpxClient(
+        proxy="http://my.test.proxy.example.com",
+        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+    ),
+)
+```
+
+You can also customize the client on a per-request basis by using `with_options()`:
+
+```python
+client.with_options(http_client=DefaultHttpxClient(...))
+```
+
+### Managing HTTP resources
+
+By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
+
+```py
+from tzafon import Lightcone
+
+with Lightcone() as client:
+  # make requests here
+  ...
+
+# HTTP client is now closed
+```
+
+## Versioning
+
+This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
+
+1. Changes that only affect static types, without breaking runtime behavior.
+2. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
+3. Changes that we do not expect to impact the vast majority of users in practice.
+
+We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
+
+We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/lightcone-python/issues) with questions, bugs, or suggestions.
+
+### Determining the installed version
+
+If you've upgraded to the latest version but aren't seeing any new features you were expecting then your python environment is likely still using an older version.
+
+You can determine the version that is being used at runtime with:
+
+```py
+import tzafon
+print(tzafon.__version__)
+```
+
+## Requirements
+
+Python 3.9 or higher.
+
+## Contributing
+
+See [the contributing documentation](./CONTRIBUTING.md).

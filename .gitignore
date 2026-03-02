@@ -1,24 +1,15 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
-.venv/
-*.so
-*.pyd
-*.dylib
+.prism.log
+_dev
 
-# Rust
-native/target/
-Cargo.lock
+__pycache__
+.mypy_cache
 
-# IDE
-.idea/
-.vscode/
-*.swp
+dist
 
-# Runtime
-screenshots/
-*.env
+.venv
+.idea
+
+.env
+.envrc
+codegen.log
+Brewfile.lock.json
