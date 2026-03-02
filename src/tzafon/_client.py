@@ -104,10 +104,10 @@ class Lightcone(SyncAPIClient):
         )
 
     @cached_property
-    def agent(self) -> AgentResource:
-        from .resources.agent import AgentResource
+    def responses(self) -> ResponsesResource:
+        from .resources.responses import ResponsesResource
 
-        return AgentResource(self)
+        return ResponsesResource(self)
 
     @cached_property
     def computers(self) -> ComputersResource:
@@ -116,10 +116,10 @@ class Lightcone(SyncAPIClient):
         return ComputersResource(self)
 
     @cached_property
-    def responses(self) -> ResponsesResource:
-        from .resources.responses import ResponsesResource
+    def agent(self) -> AgentResource:
+        from .resources.agent import AgentResource
 
-        return ResponsesResource(self)
+        return AgentResource(self)
 
     @cached_property
     def with_raw_response(self) -> LightconeWithRawResponse:
@@ -290,10 +290,10 @@ class AsyncLightcone(AsyncAPIClient):
         )
 
     @cached_property
-    def agent(self) -> AsyncAgentResource:
-        from .resources.agent import AsyncAgentResource
+    def responses(self) -> AsyncResponsesResource:
+        from .resources.responses import AsyncResponsesResource
 
-        return AsyncAgentResource(self)
+        return AsyncResponsesResource(self)
 
     @cached_property
     def computers(self) -> AsyncComputersResource:
@@ -302,10 +302,10 @@ class AsyncLightcone(AsyncAPIClient):
         return AsyncComputersResource(self)
 
     @cached_property
-    def responses(self) -> AsyncResponsesResource:
-        from .resources.responses import AsyncResponsesResource
+    def agent(self) -> AsyncAgentResource:
+        from .resources.agent import AsyncAgentResource
 
-        return AsyncResponsesResource(self)
+        return AsyncAgentResource(self)
 
     @cached_property
     def with_raw_response(self) -> AsyncLightconeWithRawResponse:
@@ -427,10 +427,10 @@ class LightconeWithRawResponse:
         self._client = client
 
     @cached_property
-    def agent(self) -> agent.AgentResourceWithRawResponse:
-        from .resources.agent import AgentResourceWithRawResponse
+    def responses(self) -> responses.ResponsesResourceWithRawResponse:
+        from .resources.responses import ResponsesResourceWithRawResponse
 
-        return AgentResourceWithRawResponse(self._client.agent)
+        return ResponsesResourceWithRawResponse(self._client.responses)
 
     @cached_property
     def computers(self) -> computers.ComputersResourceWithRawResponse:
@@ -439,10 +439,10 @@ class LightconeWithRawResponse:
         return ComputersResourceWithRawResponse(self._client.computers)
 
     @cached_property
-    def responses(self) -> responses.ResponsesResourceWithRawResponse:
-        from .resources.responses import ResponsesResourceWithRawResponse
+    def agent(self) -> agent.AgentResourceWithRawResponse:
+        from .resources.agent import AgentResourceWithRawResponse
 
-        return ResponsesResourceWithRawResponse(self._client.responses)
+        return AgentResourceWithRawResponse(self._client.agent)
 
 
 class AsyncLightconeWithRawResponse:
@@ -452,10 +452,10 @@ class AsyncLightconeWithRawResponse:
         self._client = client
 
     @cached_property
-    def agent(self) -> agent.AsyncAgentResourceWithRawResponse:
-        from .resources.agent import AsyncAgentResourceWithRawResponse
+    def responses(self) -> responses.AsyncResponsesResourceWithRawResponse:
+        from .resources.responses import AsyncResponsesResourceWithRawResponse
 
-        return AsyncAgentResourceWithRawResponse(self._client.agent)
+        return AsyncResponsesResourceWithRawResponse(self._client.responses)
 
     @cached_property
     def computers(self) -> computers.AsyncComputersResourceWithRawResponse:
@@ -464,10 +464,10 @@ class AsyncLightconeWithRawResponse:
         return AsyncComputersResourceWithRawResponse(self._client.computers)
 
     @cached_property
-    def responses(self) -> responses.AsyncResponsesResourceWithRawResponse:
-        from .resources.responses import AsyncResponsesResourceWithRawResponse
+    def agent(self) -> agent.AsyncAgentResourceWithRawResponse:
+        from .resources.agent import AsyncAgentResourceWithRawResponse
 
-        return AsyncResponsesResourceWithRawResponse(self._client.responses)
+        return AsyncAgentResourceWithRawResponse(self._client.agent)
 
 
 class LightconeWithStreamedResponse:
@@ -477,10 +477,10 @@ class LightconeWithStreamedResponse:
         self._client = client
 
     @cached_property
-    def agent(self) -> agent.AgentResourceWithStreamingResponse:
-        from .resources.agent import AgentResourceWithStreamingResponse
+    def responses(self) -> responses.ResponsesResourceWithStreamingResponse:
+        from .resources.responses import ResponsesResourceWithStreamingResponse
 
-        return AgentResourceWithStreamingResponse(self._client.agent)
+        return ResponsesResourceWithStreamingResponse(self._client.responses)
 
     @cached_property
     def computers(self) -> computers.ComputersResourceWithStreamingResponse:
@@ -489,10 +489,10 @@ class LightconeWithStreamedResponse:
         return ComputersResourceWithStreamingResponse(self._client.computers)
 
     @cached_property
-    def responses(self) -> responses.ResponsesResourceWithStreamingResponse:
-        from .resources.responses import ResponsesResourceWithStreamingResponse
+    def agent(self) -> agent.AgentResourceWithStreamingResponse:
+        from .resources.agent import AgentResourceWithStreamingResponse
 
-        return ResponsesResourceWithStreamingResponse(self._client.responses)
+        return AgentResourceWithStreamingResponse(self._client.agent)
 
 
 class AsyncLightconeWithStreamedResponse:
@@ -502,10 +502,10 @@ class AsyncLightconeWithStreamedResponse:
         self._client = client
 
     @cached_property
-    def agent(self) -> agent.AsyncAgentResourceWithStreamingResponse:
-        from .resources.agent import AsyncAgentResourceWithStreamingResponse
+    def responses(self) -> responses.AsyncResponsesResourceWithStreamingResponse:
+        from .resources.responses import AsyncResponsesResourceWithStreamingResponse
 
-        return AsyncAgentResourceWithStreamingResponse(self._client.agent)
+        return AsyncResponsesResourceWithStreamingResponse(self._client.responses)
 
     @cached_property
     def computers(self) -> computers.AsyncComputersResourceWithStreamingResponse:
@@ -514,10 +514,10 @@ class AsyncLightconeWithStreamedResponse:
         return AsyncComputersResourceWithStreamingResponse(self._client.computers)
 
     @cached_property
-    def responses(self) -> responses.AsyncResponsesResourceWithStreamingResponse:
-        from .resources.responses import AsyncResponsesResourceWithStreamingResponse
+    def agent(self) -> agent.AsyncAgentResourceWithStreamingResponse:
+        from .resources.agent import AsyncAgentResourceWithStreamingResponse
 
-        return AsyncResponsesResourceWithStreamingResponse(self._client.responses)
+        return AsyncAgentResourceWithStreamingResponse(self._client.agent)
 
 
 Client = Lightcone
