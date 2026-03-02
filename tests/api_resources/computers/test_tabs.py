@@ -7,9 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from lightcone import Lightcone, AsyncLightcone
+from tzafon import Lightcone, AsyncLightcone
 from tests.utils import assert_matches_type
-from lightcone.types import ActionResult
+from tzafon.types import ActionResult
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -112,8 +112,8 @@ class TestTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_close(self, client: Lightcone) -> None:
-        tab = client.computers.tabs.close(
+    def test_method_delete(self, client: Lightcone) -> None:
+        tab = client.computers.tabs.delete(
             tab_id="tab_id",
             id="id",
         )
@@ -121,8 +121,8 @@ class TestTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_close(self, client: Lightcone) -> None:
-        response = client.computers.tabs.with_raw_response.close(
+    def test_raw_response_delete(self, client: Lightcone) -> None:
+        response = client.computers.tabs.with_raw_response.delete(
             tab_id="tab_id",
             id="id",
         )
@@ -134,8 +134,8 @@ class TestTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_close(self, client: Lightcone) -> None:
-        with client.computers.tabs.with_streaming_response.close(
+    def test_streaming_response_delete(self, client: Lightcone) -> None:
+        with client.computers.tabs.with_streaming_response.delete(
             tab_id="tab_id",
             id="id",
         ) as response:
@@ -149,15 +149,15 @@ class TestTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_close(self, client: Lightcone) -> None:
+    def test_path_params_delete(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.tabs.with_raw_response.close(
+            client.computers.tabs.with_raw_response.delete(
                 tab_id="tab_id",
                 id="",
             )
 
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `tab_id` but received ''"):
-            client.computers.tabs.with_raw_response.close(
+            client.computers.tabs.with_raw_response.delete(
                 tab_id="",
                 id="id",
             )
@@ -315,8 +315,8 @@ class TestAsyncTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_close(self, async_client: AsyncLightcone) -> None:
-        tab = await async_client.computers.tabs.close(
+    async def test_method_delete(self, async_client: AsyncLightcone) -> None:
+        tab = await async_client.computers.tabs.delete(
             tab_id="tab_id",
             id="id",
         )
@@ -324,8 +324,8 @@ class TestAsyncTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_close(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.tabs.with_raw_response.close(
+    async def test_raw_response_delete(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.tabs.with_raw_response.delete(
             tab_id="tab_id",
             id="id",
         )
@@ -337,8 +337,8 @@ class TestAsyncTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_close(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.tabs.with_streaming_response.close(
+    async def test_streaming_response_delete(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.tabs.with_streaming_response.delete(
             tab_id="tab_id",
             id="id",
         ) as response:
@@ -352,15 +352,15 @@ class TestAsyncTabs:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_close(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_delete(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.tabs.with_raw_response.close(
+            await async_client.computers.tabs.with_raw_response.delete(
                 tab_id="tab_id",
                 id="",
             )
 
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `tab_id` but received ''"):
-            await async_client.computers.tabs.with_raw_response.close(
+            await async_client.computers.tabs.with_raw_response.delete(
                 tab_id="",
                 id="id",
             )

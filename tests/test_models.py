@@ -7,9 +7,9 @@ import pytest
 import pydantic
 from pydantic import Field
 
-from lightcone._utils import PropertyInfo
-from lightcone._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
-from lightcone._models import DISCRIMINATOR_CACHE, BaseModel, construct_type
+from tzafon._utils import PropertyInfo
+from tzafon._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
+from tzafon._models import DISCRIMINATOR_CACHE, BaseModel, construct_type
 
 
 class BasicModel(BaseModel):

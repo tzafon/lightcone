@@ -19,12 +19,12 @@ import pytest
 from respx import MockRouter
 from pydantic import ValidationError
 
-from lightcone import Lightcone, AsyncLightcone, APIResponseValidationError
-from lightcone._types import Omit
-from lightcone._utils import asyncify
-from lightcone._models import BaseModel, FinalRequestOptions
-from lightcone._exceptions import APIStatusError, LightconeError, APITimeoutError, APIResponseValidationError
-from lightcone._base_client import (
+from tzafon import Lightcone, AsyncLightcone, APIResponseValidationError
+from tzafon._types import Omit
+from tzafon._utils import asyncify
+from tzafon._models import BaseModel, FinalRequestOptions
+from tzafon._exceptions import APIStatusError, LightconeError, APITimeoutError, APIResponseValidationError
+from tzafon._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
     BaseClient,
@@ -286,10 +286,10 @@ class TestLightcone:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "lightcone/_legacy_response.py",
-                        "lightcone/_response.py",
+                        "tzafon/_legacy_response.py",
+                        "tzafon/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "lightcone/_compat.py",
+                        "tzafon/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -405,7 +405,7 @@ class TestLightcone:
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(LightconeError):
-            with update_env(**{"LIGHTCONE_API_KEY": Omit()}):
+            with update_env(**{"TZAFON_API_KEY": Omit()}):
                 client2 = Lightcone(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
@@ -848,7 +848,7 @@ class TestLightcone:
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Lightcone) -> None:
         respx_mock.post("/agent/tasks").mock(side_effect=httpx.TimeoutException("Test timeout error"))
@@ -858,7 +858,7 @@ class TestLightcone:
 
         assert _get_open_connections(client) == 0
 
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Lightcone) -> None:
         respx_mock.post("/agent/tasks").mock(return_value=httpx.Response(500))
@@ -868,7 +868,7 @@ class TestLightcone:
         assert _get_open_connections(client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     def test_retries_taken(
@@ -899,7 +899,7 @@ class TestLightcone:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_omit_retry_count_header(
         self, client: Lightcone, failures_before_success: int, respx_mock: MockRouter
@@ -922,7 +922,7 @@ class TestLightcone:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_overwrite_retry_count_header(
         self, client: Lightcone, failures_before_success: int, respx_mock: MockRouter
@@ -1175,10 +1175,10 @@ class TestAsyncLightcone:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "lightcone/_legacy_response.py",
-                        "lightcone/_response.py",
+                        "tzafon/_legacy_response.py",
+                        "tzafon/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "lightcone/_compat.py",
+                        "tzafon/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -1296,7 +1296,7 @@ class TestAsyncLightcone:
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(LightconeError):
-            with update_env(**{"LIGHTCONE_API_KEY": Omit()}):
+            with update_env(**{"TZAFON_API_KEY": Omit()}):
                 client2 = AsyncLightcone(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
@@ -1754,7 +1754,7 @@ class TestAsyncLightcone:
         calculated = async_client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_timeout_errors_doesnt_leak(
         self, respx_mock: MockRouter, async_client: AsyncLightcone
@@ -1766,7 +1766,7 @@ class TestAsyncLightcone:
 
         assert _get_open_connections(async_client) == 0
 
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(
         self, respx_mock: MockRouter, async_client: AsyncLightcone
@@ -1778,7 +1778,7 @@ class TestAsyncLightcone:
         assert _get_open_connections(async_client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     async def test_retries_taken(
@@ -1809,7 +1809,7 @@ class TestAsyncLightcone:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_omit_retry_count_header(
         self, async_client: AsyncLightcone, failures_before_success: int, respx_mock: MockRouter
@@ -1832,7 +1832,7 @@ class TestAsyncLightcone:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("lightcone._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("tzafon._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_overwrite_retry_count_header(
         self, async_client: AsyncLightcone, failures_before_success: int, respx_mock: MockRouter

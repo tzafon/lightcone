@@ -1,5 +1,5 @@
 [project]
-name = "lightcone"
+name = "tzafon"
 version = "0.0.1"
 description = "The official Python library for the lightcone API"
 dynamic = ["readme"]
@@ -86,7 +86,7 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/lightcone"]
+packages = ["src/tzafon"]
 
 [tool.hatch.build.targets.sdist]
 # Basically everything except hidden files/directories (such as .github, .devcontainers, .python-version, etc)
@@ -154,7 +154,7 @@ show_error_codes = true
 #
 # We also exclude our `tests` as mypy doesn't always infer
 # types correctly and Pyright will still catch any type errors.
-exclude = ['src/lightcone/_files.py', '_dev/.*.py', 'tests/.*']
+exclude = ['src/tzafon/_files.py', '_dev/.*.py', 'tests/.*']
 
 strict_equality = true
 implicit_reexport = true
@@ -246,7 +246,7 @@ length-sort = true
 length-sort-straight = true
 combine-as-imports = true
 extra-standard-library = ["typing_extensions"]
-known-first-party = ["lightcone", "tests"]
+known-first-party = ["tzafon", "tests"]
 
 [tool.ruff.lint.per-file-ignores]
 "bin/**.py" = ["T201", "T203"]

@@ -1,7 +1,7 @@
 # Lightcone Python API library
 
 <!-- prettier-ignore -->
-[![PyPI version](https://img.shields.io/pypi/v/lightcone.svg?label=pypi%20(stable))](https://pypi.org/project/lightcone/)
+[![PyPI version](https://img.shields.io/pypi/v/tzafon.svg?label=pypi%20(stable))](https://pypi.org/project/tzafon/)
 
 The Lightcone Python library provides convenient access to the Lightcone REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
@@ -21,7 +21,7 @@ pip install git+ssh://git@github.com/stainless-sdks/lightcone-python.git
 ```
 
 > [!NOTE]
-> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install lightcone`
+> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install tzafon`
 
 ## Usage
 
@@ -29,10 +29,10 @@ The full API of this library can be found in [api.md](api.md).
 
 ```python
 import os
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 client = Lightcone(
-    api_key=os.environ.get("LIGHTCONE_API_KEY"),  # This is the default and can be omitted
+    api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
 )
 
 response = client.agent.tasks.start()
@@ -41,7 +41,7 @@ print(response.task_id)
 
 While you can provide an `api_key` keyword argument,
 we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
-to add `LIGHTCONE_API_KEY="My API Key"` to your `.env` file
+to add `TZAFON_API_KEY="My API Key"` to your `.env` file
 so that your API Key is not stored in source control.
 
 ## Async usage
@@ -51,10 +51,10 @@ Simply import `AsyncLightcone` instead of `Lightcone` and use `await` with each 
 ```python
 import os
 import asyncio
-from lightcone import AsyncLightcone
+from tzafon import AsyncLightcone
 
 client = AsyncLightcone(
-    api_key=os.environ.get("LIGHTCONE_API_KEY"),  # This is the default and can be omitted
+    api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
 )
 
 
@@ -76,7 +76,7 @@ You can enable this by installing `aiohttp`:
 
 ```sh
 # install from this staging repo
-pip install 'lightcone[aiohttp] @ git+ssh://git@github.com/stainless-sdks/lightcone-python.git'
+pip install 'tzafon[aiohttp] @ git+ssh://git@github.com/stainless-sdks/lightcone-python.git'
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
@@ -84,13 +84,13 @@ Then you can enable it by instantiating the client with `http_client=DefaultAioH
 ```python
 import os
 import asyncio
-from lightcone import DefaultAioHttpClient
-from lightcone import AsyncLightcone
+from tzafon import DefaultAioHttpClient
+from tzafon import AsyncLightcone
 
 
 async def main() -> None:
     async with AsyncLightcone(
-        api_key=os.environ.get("LIGHTCONE_API_KEY"),  # This is the default and can be omitted
+        api_key=os.environ.get("TZAFON_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
         response = await client.agent.tasks.start()
@@ -114,7 +114,7 @@ Typed requests and responses provide autocomplete and documentation within your 
 Nested parameters are dictionaries, typed using `TypedDict`, for example:
 
 ```python
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 client = Lightcone()
 
@@ -126,27 +126,27 @@ print(computer_response.display)
 
 ## Handling errors
 
-When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `lightcone.APIConnectionError` is raised.
+When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `tzafon.APIConnectionError` is raised.
 
 When the API returns a non-success status code (that is, 4xx or 5xx
-response), a subclass of `lightcone.APIStatusError` is raised, containing `status_code` and `response` properties.
+response), a subclass of `tzafon.APIStatusError` is raised, containing `status_code` and `response` properties.
 
-All errors inherit from `lightcone.APIError`.
+All errors inherit from `tzafon.APIError`.
 
 ```python
-import lightcone
-from lightcone import Lightcone
+import tzafon
+from tzafon import Lightcone
 
 client = Lightcone()
 
 try:
     client.agent.tasks.start()
-except lightcone.APIConnectionError as e:
+except tzafon.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
-except lightcone.RateLimitError as e:
+except tzafon.RateLimitError as e:
     print("A 429 status code was received; we should back off a bit.")
-except lightcone.APIStatusError as e:
+except tzafon.APIStatusError as e:
     print("Another non-200-range status code was received")
     print(e.status_code)
     print(e.response)
@@ -174,7 +174,7 @@ Connection errors (for example, due to a network connectivity problem), 408 Requ
 You can use the `max_retries` option to configure or disable retry settings:
 
 ```python
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 # Configure the default for all requests:
 client = Lightcone(
@@ -192,7 +192,7 @@ By default requests time out after 1 minute. You can configure this with a `time
 which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
 ```python
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 # Configure the default for all requests:
 client = Lightcone(
@@ -244,7 +244,7 @@ if response.my_field is None:
 The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
 
 ```py
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 client = Lightcone()
 response = client.agent.tasks.with_raw_response.start()
@@ -254,9 +254,9 @@ task = response.parse()  # get the object that `agent.tasks.start()` would have 
 print(task.task_id)
 ```
 
-These methods return an [`APIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/lightcone/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/tzafon/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/lightcone/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/lightcone-python/tree/main/src/tzafon/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -318,7 +318,7 @@ You can directly override the [httpx client](https://www.python-httpx.org/api/#c
 
 ```python
 import httpx
-from lightcone import Lightcone, DefaultHttpxClient
+from tzafon import Lightcone, DefaultHttpxClient
 
 client = Lightcone(
     # Or use the `LIGHTCONE_BASE_URL` env var
@@ -341,7 +341,7 @@ client.with_options(http_client=DefaultHttpxClient(...))
 By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
 
 ```py
-from lightcone import Lightcone
+from tzafon import Lightcone
 
 with Lightcone() as client:
   # make requests here
@@ -369,8 +369,8 @@ If you've upgraded to the latest version but aren't seeing any new features you 
 You can determine the version that is being used at runtime with:
 
 ```py
-import lightcone
-print(lightcone.__version__)
+import tzafon
+print(tzafon.__version__)
 ```
 
 ## Requirements

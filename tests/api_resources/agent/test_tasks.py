@@ -7,9 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from lightcone import Lightcone, AsyncLightcone
+from tzafon import Lightcone, AsyncLightcone
 from tests.utils import assert_matches_type
-from lightcone.types.agent import (
+from tzafon.types.agent import (
     TaskPauseResponse,
     TaskStartResponse,
     TaskResumeResponse,

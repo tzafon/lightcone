@@ -5,8 +5,8 @@ from typing import Union
 
 import pydantic
 
-from lightcone import _compat
-from lightcone._utils._json import openapi_dumps
+from tzafon import _compat
+from tzafon._utils._json import openapi_dumps
 
 
 class TestOpenapiDumps:

@@ -5,8 +5,8 @@ from typing import Iterator, AsyncIterator
 import httpx
 import pytest
 
-from lightcone import Lightcone, AsyncLightcone
-from lightcone._streaming import Stream, AsyncStream, ServerSentEvent
+from tzafon import Lightcone, AsyncLightcone
+from tzafon._streaming import Stream, AsyncStream, ServerSentEvent
 
 
 @pytest.mark.asyncio

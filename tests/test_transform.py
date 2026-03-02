@@ -8,15 +8,15 @@ from typing_extensions import Required, Annotated, TypedDict
 
 import pytest
 
-from lightcone._types import Base64FileInput, omit, not_given
-from lightcone._utils import (
+from tzafon._types import Base64FileInput, omit, not_given
+from tzafon._utils import (
     PropertyInfo,
     transform as _transform,
     parse_datetime,
     async_transform as _async_transform,
 )
-from lightcone._compat import PYDANTIC_V1
-from lightcone._models import BaseModel
+from tzafon._compat import PYDANTIC_V1
+from tzafon._models import BaseModel
 
 _T = TypeVar("_T")
 

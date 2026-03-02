@@ -7,15 +7,15 @@ from typing import Any, cast
 
 import pytest
 
-from lightcone import Lightcone, AsyncLightcone
+from tzafon import Lightcone, AsyncLightcone
 from tests.utils import assert_matches_type
-from lightcone.types import (
+from tzafon.types import (
     ActionResult,
     ComputerResponse,
     ComputerListResponse,
-    ComputerGetStatusResponse,
-    ComputerKeepAliveResponse,
-    ComputerExecuteBatchResponse,
+    ComputerBatchResponse,
+    ComputerKeepaliveResponse,
+    ComputerRetrieveStatusResponse,
 )
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
@@ -153,53 +153,130 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_capture_screenshot(self, client: Lightcone) -> None:
-        computer = client.computers.capture_screenshot(
-            id="id",
+    def test_method_delete(self, client: Lightcone) -> None:
+        computer = client.computers.delete(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_capture_screenshot_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.capture_screenshot(
-            id="id",
-            base64=True,
-            tab_id="tab_id",
+    def test_raw_response_delete(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.delete(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_capture_screenshot(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.capture_screenshot(
+    def test_streaming_response_delete(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.delete(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_delete(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.delete(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_batch(self, client: Lightcone) -> None:
+        computer = client.computers.batch(
+            id="id",
+        )
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_batch_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.batch(
+            id="id",
+            actions=[
+                {
+                    "auto_detect_encoding": True,
+                    "base64": True,
+                    "button": "button",
+                    "debug": {
+                        "command": "command",
+                        "cwd": "cwd",
+                        "env": {"foo": "string"},
+                        "max_output_length": 0,
+                        "request_id": "request_id",
+                        "stream": True,
+                        "timeout_seconds": 0,
+                    },
+                    "dx": 0,
+                    "dy": 0,
+                    "height": 0,
+                    "include_context": True,
+                    "key": "key",
+                    "keys": ["string"],
+                    "ms": 0,
+                    "proxy_url": "proxy_url",
+                    "request_id": "request_id",
+                    "scale_factor": 0,
+                    "tab_id": "tab_id",
+                    "text": "text",
+                    "type": "type",
+                    "url": "url",
+                    "width": 0,
+                    "x": 0,
+                    "x1": 0,
+                    "x2": 0,
+                    "y": 0,
+                    "y1": 0,
+                    "y2": 0,
+                }
+            ],
+        )
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_batch(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.batch(
             id="id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_capture_screenshot(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.capture_screenshot(
+    def test_streaming_response_batch(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.batch(
             id="id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
+            assert_matches_type(ComputerBatchResponse, computer, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_capture_screenshot(self, client: Lightcone) -> None:
+    def test_path_params_batch(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.capture_screenshot(
+            client.computers.with_raw_response.batch(
                 id="",
             )
 
@@ -304,6 +381,60 @@ class TestComputers:
     def test_path_params_click(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             client.computers.with_raw_response.click(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_debug(self, client: Lightcone) -> None:
+        computer = client.computers.debug(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_debug_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.debug(
+            id="id",
+            command="command",
+            max_output_length=0,
+            tab_id="tab_id",
+            timeout_seconds=0,
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_debug(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.debug(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_debug(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.debug(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_debug(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.debug(
                 id="",
             )
 
@@ -417,16 +548,16 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_execute_action(self, client: Lightcone) -> None:
-        computer = client.computers.execute_action(
+    def test_method_execute(self, client: Lightcone) -> None:
+        computer = client.computers.execute(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_execute_action_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.execute_action(
+    def test_method_execute_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.execute(
             id="id",
             action={
                 "auto_detect_encoding": True,
@@ -468,8 +599,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_execute_action(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.execute_action(
+    def test_raw_response_execute(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.execute(
             id="id",
         )
 
@@ -480,8 +611,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_execute_action(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.execute_action(
+    def test_streaming_response_execute(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.execute(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -494,123 +625,34 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_execute_action(self, client: Lightcone) -> None:
+    def test_path_params_execute(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.execute_action(
+            client.computers.with_raw_response.execute(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_execute_batch(self, client: Lightcone) -> None:
-        computer = client.computers.execute_batch(
-            id="id",
-        )
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_execute_batch_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.execute_batch(
-            id="id",
-            actions=[
-                {
-                    "auto_detect_encoding": True,
-                    "base64": True,
-                    "button": "button",
-                    "debug": {
-                        "command": "command",
-                        "cwd": "cwd",
-                        "env": {"foo": "string"},
-                        "max_output_length": 0,
-                        "request_id": "request_id",
-                        "stream": True,
-                        "timeout_seconds": 0,
-                    },
-                    "dx": 0,
-                    "dy": 0,
-                    "height": 0,
-                    "include_context": True,
-                    "key": "key",
-                    "keys": ["string"],
-                    "ms": 0,
-                    "proxy_url": "proxy_url",
-                    "request_id": "request_id",
-                    "scale_factor": 0,
-                    "tab_id": "tab_id",
-                    "text": "text",
-                    "type": "type",
-                    "url": "url",
-                    "width": 0,
-                    "x": 0,
-                    "x1": 0,
-                    "x2": 0,
-                    "y": 0,
-                    "y1": 0,
-                    "y2": 0,
-                }
-            ],
-        )
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_execute_batch(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.execute_batch(
-            id="id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_execute_batch(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.execute_batch(
-            id="id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_execute_batch(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.execute_batch(
-                id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_execute_debug(self, client: Lightcone) -> None:
-        computer = client.computers.execute_debug(
+    def test_method_hotkey(self, client: Lightcone) -> None:
+        computer = client.computers.hotkey(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_execute_debug_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.execute_debug(
+    def test_method_hotkey_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.hotkey(
             id="id",
-            command="command",
-            max_output_length=0,
+            keys=["string"],
             tab_id="tab_id",
-            timeout_seconds=0,
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_execute_debug(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.execute_debug(
+    def test_raw_response_hotkey(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.hotkey(
             id="id",
         )
 
@@ -621,8 +663,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_execute_debug(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.execute_debug(
+    def test_streaming_response_hotkey(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.hotkey(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -635,24 +677,24 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_execute_debug(self, client: Lightcone) -> None:
+    def test_path_params_hotkey(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.execute_debug(
+            client.computers.with_raw_response.hotkey(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_get_html(self, client: Lightcone) -> None:
-        computer = client.computers.get_html(
+    def test_method_html(self, client: Lightcone) -> None:
+        computer = client.computers.html(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_get_html_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.get_html(
+    def test_method_html_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.html(
             id="id",
             auto_detect_encoding=True,
             tab_id="tab_id",
@@ -661,8 +703,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_get_html(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.get_html(
+    def test_raw_response_html(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.html(
             id="id",
         )
 
@@ -673,8 +715,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_get_html(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.get_html(
+    def test_streaming_response_html(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.html(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -687,93 +729,51 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_get_html(self, client: Lightcone) -> None:
+    def test_path_params_html(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.get_html(
+            client.computers.with_raw_response.html(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_get_status(self, client: Lightcone) -> None:
-        computer = client.computers.get_status(
+    def test_method_keepalive(self, client: Lightcone) -> None:
+        computer = client.computers.keepalive(
             "id",
         )
-        assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
+        assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_get_status(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.get_status(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_get_status(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.get_status(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_get_status(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.get_status(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_keep_alive(self, client: Lightcone) -> None:
-        computer = client.computers.keep_alive(
-            "id",
-        )
-        assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_keep_alive(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.keep_alive(
+    def test_raw_response_keepalive(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.keepalive(
             "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = response.parse()
-        assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
+        assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_keep_alive(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.keep_alive(
+    def test_streaming_response_keepalive(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.keepalive(
             "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = response.parse()
-            assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
+            assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_keep_alive(self, client: Lightcone) -> None:
+    def test_path_params_keepalive(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.keep_alive(
+            client.computers.with_raw_response.keepalive(
                 "",
             )
 
@@ -1041,54 +1041,170 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_press_hotkey(self, client: Lightcone) -> None:
-        computer = client.computers.press_hotkey(
-            id="id",
+    def test_method_retrieve_events(self, client: Lightcone) -> None:
+        computer = client.computers.retrieve_events(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_press_hotkey_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.press_hotkey(
-            id="id",
-            keys=["string"],
-            tab_id="tab_id",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_press_hotkey(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.press_hotkey(
-            id="id",
+    def test_raw_response_retrieve_events(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.retrieve_events(
+            "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_press_hotkey(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.press_hotkey(
-            id="id",
+    def test_streaming_response_retrieve_events(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.retrieve_events(
+            "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
+            assert computer is None
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_press_hotkey(self, client: Lightcone) -> None:
+    def test_path_params_retrieve_events(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.press_hotkey(
-                id="",
+            client.computers.with_raw_response.retrieve_events(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_retrieve_screencast(self, client: Lightcone) -> None:
+        computer = client.computers.retrieve_screencast(
+            "id",
+        )
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_retrieve_screencast(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.retrieve_screencast(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_retrieve_screencast(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.retrieve_screencast(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_retrieve_screencast(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.retrieve_screencast(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_retrieve_status(self, client: Lightcone) -> None:
+        computer = client.computers.retrieve_status(
+            "id",
+        )
+        assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_retrieve_status(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.retrieve_status(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_retrieve_status(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.retrieve_status(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_retrieve_status(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.retrieve_status(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_retrieve_ws(self, client: Lightcone) -> None:
+        computer = client.computers.retrieve_ws(
+            "id",
+        )
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_retrieve_ws(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.retrieve_ws(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_retrieve_ws(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.retrieve_ws(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_retrieve_ws(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.retrieve_ws(
+                "",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
@@ -1141,6 +1257,58 @@ class TestComputers:
     def test_path_params_right_click(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             client.computers.with_raw_response.right_click(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_screenshot(self, client: Lightcone) -> None:
+        computer = client.computers.screenshot(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_screenshot_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.screenshot(
+            id="id",
+            base64=True,
+            tab_id="tab_id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_screenshot(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.screenshot(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_screenshot(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.screenshot(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_screenshot(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.screenshot(
                 id="",
             )
 
@@ -1201,16 +1369,68 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_set_viewport(self, client: Lightcone) -> None:
-        computer = client.computers.set_viewport(
+    def test_method_type(self, client: Lightcone) -> None:
+        computer = client.computers.type(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_set_viewport_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.set_viewport(
+    def test_method_type_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.type(
+            id="id",
+            tab_id="tab_id",
+            text="text",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_raw_response_type(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.type(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_streaming_response_type(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.type(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_path_params_type(self, client: Lightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            client.computers.with_raw_response.type(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_viewport(self, client: Lightcone) -> None:
+        computer = client.computers.viewport(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    def test_method_viewport_with_all_params(self, client: Lightcone) -> None:
+        computer = client.computers.viewport(
             id="id",
             height=0,
             scale_factor=0,
@@ -1221,8 +1441,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_raw_response_set_viewport(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.set_viewport(
+    def test_raw_response_viewport(self, client: Lightcone) -> None:
+        response = client.computers.with_raw_response.viewport(
             id="id",
         )
 
@@ -1233,8 +1453,8 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_streaming_response_set_viewport(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.set_viewport(
+    def test_streaming_response_viewport(self, client: Lightcone) -> None:
+        with client.computers.with_streaming_response.viewport(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -1247,230 +1467,10 @@ class TestComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_path_params_set_viewport(self, client: Lightcone) -> None:
+    def test_path_params_viewport(self, client: Lightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.set_viewport(
+            client.computers.with_raw_response.viewport(
                 id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_stream_events(self, client: Lightcone) -> None:
-        computer = client.computers.stream_events(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_stream_events(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.stream_events(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_stream_events(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.stream_events(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_stream_events(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.stream_events(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_stream_screencast(self, client: Lightcone) -> None:
-        computer = client.computers.stream_screencast(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_stream_screencast(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.stream_screencast(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_stream_screencast(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.stream_screencast(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_stream_screencast(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.stream_screencast(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_terminate(self, client: Lightcone) -> None:
-        computer = client.computers.terminate(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_terminate(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.terminate(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_terminate(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.terminate(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_terminate(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.terminate(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_type_text(self, client: Lightcone) -> None:
-        computer = client.computers.type_text(
-            id="id",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_type_text_with_all_params(self, client: Lightcone) -> None:
-        computer = client.computers.type_text(
-            id="id",
-            tab_id="tab_id",
-            text="text",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_type_text(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.type_text(
-            id="id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_type_text(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.type_text(
-            id="id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_type_text(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.type_text(
-                id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_method_websocket_connection(self, client: Lightcone) -> None:
-        computer = client.computers.websocket_connection(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_raw_response_websocket_connection(self, client: Lightcone) -> None:
-        response = client.computers.with_raw_response.websocket_connection(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_streaming_response_websocket_connection(self, client: Lightcone) -> None:
-        with client.computers.with_streaming_response.websocket_connection(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    def test_path_params_websocket_connection(self, client: Lightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.computers.with_raw_response.websocket_connection(
-                "",
             )
 
 
@@ -1608,53 +1608,130 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_capture_screenshot(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.capture_screenshot(
-            id="id",
+    async def test_method_delete(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.delete(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_capture_screenshot_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.capture_screenshot(
-            id="id",
-            base64=True,
-            tab_id="tab_id",
+    async def test_raw_response_delete(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.delete(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_capture_screenshot(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.capture_screenshot(
+    async def test_streaming_response_delete(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.delete(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_delete(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.delete(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_batch(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.batch(
+            id="id",
+        )
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_batch_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.batch(
+            id="id",
+            actions=[
+                {
+                    "auto_detect_encoding": True,
+                    "base64": True,
+                    "button": "button",
+                    "debug": {
+                        "command": "command",
+                        "cwd": "cwd",
+                        "env": {"foo": "string"},
+                        "max_output_length": 0,
+                        "request_id": "request_id",
+                        "stream": True,
+                        "timeout_seconds": 0,
+                    },
+                    "dx": 0,
+                    "dy": 0,
+                    "height": 0,
+                    "include_context": True,
+                    "key": "key",
+                    "keys": ["string"],
+                    "ms": 0,
+                    "proxy_url": "proxy_url",
+                    "request_id": "request_id",
+                    "scale_factor": 0,
+                    "tab_id": "tab_id",
+                    "text": "text",
+                    "type": "type",
+                    "url": "url",
+                    "width": 0,
+                    "x": 0,
+                    "x1": 0,
+                    "x2": 0,
+                    "y": 0,
+                    "y1": 0,
+                    "y2": 0,
+                }
+            ],
+        )
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_batch(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.batch(
             id="id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = await response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert_matches_type(ComputerBatchResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_capture_screenshot(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.capture_screenshot(
+    async def test_streaming_response_batch(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.batch(
             id="id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = await response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
+            assert_matches_type(ComputerBatchResponse, computer, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_capture_screenshot(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_batch(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.capture_screenshot(
+            await async_client.computers.with_raw_response.batch(
                 id="",
             )
 
@@ -1759,6 +1836,60 @@ class TestAsyncComputers:
     async def test_path_params_click(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             await async_client.computers.with_raw_response.click(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_debug(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.debug(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_debug_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.debug(
+            id="id",
+            command="command",
+            max_output_length=0,
+            tab_id="tab_id",
+            timeout_seconds=0,
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_debug(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.debug(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_debug(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.debug(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_debug(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.debug(
                 id="",
             )
 
@@ -1872,16 +2003,16 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_execute_action(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_action(
+    async def test_method_execute(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.execute(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_execute_action_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_action(
+    async def test_method_execute_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.execute(
             id="id",
             action={
                 "auto_detect_encoding": True,
@@ -1923,8 +2054,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_execute_action(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.execute_action(
+    async def test_raw_response_execute(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.execute(
             id="id",
         )
 
@@ -1935,8 +2066,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_execute_action(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.execute_action(
+    async def test_streaming_response_execute(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.execute(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -1949,123 +2080,34 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_execute_action(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_execute(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.execute_action(
+            await async_client.computers.with_raw_response.execute(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_execute_batch(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_batch(
-            id="id",
-        )
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_execute_batch_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_batch(
-            id="id",
-            actions=[
-                {
-                    "auto_detect_encoding": True,
-                    "base64": True,
-                    "button": "button",
-                    "debug": {
-                        "command": "command",
-                        "cwd": "cwd",
-                        "env": {"foo": "string"},
-                        "max_output_length": 0,
-                        "request_id": "request_id",
-                        "stream": True,
-                        "timeout_seconds": 0,
-                    },
-                    "dx": 0,
-                    "dy": 0,
-                    "height": 0,
-                    "include_context": True,
-                    "key": "key",
-                    "keys": ["string"],
-                    "ms": 0,
-                    "proxy_url": "proxy_url",
-                    "request_id": "request_id",
-                    "scale_factor": 0,
-                    "tab_id": "tab_id",
-                    "text": "text",
-                    "type": "type",
-                    "url": "url",
-                    "width": 0,
-                    "x": 0,
-                    "x1": 0,
-                    "x2": 0,
-                    "y": 0,
-                    "y1": 0,
-                    "y2": 0,
-                }
-            ],
-        )
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_execute_batch(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.execute_batch(
-            id="id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_execute_batch(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.execute_batch(
-            id="id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert_matches_type(ComputerExecuteBatchResponse, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_execute_batch(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.execute_batch(
-                id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_execute_debug(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_debug(
+    async def test_method_hotkey(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.hotkey(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_execute_debug_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.execute_debug(
+    async def test_method_hotkey_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.hotkey(
             id="id",
-            command="command",
-            max_output_length=0,
+            keys=["string"],
             tab_id="tab_id",
-            timeout_seconds=0,
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_execute_debug(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.execute_debug(
+    async def test_raw_response_hotkey(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.hotkey(
             id="id",
         )
 
@@ -2076,8 +2118,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_execute_debug(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.execute_debug(
+    async def test_streaming_response_hotkey(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.hotkey(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -2090,24 +2132,24 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_execute_debug(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_hotkey(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.execute_debug(
+            await async_client.computers.with_raw_response.hotkey(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_get_html(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.get_html(
+    async def test_method_html(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.html(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_get_html_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.get_html(
+    async def test_method_html_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.html(
             id="id",
             auto_detect_encoding=True,
             tab_id="tab_id",
@@ -2116,8 +2158,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_get_html(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.get_html(
+    async def test_raw_response_html(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.html(
             id="id",
         )
 
@@ -2128,8 +2170,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_get_html(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.get_html(
+    async def test_streaming_response_html(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.html(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -2142,93 +2184,51 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_get_html(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_html(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.get_html(
+            await async_client.computers.with_raw_response.html(
                 id="",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_get_status(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.get_status(
+    async def test_method_keepalive(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.keepalive(
             "id",
         )
-        assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
+        assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_get_status(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.get_status(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_get_status(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.get_status(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert_matches_type(ComputerGetStatusResponse, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_get_status(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.get_status(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_keep_alive(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.keep_alive(
-            "id",
-        )
-        assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_keep_alive(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.keep_alive(
+    async def test_raw_response_keepalive(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.keepalive(
             "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = await response.parse()
-        assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
+        assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_keep_alive(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.keep_alive(
+    async def test_streaming_response_keepalive(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.keepalive(
             "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = await response.parse()
-            assert_matches_type(ComputerKeepAliveResponse, computer, path=["response"])
+            assert_matches_type(ComputerKeepaliveResponse, computer, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_keep_alive(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_keepalive(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.keep_alive(
+            await async_client.computers.with_raw_response.keepalive(
                 "",
             )
 
@@ -2496,54 +2496,170 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_press_hotkey(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.press_hotkey(
-            id="id",
+    async def test_method_retrieve_events(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.retrieve_events(
+            "id",
         )
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_press_hotkey_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.press_hotkey(
-            id="id",
-            keys=["string"],
-            tab_id="tab_id",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_press_hotkey(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.press_hotkey(
-            id="id",
+    async def test_raw_response_retrieve_events(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.retrieve_events(
+            "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         computer = await response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
+        assert computer is None
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_press_hotkey(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.press_hotkey(
-            id="id",
+    async def test_streaming_response_retrieve_events(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.retrieve_events(
+            "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             computer = await response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
+            assert computer is None
 
         assert cast(Any, response.is_closed) is True
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_press_hotkey(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_retrieve_events(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.press_hotkey(
-                id="",
+            await async_client.computers.with_raw_response.retrieve_events(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_retrieve_screencast(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.retrieve_screencast(
+            "id",
+        )
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_retrieve_screencast(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.retrieve_screencast(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_retrieve_screencast(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.retrieve_screencast(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_retrieve_screencast(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.retrieve_screencast(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_retrieve_status(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.retrieve_status(
+            "id",
+        )
+        assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_retrieve_status(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.retrieve_status(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_retrieve_status(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.retrieve_status(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert_matches_type(ComputerRetrieveStatusResponse, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_retrieve_status(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.retrieve_status(
+                "",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_retrieve_ws(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.retrieve_ws(
+            "id",
+        )
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_retrieve_ws(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.retrieve_ws(
+            "id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert computer is None
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_retrieve_ws(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.retrieve_ws(
+            "id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert computer is None
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_retrieve_ws(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.retrieve_ws(
+                "",
             )
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
@@ -2596,6 +2712,58 @@ class TestAsyncComputers:
     async def test_path_params_right_click(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             await async_client.computers.with_raw_response.right_click(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_screenshot(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.screenshot(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_screenshot_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.screenshot(
+            id="id",
+            base64=True,
+            tab_id="tab_id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_screenshot(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.screenshot(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_screenshot(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.screenshot(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_screenshot(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.screenshot(
                 id="",
             )
 
@@ -2656,16 +2824,68 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_set_viewport(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.set_viewport(
+    async def test_method_type(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.type(
             id="id",
         )
         assert_matches_type(ActionResult, computer, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_method_set_viewport_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.set_viewport(
+    async def test_method_type_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.type(
+            id="id",
+            tab_id="tab_id",
+            text="text",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_raw_response_type(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.type(
+            id="id",
+        )
+
+        assert response.is_closed is True
+        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+        computer = await response.parse()
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_streaming_response_type(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.type(
+            id="id",
+        ) as response:
+            assert not response.is_closed
+            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
+
+            computer = await response.parse()
+            assert_matches_type(ActionResult, computer, path=["response"])
+
+        assert cast(Any, response.is_closed) is True
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_path_params_type(self, async_client: AsyncLightcone) -> None:
+        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
+            await async_client.computers.with_raw_response.type(
+                id="",
+            )
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_viewport(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.viewport(
+            id="id",
+        )
+        assert_matches_type(ActionResult, computer, path=["response"])
+
+    @pytest.mark.skip(reason="Mock server tests are disabled")
+    @parametrize
+    async def test_method_viewport_with_all_params(self, async_client: AsyncLightcone) -> None:
+        computer = await async_client.computers.viewport(
             id="id",
             height=0,
             scale_factor=0,
@@ -2676,8 +2896,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_raw_response_set_viewport(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.set_viewport(
+    async def test_raw_response_viewport(self, async_client: AsyncLightcone) -> None:
+        response = await async_client.computers.with_raw_response.viewport(
             id="id",
         )
 
@@ -2688,8 +2908,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_streaming_response_set_viewport(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.set_viewport(
+    async def test_streaming_response_viewport(self, async_client: AsyncLightcone) -> None:
+        async with async_client.computers.with_streaming_response.viewport(
             id="id",
         ) as response:
             assert not response.is_closed
@@ -2702,228 +2922,8 @@ class TestAsyncComputers:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    async def test_path_params_set_viewport(self, async_client: AsyncLightcone) -> None:
+    async def test_path_params_viewport(self, async_client: AsyncLightcone) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.set_viewport(
+            await async_client.computers.with_raw_response.viewport(
                 id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_stream_events(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.stream_events(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_stream_events(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.stream_events(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_stream_events(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.stream_events(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_stream_events(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.stream_events(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_stream_screencast(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.stream_screencast(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_stream_screencast(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.stream_screencast(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_stream_screencast(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.stream_screencast(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_stream_screencast(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.stream_screencast(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_terminate(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.terminate(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_terminate(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.terminate(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_terminate(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.terminate(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_terminate(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.terminate(
-                "",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_type_text(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.type_text(
-            id="id",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_type_text_with_all_params(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.type_text(
-            id="id",
-            tab_id="tab_id",
-            text="text",
-        )
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_type_text(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.type_text(
-            id="id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert_matches_type(ActionResult, computer, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_type_text(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.type_text(
-            id="id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert_matches_type(ActionResult, computer, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_type_text(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.type_text(
-                id="",
-            )
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_websocket_connection(self, async_client: AsyncLightcone) -> None:
-        computer = await async_client.computers.websocket_connection(
-            "id",
-        )
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_raw_response_websocket_connection(self, async_client: AsyncLightcone) -> None:
-        response = await async_client.computers.with_raw_response.websocket_connection(
-            "id",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        computer = await response.parse()
-        assert computer is None
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_streaming_response_websocket_connection(self, async_client: AsyncLightcone) -> None:
-        async with async_client.computers.with_streaming_response.websocket_connection(
-            "id",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            computer = await response.parse()
-            assert computer is None
-
-        assert cast(Any, response.is_closed) is True
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_path_params_websocket_connection(self, async_client: AsyncLightcone) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.computers.with_raw_response.websocket_connection(
-                "",
             )

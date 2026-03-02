@@ -7,9 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from lightcone import Lightcone, AsyncLightcone
+from tzafon import Lightcone, AsyncLightcone
 from tests.utils import assert_matches_type
-from lightcone.types import ResponsesResponse, ResponseDeleteResponse
+from tzafon.types import ResponsesResponse, ResponseDeleteResponse
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
