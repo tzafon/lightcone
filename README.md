@@ -28,7 +28,7 @@ A 4B computer-use model trained with GUI reinforcement learning. Recovers from m
 | **Training** | GUI reinforcement learning |
 | **Input** | Text + screenshot |
 | **Output** | GUI actions — `click`, `type`, `scroll`, `key`, `drag`, ... |
-| **Coordinates** | Normalized 0–999 grid, scaled to viewport pixels |
+| **Coordinates** | 0–999 normalized (model) · pixel-scaled (Responses API) |
 | **Pricing** | < $1/M tokens ([details](https://docs.tzafon.ai/pricing)) |
 
 ---
@@ -134,7 +134,7 @@ curl -X POST https://api.tzafon.ai/v1/responses \
 
 `click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser only) · `wait` · `terminate`
 
-All coordinates use a **0–999 normalized grid** and are scaled to viewport pixels by the API (default 1024×768). Multi-turn conversations are supported via `previous_response_id`.
+Via **Chat Completions** (`/v1/chat/completions`), the model returns raw 0–999 normalized coordinates. Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport pixels (default 1024×768). Multi-turn conversations are supported via `previous_response_id`.
 
 ---
 
@@ -151,7 +151,7 @@ Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop t
 | VLC | 49.94% | 34.41% | **43.87%** |
 | **Overall** | **53.1%** | 41.6% | 37.01% |
 
-> Northstar CUA Fast closes the gap on single-app tasks (Chrome, Thunderbird, Writer, VLC) at **~$0.002/step** — roughly 10x cheaper than frontier computer-use models.
+> At 4B parameters, Northstar CUA Fast is competitive with open-source models at twice its size on single-app tasks. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
 
 ---
 
