@@ -1,0 +1,99 @@
+name: Sync Python SDK
+
+on:
+  # Run manually anytime
+  workflow_dispatch:
+  # Or check automatically every hour
+  schedule:
+    - cron: "0 * * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout lightcone (monorepo)
+        uses: actions/checkout@v4
+        with:
+          path: lightcone
+
+      - name: Checkout lightcone-python (Stainless SDK)
+        uses: actions/checkout@v4
+        with:
+          repository: tzafon/lightcone-python
+          path: lightcone-python
+          token: ${{ secrets.SDK_SYNC_TOKEN }}
+
+      - name: Get source commit SHA
+        id: source
+        working-directory: lightcone-python
+        run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Sync SDK files
+        run: |
+          # Create target directory if it doesn't exist
+          mkdir -p lightcone/sdks/python
+
+          # Sync everything EXCEPT files that would conflict with the monorepo
+          rsync -av --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.claude/' \
+            --exclude='.devcontainer/' \
+            --exclude='.vscode/' \
+            --exclude='.stats.yml' \
+            --exclude='.release-please-manifest.json' \
+            --exclude='release-please-config.json' \
+            --exclude='.python-version' \
+            --exclude='Brewfile' \
+            --exclude='CONTRIBUTING.md' \
+            --exclude='SECURITY.md' \
+            --exclude='computer-python/' \
+            --exclude='bin/' \
+            --exclude='scripts/' \
+            --exclude='requirements-dev.lock' \
+            lightcone-python/ \
+            lightcone/sdks/python/
+
+      - name: Check for changes
+        id: changes
+        working-directory: lightcone
+        run: |
+          git add sdks/python/
+          if git diff --staged --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update PR
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: lightcone
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="sync/python-sdk"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create or switch to the sync branch
+          git checkout -B "$BRANCH"
+          git commit -m "sync: update Python SDK from lightcone-python (${{ steps.source.outputs.sha }})"
+          git push --force origin "$BRANCH"
+
+          # Create PR if one doesn't already exist
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number')
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create \
+              --title "sync: update Python SDK" \
+              --body "Automated sync from [lightcone-python](https://github.com/tzafon/lightcone-python) at commit \`${{ steps.source.outputs.sha }}\`.
+
+          This PR was created automatically by the SDK sync workflow." \
+              --head "$BRANCH" \
+              --base main
+          else
+            echo "PR #$EXISTING_PR already exists, pushed updated changes."
+          fi
