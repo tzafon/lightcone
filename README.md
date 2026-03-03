@@ -2,7 +2,7 @@
 
 # Northstar CUA Fast
 
-### Low-latency computer-use model for GUI automation
+### 4B computer-use model trained with reinforcement learning
 
 [API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Pricing](https://docs.tzafon.ai/pricing) | [Discord](https://discord.gg/tzafon) | [X (Twitter)](https://x.com/tzafon_company)
 
@@ -19,17 +19,17 @@
 
 ## Why Northstar CUA Fast
 
-A **4B-parameter** computer-use model that interprets screenshots and outputs GUI actions to control a desktop autonomously. Built for **agentic loops** where every step is a model call — smaller model = lower latency per step = faster agent.
+A 4B computer-use model trained with GUI reinforcement learning. Recovers from mistakes, generalizes across environments, and outperforms open-source models at twice its size. Built for agentic loops where every step is a model call. < $1/M tokens.
 
 | | |
 |---|---|
 | **Parameters** | 4B |
 | **Context** | 64K |
+| **Training** | GUI reinforcement learning |
 | **Input** | Text + screenshot |
 | **Output** | GUI actions — `click`, `type`, `scroll`, `key`, `drag`, ... |
 | **Coordinates** | Normalized 0–999 grid, scaled to viewport pixels |
-| **Median latency** | **768ms** end-to-end (P50 over 20K requests) |
-| **Cost per step** | **~$0.002** — 50-step task ≈ **$0.09** |
+| **Pricing** | < $1/M tokens ([details](https://docs.tzafon.ai/pricing)) |
 
 ---
 
