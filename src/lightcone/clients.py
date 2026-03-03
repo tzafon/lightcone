@@ -20,9 +20,9 @@ class AgentClients:
 
 def resolve_api_key(api_key: Optional[str] = None, settings: Optional[Settings] = None) -> str:
     resolved_settings = settings or get_settings()
-    resolved = api_key or resolved_settings.api_key or os.environ.get("LIGHTCONE_API_KEY")
+    resolved = api_key or resolved_settings.api_key or os.environ.get("TZAFON_API_KEY")
     if not resolved:
-        raise RuntimeError("LIGHTCONE_API_KEY is not set")
+        raise RuntimeError("TZAFON_API_KEY is not set")
     return resolved
 
 

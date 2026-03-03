@@ -49,7 +49,7 @@ class Settings:
 def get_settings() -> Settings:
     raw_model = os.getenv("LIGHTCONE_LLM_MODEL") or os.getenv("LIGHTCONE_MODEL") or ""
     return Settings(
-        api_key=os.getenv("LIGHTCONE_API_KEY"),
+        api_key=os.getenv("TZAFON_API_KEY"),
         llm_base_url=_get_env("LIGHTCONE_LLM_BASE_URL", "https://api.tzafon.ai/v1"),
         computer_base_url=_get_env("LIGHTCONE_COMPUTER_BASE_URL", "https://api.tzafon.ai"),
         llm_model=raw_model or "auto",

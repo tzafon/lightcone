@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A streamlined computer-use agent harness."
 readme = "README.md"
 requires-python = ">=3.12"
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 dependencies = [
     "fastapi>=0.115.0",
     "openai>=2.11.0",

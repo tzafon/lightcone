@@ -23,7 +23,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=os.getenv("LIGHTCONE_TASK", "").strip(),
         help="Task instruction (default: LIGHTCONE_TASK env var)",
     )
-    run_p.add_argument("--api-key", type=str, default="", help="API key (overrides LIGHTCONE_API_KEY)")
+    run_p.add_argument("--api-key", type=str, default="", help="API key (overrides TZAFON_API_KEY)")
     run_p.add_argument("--profile", type=str, default="", help="Prompt profile (browser, terminal, desktop, default)")
     run_p.add_argument("--start-url", type=str, default="", help="URL to open before the agent loop")
     run_p.add_argument("--model", type=str, default="", help="LLM model name or alias (8b, 32b, auto)")

@@ -21,10 +21,6 @@ MODEL_ALIASES: dict[str, str] = {
     "4": "tzafon.northstar-cua-fast",
     "4b": "tzafon.northstar-cua-fast",
     "fast": "tzafon.northstar-cua-fast",
-    "8": "tzafon.northstar-cua-8b",
-    "8b": "tzafon.northstar-cua-8b",
-    "32": "tzafon.northstar-cua-32b",
-    "32b": "tzafon.northstar-cua-32b",
 }
 
 OPENAI_COMPATIBLE_BASE_URLS: dict[str, str] = {
@@ -90,10 +86,10 @@ def resolve_model(
         alias_key = raw.strip().lower()
         return MODEL_ALIASES.get(alias_key, raw)
 
-    api_key = api_key or os.getenv("LIGHTCONE_API_KEY")
+    api_key = api_key or os.getenv("TZAFON_API_KEY")
     base_url = _resolve_base_url(base_url or os.getenv("LIGHTCONE_LLM_BASE_URL"))
     if not api_key:
-        raise RuntimeError("LIGHTCONE_API_KEY is required to auto-select a model")
+        raise RuntimeError("TZAFON_API_KEY is required to auto-select a model")
 
     try:
         models = _fetch_models(base_url, api_key)

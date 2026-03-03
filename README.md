@@ -2,68 +2,94 @@
 
 # Northstar CUA Fast
 
-### Fast, Lightweight Computer-Use Intelligence
+### Low-latency computer-use model for GUI automation
 
-[API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Discord](https://discord.gg/tzafon) | [X (Twitter)](https://x.com/tzafon_company)
+[API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Pricing](https://docs.tzafon.ai/pricing) | [Discord](https://discord.gg/tzafon) | [X (Twitter)](https://x.com/tzafon_company)
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![PyPI - tzafon](https://img.shields.io/pypi/v/tzafon?label=tzafon&color=blue)](https://pypi.org/project/tzafon/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
 
 </div>
 
 ---
 
-## 1. Model Introduction
+<!-- TODO: Add demo GIF here -->
+<!-- ![Demo](assets/demo.gif) -->
 
-Northstar CUA Fast is a 4B-parameter computer-use agent model developed by Tzafon. It is purpose-built for GUI automation — interpreting screenshots, reasoning about UI state, and producing structured actions (clicks, typing, scrolling) to operate a desktop autonomously.
+## Why Northstar CUA Fast
 
-Despite its small size, Northstar CUA Fast is optimised for real-time agentic loops where latency matters: each step requires a full model call, so a faster model directly translates to a faster agent.
-
-### Key Features
-
-- **4B parameters** — small enough to run on a single GPU, fast enough for real-time desktop automation.
-- **Structured tool calling** — outputs normalised actions in a 0-999 coordinate grid, scaled to any viewport.
-- **Built for agentic loops** — designed for the screenshot-think-act cycle, not just single-turn QA.
-
-## 2. Model Summary
+A **4B-parameter** computer-use model that interprets screenshots and outputs GUI actions to control a desktop autonomously. Built for **agentic loops** where every step is a model call — smaller model = lower latency per step = faster agent.
 
 | | |
 |---|---|
-| **Architecture** | Dense Transformer |
 | **Parameters** | 4B |
-| **Context Length** | 64K |
-| **Input** | Text + Image (screenshot) |
-| **Output** | Structured tool calls (JSON) |
-| **Coordinate System** | Normalised 0-999 grid |
-| **Training Data** | Desktop GUI interaction traces |
-| **License** | MIT |
+| **Context** | 64K |
+| **Input** | Text + screenshot |
+| **Output** | GUI actions — `click`, `type`, `scroll`, `key`, `drag`, ... |
+| **Coordinates** | Normalized 0–999 grid, scaled to viewport pixels |
+| **Median latency** | **768ms** end-to-end (P50 over 20K requests) |
+| **Cost per step** | **~$0.002** — 50-step task ≈ **$0.09** |
 
-## 3. Evaluation Results
+---
 
-### OSWorld Benchmark
+## Quickstart
 
-Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world computer tasks across desktop applications, web browsing, file management, and terminal operations.
+### Install
 
-#### Per-Domain Breakdown
+```bash
+pip install tzafon
+```
 
-| Domain | UI-TARS 2 | Qwen3 Flash | Northstar CUA Fast (4B) |
-|---|---|---|---|
-| **Overall** | **53.1%** | 41.6% | 37.01% |
-| Chrome | 62.96% | 56.43% | 55.30% |
-| Thunderbird | 73.33% | 66.67% | 62.40% |
-| LibreOffice Writer | 60.87% | 56.52% | 56.94% |
-| OS | 41.67% | 54.17% | 46.26% |
-| VLC | 49.94% | 34.41% | 43.87% |
-| VS Code | 73.91% | 69.57% | 43.82% |
-| GIMP | 50.00% | 42.31% | 41.58% |
-| LibreOffice Impress | 56.38% | 50.98% | 37.50% |
-| LibreOffice Calc | 65.96% | 23.04% | 30.64% |
-| Multi-Apps | 34.13% | 22.01% | 15.55% |
+### Make your first call
 
-## 4. Quickstart
+```python
+import os
+from tzafon import Lightcone
 
-### API Access
+client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
-Northstar CUA Fast is available via the [Tzafon API](https://docs.tzafon.ai/api-reference/introduction), which is OpenAI-compatible:
+response = client.responses.create(
+    model="tzafon.northstar-cua-fast",
+    instructions="Click on the Firefox icon.",
+    tools=[{
+        "type": "computer_use",
+        "display_width": 1024,
+        "display_height": 768,
+        "environment": "browser",
+    }],
+)
+print(response.output)
+```
+
+Response:
+
+```json
+{
+  "id": "resp_abc123",
+  "status": "completed",
+  "output": [
+    {
+      "type": "computer_call",
+      "call_id": "call_xyz",
+      "action": {
+        "type": "click",
+        "x": 512,
+        "y": 384
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 1024,
+    "output_tokens": 48,
+    "total_tokens": 1072
+  }
+}
+```
+
+### OpenAI-compatible Chat Completions
+
+For direct model access with any OpenAI SDK:
 
 ```python
 from openai import OpenAI
@@ -76,19 +102,60 @@ client = OpenAI(
 response = client.chat.completions.create(
     model="tzafon.northstar-cua-fast",
     messages=[
-        {"role": "system", "content": "You are a desktop automation agent."},
         {"role": "user", "content": [
             {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}},
             {"type": "text", "text": "Click on the Firefox icon."},
         ]},
     ],
-    temperature=0.3,
+    temperature=0,
     max_tokens=512,
 )
 print(response.choices[0].message.content)
 ```
 
-## 5. Agent Harness
+### cURL
+
+```bash
+curl -X POST https://api.tzafon.ai/v1/responses \
+  -H "Authorization: Bearer $TZAFON_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tzafon.northstar-cua-fast",
+    "instructions": "Click on the Firefox icon.",
+    "tools": [{"type": "computer_use", "display_width": 1024, "display_height": 768}]
+  }'
+```
+
+> **[Try it in the Playground](https://docs.tzafon.ai/api-reference/introduction)** — no setup required.
+
+---
+
+## Supported Actions
+
+`click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser only) · `wait` · `terminate`
+
+All coordinates use a **0–999 normalized grid** and are scaled to viewport pixels by the API (default 1024×768). Multi-turn conversations are supported via `previous_response_id`.
+
+---
+
+## OSWorld Benchmark (pass@1)
+
+Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop tasks.
+
+| Domain | UI-TARS 2 | Qwen3 Flash | **Northstar CUA Fast (4B)** |
+|---|---|---|---|
+| Chrome | 62.96% | 56.43% | **55.30%** |
+| Thunderbird | 73.33% | 66.67% | **62.40%** |
+| LibreOffice Writer | 60.87% | 56.52% | **56.94%** |
+| OS | 41.67% | 54.17% | **46.26%** |
+| VLC | 49.94% | 34.41% | **43.87%** |
+| **Overall** | **53.1%** | 41.6% | 37.01% |
+
+> Northstar CUA Fast closes the gap on single-app tasks (Chrome, Thunderbird, Writer, VLC) at **~$0.002/step** — roughly 10x cheaper than frontier computer-use models.
+
+---
+
+## Agent Harness
 
 This repository includes **Lightcone**, an agent harness that wraps Northstar CUA Fast into a full desktop automation loop: screenshot, think, act, repeat.
 
@@ -105,7 +172,7 @@ uv run maturin develop -m native/Cargo.toml
 ### Run a Task
 
 ```bash
-export LIGHTCONE_API_KEY="your-api-key"
+export TZAFON_API_KEY="your-api-key"
 
 # CLI
 lightcone run --task "Open Firefox and search for 'hello world'"
@@ -124,7 +191,7 @@ lightcone serve --port 8000
 
 # SSE streaming
 curl -N -X POST http://localhost:8000/tasks/stream \
-  -H "Authorization: Bearer $LIGHTCONE_API_KEY" \
+  -H "Authorization: Bearer $TZAFON_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"instruction": "Open Firefox"}'
 ```
@@ -140,26 +207,38 @@ screenshot → Northstar CUA Fast → parse action → execute on computer → r
 - **Rust-accelerated image processing** — screenshot decode, resize, and encode in a single GIL-free call.
 - **Auto-discovering tool registry** — add new tools by dropping a file.
 
-## 6. Configuration
+---
 
-All settings are loaded from environment variables (prefixed `LIGHTCONE_`):
+## Configuration
+
+All settings are loaded from environment variables:
 
 | Variable | Default | Description |
 |---|---|---|
-| `LIGHTCONE_API_KEY` | — | API key (required) |
+| `TZAFON_API_KEY` | — | API key (required) |
 | `LIGHTCONE_LLM_MODEL` | `auto` | Model name or alias |
 | `LIGHTCONE_LLM_BASE_URL` | `https://api.tzafon.ai/v1` | LLM endpoint |
 | `LIGHTCONE_MAX_STEPS` | `150` | Max agent steps per task |
 | `LIGHTCONE_MAX_HISTORY_TURNS` | `4` | Sliding window size |
 | `LIGHTCONE_PROMPT_PROFILE` | `default` | Prompt profile (`default`, `browser`, `terminal`, `desktop`) |
 
-## 7. License
+---
 
-The code in this repository is released under the [MIT License](LICENSE).
+## What's Open Source vs Hosted
 
-Model weights are available exclusively via the [Tzafon API](https://docs.tzafon.ai/api-reference/introduction).
+| Component | License | Status |
+|---|---|---|
+| Lightcone agent harness | Apache 2.0 | This repo |
+| Python SDK (`tzafon`) | MIT | [PyPI](https://pypi.org/project/tzafon/) |
+| Model weights | — | [Tzafon API](https://docs.tzafon.ai/api-reference/introduction) |
 
-## 8. Citation
+---
+
+## License
+
+The code in this repository is released under the [Apache License 2.0](LICENSE).
+
+## Citation
 
 ```bibtex
 @misc{tzafon2026northstarcuafast,
@@ -170,6 +249,6 @@ Model weights are available exclusively via the [Tzafon API](https://docs.tzafon
 }
 ```
 
-## 9. Contact
+## Contact
 
 Questions or feedback? Reach out at **support@tzafon.ai** or open an issue.
