@@ -73,7 +73,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         working-directory: lightcone
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SDK_SYNC_TOKEN }}
         run: |
           BRANCH="sync/python-sdk"
           git config user.name "github-actions[bot]"
