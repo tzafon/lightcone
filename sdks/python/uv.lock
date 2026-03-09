@@ -1602,7 +1602,7 @@ wheels = [
 
 [[package]]
 name = "tzafon"
-version = "0.1.1"
+version = "2.22.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },

@@ -47,6 +47,7 @@ class ResponsesResource(SyncAPIResource):
     def create(
         self,
         *,
+        input: Iterable[response_create_params.Input] | Omit = omit,
         instructions: str | Omit = omit,
         max_output_tokens: int | Omit = omit,
         model: str | Omit = omit,
@@ -79,9 +80,10 @@ class ResponsesResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._post(
-            "/responses",
+            "/v1/responses",
             body=maybe_transform(
                 {
+                    "input": input,
                     "instructions": instructions,
                     "max_output_tokens": max_output_tokens,
                     "model": model,
@@ -125,7 +127,7 @@ class ResponsesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/responses/{id}",
+            f"/v1/responses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -158,7 +160,7 @@ class ResponsesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._delete(
-            f"/responses/{id}",
+            f"/v1/responses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -193,7 +195,7 @@ class ResponsesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/responses/{id}/cancel",
+            f"/v1/responses/{id}/cancel",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -224,6 +226,7 @@ class AsyncResponsesResource(AsyncAPIResource):
     async def create(
         self,
         *,
+        input: Iterable[response_create_params.Input] | Omit = omit,
         instructions: str | Omit = omit,
         max_output_tokens: int | Omit = omit,
         model: str | Omit = omit,
@@ -256,9 +259,10 @@ class AsyncResponsesResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._post(
-            "/responses",
+            "/v1/responses",
             body=await async_maybe_transform(
                 {
+                    "input": input,
                     "instructions": instructions,
                     "max_output_tokens": max_output_tokens,
                     "model": model,
@@ -302,7 +306,7 @@ class AsyncResponsesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/responses/{id}",
+            f"/v1/responses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -335,7 +339,7 @@ class AsyncResponsesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._delete(
-            f"/responses/{id}",
+            f"/v1/responses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -370,7 +374,7 @@ class AsyncResponsesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/responses/{id}/cancel",
+            f"/v1/responses/{id}/cancel",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),

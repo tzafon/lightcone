@@ -6,6 +6,7 @@ from .action_result import ActionResult as ActionResult
 from .content_block import ContentBlock as ContentBlock
 from .computer_response import ComputerResponse as ComputerResponse
 from .responses_response import ResponsesResponse as ResponsesResponse
+from .content_block_param import ContentBlockParam as ContentBlockParam
 from .computer_drag_params import ComputerDragParams as ComputerDragParams
 from .computer_html_params import ComputerHTMLParams as ComputerHTMLParams
 from .computer_list_params import ComputerListParams as ComputerListParams
@@ -33,4 +34,18 @@ from .computer_keepalive_response import ComputerKeepaliveResponse as ComputerKe
 from .computer_right_click_params import ComputerRightClickParams as ComputerRightClickParams
 from .computer_change_proxy_params import ComputerChangeProxyParams as ComputerChangeProxyParams
 from .computer_double_click_params import ComputerDoubleClickParams as ComputerDoubleClickParams
+from .chat_create_completion_params import ChatCreateCompletionParams as ChatCreateCompletionParams
 from .computer_retrieve_status_response import ComputerRetrieveStatusResponse as ComputerRetrieveStatusResponse
+from .v2_go_backend_internal_service_action import V2GoBackendInternalServiceAction as V2GoBackendInternalServiceAction
+from .v2_go_backend_internal_service_viewport import (
+    V2GoBackendInternalServiceViewport as V2GoBackendInternalServiceViewport,
+)
+from .v2_go_backend_internal_types_page_context import (
+    V2GoBackendInternalTypesPageContext as V2GoBackendInternalTypesPageContext,
+)
+from .v2_go_backend_internal_service_output_item import (
+    V2GoBackendInternalServiceOutputItem as V2GoBackendInternalServiceOutputItem,
+)
+from .v2_go_backend_internal_service_responses_usage import (
+    V2GoBackendInternalServiceResponsesUsage as V2GoBackendInternalServiceResponsesUsage,
+)

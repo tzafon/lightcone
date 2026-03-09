@@ -27,6 +27,25 @@ class TestResponses:
     @parametrize
     def test_method_create_with_all_params(self, client: Lightcone) -> None:
         response = client.responses.create(
+            input=[
+                {
+                    "call_id": "call_id",
+                    "content": [
+                        {
+                            "image_url": "image_url",
+                            "text": "text",
+                            "type": "input_text",
+                        }
+                    ],
+                    "output": {
+                        "image_url": "image_url",
+                        "text": "text",
+                        "type": "input_text",
+                    },
+                    "role": "role",
+                    "type": "computer_call_output",
+                }
+            ],
             instructions="instructions",
             max_output_tokens=0,
             model="model",
@@ -209,6 +228,25 @@ class TestAsyncResponses:
     @parametrize
     async def test_method_create_with_all_params(self, async_client: AsyncLightcone) -> None:
         response = await async_client.responses.create(
+            input=[
+                {
+                    "call_id": "call_id",
+                    "content": [
+                        {
+                            "image_url": "image_url",
+                            "text": "text",
+                            "type": "input_text",
+                        }
+                    ],
+                    "output": {
+                        "image_url": "image_url",
+                        "text": "text",
+                        "type": "input_text",
+                    },
+                    "role": "role",
+                    "type": "computer_call_output",
+                }
+            ],
             instructions="instructions",
             max_output_tokens=0,
             model="model",
