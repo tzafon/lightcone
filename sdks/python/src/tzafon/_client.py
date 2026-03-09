@@ -21,6 +21,7 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._compat import cached_property
+from ._models import SecurityOptions
 from ._version import __version__
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError, LightconeError
@@ -31,7 +32,9 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import agent, computers, responses
+    from .resources import chat, agent, models, computers, responses
+    from .resources.chat import ChatResource, AsyncChatResource
+    from .resources.models import ModelsResource, AsyncModelsResource
     from .resources.responses import ResponsesResource, AsyncResponsesResource
     from .lib.computer_session import ComputerSession, ComputerResource
     from .resources.agent.agent import AgentResource, AsyncAgentResource
@@ -105,22 +108,16 @@ class Lightcone(SyncAPIClient):
         )
 
     @cached_property
-    def responses(self) -> ResponsesResource:
-        from .resources.responses import ResponsesResource
+    def agent(self) -> AgentResource:
+        from .resources.agent import AgentResource
 
-        return ResponsesResource(self)
+        return AgentResource(self)
 
     @cached_property
     def computers(self) -> ComputersResource:
         from .resources.computers import ComputersResource
 
         return ComputersResource(self)
-
-    @cached_property
-    def agent(self) -> AgentResource:
-        from .resources.agent import AgentResource
-
-        return AgentResource(self)
 
     @cached_property
     def computer(self) -> ComputerResource:
@@ -131,6 +128,24 @@ class Lightcone(SyncAPIClient):
     def create(self, kind: str = "browser", **kwargs: Any) -> ComputerSession:
         """Create a computer session (backwards compat with computer-python SDK)."""
         return self.computer.create(kind=kind, **kwargs)
+
+    @cached_property
+    def responses(self) -> ResponsesResource:
+        from .resources.responses import ResponsesResource
+
+        return ResponsesResource(self)
+
+    @cached_property
+    def chat(self) -> ChatResource:
+        from .resources.chat import ChatResource
+
+        return ChatResource(self)
+
+    @cached_property
+    def models(self) -> ModelsResource:
+        from .resources.models import ModelsResource
+
+        return ModelsResource(self)
 
     @cached_property
     def with_raw_response(self) -> LightconeWithRawResponse:
@@ -145,9 +160,14 @@ class Lightcone(SyncAPIClient):
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
 
-    @property
     @override
-    def auth_headers(self) -> dict[str, str]:
+    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
+        return {
+            **(self._api_key_auth if security.get("api_key_auth", False) else {}),
+        }
+
+    @property
+    def _api_key_auth(self) -> dict[str, str]:
         api_key = self.api_key
         return {"Authorization": f"Bearer {api_key}"}
 
@@ -301,10 +321,10 @@ class AsyncLightcone(AsyncAPIClient):
         )
 
     @cached_property
-    def responses(self) -> AsyncResponsesResource:
-        from .resources.responses import AsyncResponsesResource
+    def agent(self) -> AsyncAgentResource:
+        from .resources.agent import AsyncAgentResource
 
-        return AsyncResponsesResource(self)
+        return AsyncAgentResource(self)
 
     @cached_property
     def computers(self) -> AsyncComputersResource:
@@ -313,10 +333,22 @@ class AsyncLightcone(AsyncAPIClient):
         return AsyncComputersResource(self)
 
     @cached_property
-    def agent(self) -> AsyncAgentResource:
-        from .resources.agent import AsyncAgentResource
+    def responses(self) -> AsyncResponsesResource:
+        from .resources.responses import AsyncResponsesResource
 
-        return AsyncAgentResource(self)
+        return AsyncResponsesResource(self)
+
+    @cached_property
+    def chat(self) -> AsyncChatResource:
+        from .resources.chat import AsyncChatResource
+
+        return AsyncChatResource(self)
+
+    @cached_property
+    def models(self) -> AsyncModelsResource:
+        from .resources.models import AsyncModelsResource
+
+        return AsyncModelsResource(self)
 
     @cached_property
     def with_raw_response(self) -> AsyncLightconeWithRawResponse:
@@ -331,9 +363,14 @@ class AsyncLightcone(AsyncAPIClient):
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
 
-    @property
     @override
-    def auth_headers(self) -> dict[str, str]:
+    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
+        return {
+            **(self._api_key_auth if security.get("api_key_auth", False) else {}),
+        }
+
+    @property
+    def _api_key_auth(self) -> dict[str, str]:
         api_key = self.api_key
         return {"Authorization": f"Bearer {api_key}"}
 
@@ -438,10 +475,10 @@ class LightconeWithRawResponse:
         self._client = client
 
     @cached_property
-    def responses(self) -> responses.ResponsesResourceWithRawResponse:
-        from .resources.responses import ResponsesResourceWithRawResponse
+    def agent(self) -> agent.AgentResourceWithRawResponse:
+        from .resources.agent import AgentResourceWithRawResponse
 
-        return ResponsesResourceWithRawResponse(self._client.responses)
+        return AgentResourceWithRawResponse(self._client.agent)
 
     @cached_property
     def computers(self) -> computers.ComputersResourceWithRawResponse:
@@ -450,10 +487,22 @@ class LightconeWithRawResponse:
         return ComputersResourceWithRawResponse(self._client.computers)
 
     @cached_property
-    def agent(self) -> agent.AgentResourceWithRawResponse:
-        from .resources.agent import AgentResourceWithRawResponse
+    def responses(self) -> responses.ResponsesResourceWithRawResponse:
+        from .resources.responses import ResponsesResourceWithRawResponse
 
-        return AgentResourceWithRawResponse(self._client.agent)
+        return ResponsesResourceWithRawResponse(self._client.responses)
+
+    @cached_property
+    def chat(self) -> chat.ChatResourceWithRawResponse:
+        from .resources.chat import ChatResourceWithRawResponse
+
+        return ChatResourceWithRawResponse(self._client.chat)
+
+    @cached_property
+    def models(self) -> models.ModelsResourceWithRawResponse:
+        from .resources.models import ModelsResourceWithRawResponse
+
+        return ModelsResourceWithRawResponse(self._client.models)
 
 
 class AsyncLightconeWithRawResponse:
@@ -463,10 +512,10 @@ class AsyncLightconeWithRawResponse:
         self._client = client
 
     @cached_property
-    def responses(self) -> responses.AsyncResponsesResourceWithRawResponse:
-        from .resources.responses import AsyncResponsesResourceWithRawResponse
+    def agent(self) -> agent.AsyncAgentResourceWithRawResponse:
+        from .resources.agent import AsyncAgentResourceWithRawResponse
 
-        return AsyncResponsesResourceWithRawResponse(self._client.responses)
+        return AsyncAgentResourceWithRawResponse(self._client.agent)
 
     @cached_property
     def computers(self) -> computers.AsyncComputersResourceWithRawResponse:
@@ -475,10 +524,22 @@ class AsyncLightconeWithRawResponse:
         return AsyncComputersResourceWithRawResponse(self._client.computers)
 
     @cached_property
-    def agent(self) -> agent.AsyncAgentResourceWithRawResponse:
-        from .resources.agent import AsyncAgentResourceWithRawResponse
+    def responses(self) -> responses.AsyncResponsesResourceWithRawResponse:
+        from .resources.responses import AsyncResponsesResourceWithRawResponse
 
-        return AsyncAgentResourceWithRawResponse(self._client.agent)
+        return AsyncResponsesResourceWithRawResponse(self._client.responses)
+
+    @cached_property
+    def chat(self) -> chat.AsyncChatResourceWithRawResponse:
+        from .resources.chat import AsyncChatResourceWithRawResponse
+
+        return AsyncChatResourceWithRawResponse(self._client.chat)
+
+    @cached_property
+    def models(self) -> models.AsyncModelsResourceWithRawResponse:
+        from .resources.models import AsyncModelsResourceWithRawResponse
+
+        return AsyncModelsResourceWithRawResponse(self._client.models)
 
 
 class LightconeWithStreamedResponse:
@@ -488,10 +549,10 @@ class LightconeWithStreamedResponse:
         self._client = client
 
     @cached_property
-    def responses(self) -> responses.ResponsesResourceWithStreamingResponse:
-        from .resources.responses import ResponsesResourceWithStreamingResponse
+    def agent(self) -> agent.AgentResourceWithStreamingResponse:
+        from .resources.agent import AgentResourceWithStreamingResponse
 
-        return ResponsesResourceWithStreamingResponse(self._client.responses)
+        return AgentResourceWithStreamingResponse(self._client.agent)
 
     @cached_property
     def computers(self) -> computers.ComputersResourceWithStreamingResponse:
@@ -500,10 +561,22 @@ class LightconeWithStreamedResponse:
         return ComputersResourceWithStreamingResponse(self._client.computers)
 
     @cached_property
-    def agent(self) -> agent.AgentResourceWithStreamingResponse:
-        from .resources.agent import AgentResourceWithStreamingResponse
+    def responses(self) -> responses.ResponsesResourceWithStreamingResponse:
+        from .resources.responses import ResponsesResourceWithStreamingResponse
 
-        return AgentResourceWithStreamingResponse(self._client.agent)
+        return ResponsesResourceWithStreamingResponse(self._client.responses)
+
+    @cached_property
+    def chat(self) -> chat.ChatResourceWithStreamingResponse:
+        from .resources.chat import ChatResourceWithStreamingResponse
+
+        return ChatResourceWithStreamingResponse(self._client.chat)
+
+    @cached_property
+    def models(self) -> models.ModelsResourceWithStreamingResponse:
+        from .resources.models import ModelsResourceWithStreamingResponse
+
+        return ModelsResourceWithStreamingResponse(self._client.models)
 
 
 class AsyncLightconeWithStreamedResponse:
@@ -513,10 +586,10 @@ class AsyncLightconeWithStreamedResponse:
         self._client = client
 
     @cached_property
-    def responses(self) -> responses.AsyncResponsesResourceWithStreamingResponse:
-        from .resources.responses import AsyncResponsesResourceWithStreamingResponse
+    def agent(self) -> agent.AsyncAgentResourceWithStreamingResponse:
+        from .resources.agent import AsyncAgentResourceWithStreamingResponse
 
-        return AsyncResponsesResourceWithStreamingResponse(self._client.responses)
+        return AsyncAgentResourceWithStreamingResponse(self._client.agent)
 
     @cached_property
     def computers(self) -> computers.AsyncComputersResourceWithStreamingResponse:
@@ -525,10 +598,22 @@ class AsyncLightconeWithStreamedResponse:
         return AsyncComputersResourceWithStreamingResponse(self._client.computers)
 
     @cached_property
-    def agent(self) -> agent.AsyncAgentResourceWithStreamingResponse:
-        from .resources.agent import AsyncAgentResourceWithStreamingResponse
+    def responses(self) -> responses.AsyncResponsesResourceWithStreamingResponse:
+        from .resources.responses import AsyncResponsesResourceWithStreamingResponse
 
-        return AsyncAgentResourceWithStreamingResponse(self._client.agent)
+        return AsyncResponsesResourceWithStreamingResponse(self._client.responses)
+
+    @cached_property
+    def chat(self) -> chat.AsyncChatResourceWithStreamingResponse:
+        from .resources.chat import AsyncChatResourceWithStreamingResponse
+
+        return AsyncChatResourceWithStreamingResponse(self._client.chat)
+
+    @cached_property
+    def models(self) -> models.AsyncModelsResourceWithStreamingResponse:
+        from .resources.models import AsyncModelsResourceWithStreamingResponse
+
+        return AsyncModelsResourceWithStreamingResponse(self._client.models)
 
 
 Client = Lightcone

@@ -1,17 +1,28 @@
-# Responses
+# Agent
+
+## Tasks
 
 Types:
 
 ```python
-from tzafon.types import ContentBlock, ResponsesResponse, ResponseDeleteResponse
+from tzafon.types.agent import (
+    TaskInjectMessageResponse,
+    TaskPauseResponse,
+    TaskResumeResponse,
+    TaskRetrieveStatusResponse,
+    TaskStartResponse,
+    TaskStartStreamResponse,
+)
 ```
 
 Methods:
 
-- <code title="post /responses">client.responses.<a href="./src/tzafon/resources/responses.py">create</a>(\*\*<a href="src/tzafon/types/response_create_params.py">params</a>) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
-- <code title="get /responses/{id}">client.responses.<a href="./src/tzafon/resources/responses.py">retrieve</a>(id) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
-- <code title="delete /responses/{id}">client.responses.<a href="./src/tzafon/resources/responses.py">delete</a>(id) -> <a href="./src/tzafon/types/response_delete_response.py">ResponseDeleteResponse</a></code>
-- <code title="post /responses/{id}/cancel">client.responses.<a href="./src/tzafon/resources/responses.py">cancel</a>(id) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
+- <code title="post /agent/tasks/{id}/messages">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">inject_message</a>(id, \*\*<a href="src/tzafon/types/agent/task_inject_message_params.py">params</a>) -> <a href="./src/tzafon/types/agent/task_inject_message_response.py">TaskInjectMessageResponse</a></code>
+- <code title="post /agent/tasks/{id}/pause">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">pause</a>(id) -> <a href="./src/tzafon/types/agent/task_pause_response.py">TaskPauseResponse</a></code>
+- <code title="post /agent/tasks/{id}/resume">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">resume</a>(id) -> <a href="./src/tzafon/types/agent/task_resume_response.py">TaskResumeResponse</a></code>
+- <code title="get /agent/tasks/{id}">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">retrieve_status</a>(id) -> <a href="./src/tzafon/types/agent/task_retrieve_status_response.py">TaskRetrieveStatusResponse</a></code>
+- <code title="post /agent/tasks">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">start</a>(\*\*<a href="src/tzafon/types/agent/task_start_params.py">params</a>) -> <a href="./src/tzafon/types/agent/task_start_response.py">TaskStartResponse</a></code>
+- <code title="post /agent/tasks/stream">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">start_stream</a>(\*\*<a href="src/tzafon/types/agent/task_start_stream_params.py">params</a>) -> str</code>
 
 # Computers
 
@@ -22,6 +33,7 @@ from tzafon.types import (
     ActionResult,
     ComputerAction,
     ComputerResponse,
+    V2GoBackendInternalTypesPageContext,
     ComputerListResponse,
     ComputerBatchResponse,
     ComputerKeepaliveResponse,
@@ -82,28 +94,37 @@ Methods:
 - <code title="delete /computers/{id}/tabs/{tab_id}">client.computers.tabs.<a href="./src/tzafon/resources/computers/tabs.py">delete</a>(tab_id, \*, id) -> <a href="./src/tzafon/types/action_result.py">ActionResult</a></code>
 - <code title="post /computers/{id}/tabs/{tab_id}/switch">client.computers.tabs.<a href="./src/tzafon/resources/computers/tabs.py">switch</a>(tab_id, \*, id) -> <a href="./src/tzafon/types/action_result.py">ActionResult</a></code>
 
-# Agent
-
-## Tasks
+# Responses
 
 Types:
 
 ```python
-from tzafon.types.agent import (
-    TaskInjectMessageResponse,
-    TaskPauseResponse,
-    TaskResumeResponse,
-    TaskRetrieveStatusResponse,
-    TaskStartResponse,
-    TaskStartStreamResponse,
+from tzafon.types import (
+    ContentBlock,
+    ResponsesResponse,
+    V2GoBackendInternalServiceAction,
+    V2GoBackendInternalServiceOutputItem,
+    V2GoBackendInternalServiceResponsesUsage,
+    V2GoBackendInternalServiceViewport,
+    ResponseDeleteResponse,
 )
 ```
 
 Methods:
 
-- <code title="post /agent/tasks/{id}/messages">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">inject_message</a>(id, \*\*<a href="src/tzafon/types/agent/task_inject_message_params.py">params</a>) -> <a href="./src/tzafon/types/agent/task_inject_message_response.py">TaskInjectMessageResponse</a></code>
-- <code title="post /agent/tasks/{id}/pause">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">pause</a>(id) -> <a href="./src/tzafon/types/agent/task_pause_response.py">TaskPauseResponse</a></code>
-- <code title="post /agent/tasks/{id}/resume">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">resume</a>(id) -> <a href="./src/tzafon/types/agent/task_resume_response.py">TaskResumeResponse</a></code>
-- <code title="get /agent/tasks/{id}">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">retrieve_status</a>(id) -> <a href="./src/tzafon/types/agent/task_retrieve_status_response.py">TaskRetrieveStatusResponse</a></code>
-- <code title="post /agent/tasks">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">start</a>(\*\*<a href="src/tzafon/types/agent/task_start_params.py">params</a>) -> <a href="./src/tzafon/types/agent/task_start_response.py">TaskStartResponse</a></code>
-- <code title="post /agent/tasks/stream">client.agent.tasks.<a href="./src/tzafon/resources/agent/tasks.py">start_stream</a>(\*\*<a href="src/tzafon/types/agent/task_start_stream_params.py">params</a>) -> str</code>
+- <code title="post /v1/responses">client.responses.<a href="./src/tzafon/resources/responses.py">create</a>(\*\*<a href="src/tzafon/types/response_create_params.py">params</a>) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
+- <code title="get /v1/responses/{id}">client.responses.<a href="./src/tzafon/resources/responses.py">retrieve</a>(id) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
+- <code title="delete /v1/responses/{id}">client.responses.<a href="./src/tzafon/resources/responses.py">delete</a>(id) -> <a href="./src/tzafon/types/response_delete_response.py">ResponseDeleteResponse</a></code>
+- <code title="post /v1/responses/{id}/cancel">client.responses.<a href="./src/tzafon/resources/responses.py">cancel</a>(id) -> <a href="./src/tzafon/types/responses_response.py">ResponsesResponse</a></code>
+
+# Chat
+
+Methods:
+
+- <code title="post /chat/completions">client.chat.<a href="./src/tzafon/resources/chat.py">create_completion</a>(\*\*<a href="src/tzafon/types/chat_create_completion_params.py">params</a>) -> object</code>
+
+# Models
+
+Methods:
+
+- <code title="get /models">client.models.<a href="./src/tzafon/resources/models.py">list</a>() -> object</code>

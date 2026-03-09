@@ -1,9 +1,9 @@
 [project]
 name = "tzafon"
-version = "0.2.0"
+version = "2.27.1"
 description = "The official Python library for the lightcone API"
 dynamic = ["readme"]
-license = "MIT"
+license = "Apache-2.0"
 authors = [
 { name = "Lightcone", email = "support@tzafon.ai" },
 ]
@@ -33,7 +33,7 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: Microsoft :: Windows",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: OSI Approved :: MIT License"
+  "License :: OSI Approved :: Apache Software License"
 ]
 
 [project.urls]
