@@ -6,13 +6,6 @@ __pycache__/
 dist/
 build/
 .venv/
-*.so
-*.pyd
-*.dylib
-
-# Rust
-native/target/
-Cargo.lock
 
 # IDE
 .idea/
@@ -20,5 +13,7 @@ Cargo.lock
 *.swp
 
 # Runtime
-screenshots/
 *.env
+
+# Temporary
+lightcone-api-docs/

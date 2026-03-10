@@ -14,11 +14,6 @@
 
 ---
 
-<!-- TODO: Add demo GIF here -->
-<!-- ![Demo](assets/demo.gif) -->
-
-## Why Northstar CUA Fast
-
 A 4B computer-use model trained with GUI reinforcement learning. Recovers from mistakes, generalizes across environments, and outperforms open-source models at twice its size. Built for agentic loops where every step is a model call. < $1/M tokens.
 
 | | |
@@ -62,71 +57,96 @@ response = client.responses.create(
 print(response.output)
 ```
 
-Response:
+---
 
-```json
-{
-  "id": "resp_abc123",
-  "status": "completed",
-  "output": [
-    {
-      "type": "computer_call",
-      "call_id": "call_xyz",
-      "action": {
-        "type": "click",
-        "x": 512,
-        "y": 384
-      }
-    }
-  ],
-  "usage": {
-    "input_tokens": 1024,
-    "output_tokens": 48,
-    "total_tokens": 1072
-  }
-}
-```
+## CUA Loop
 
-### OpenAI-compatible Chat Completions
-
-For direct model access with any OpenAI SDK:
+The Responses API handles context, parsing, and coordinate scaling — your agent loop is just screenshot, think, act, repeat:
 
 ```python
-from openai import OpenAI
+import os
+from tzafon import Lightcone
 
-client = OpenAI(
-    api_key="your-api-key",
-    base_url="https://api.tzafon.ai/v1",
-)
+client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
-response = client.chat.completions.create(
-    model="tzafon.northstar-cua-fast",
-    messages=[
-        {"role": "user", "content": [
-            {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}},
-            {"type": "text", "text": "Click on the Firefox icon."},
-        ]},
-    ],
-    temperature=0,
-    max_tokens=512,
-)
-print(response.choices[0].message.content)
+TOOL = {"type": "computer_use", "display_width": 1280, "display_height": 720, "environment": "browser"}
+TASK = "Go to wikipedia.org and search for 'Alan Turing'"
+
+with client.computer.create(kind="browser") as computer:
+    screenshot_url = computer.get_screenshot_url(computer.screenshot())
+
+    response = client.responses.create(
+        model="tzafon.northstar-cua-fast",
+        instructions=TASK,
+        tools=[TOOL],
+        input=[{"role": "user", "content": [
+            {"type": "input_text", "text": TASK},
+            {"type": "input_image", "image_url": screenshot_url},
+        ]}],
+    )
+
+    while True:
+        computer_call = next(
+            (o for o in (response.output or []) if o.type == "computer_call"), None
+        )
+        if not computer_call:
+            break
+
+        action = computer_call.action
+        if action.type == "click":
+            computer.click(action.x, action.y)
+        elif action.type == "type":
+            computer.type(action.text)
+        elif action.type in ("key", "keypress"):
+            computer.hotkey(action.keys)
+        elif action.type == "scroll":
+            computer.scroll(dx=action.scroll_x or 0, dy=action.scroll_y or 0)
+        elif action.type == "navigate":
+            computer.navigate(action.url)
+        elif action.type in ("terminate", "done", "answer"):
+            break
+        # ... see examples/ for full action handling
+
+        computer.wait(1)
+        screenshot_url = computer.get_screenshot_url(computer.screenshot())
+        response = client.responses.create(
+            model="tzafon.northstar-cua-fast",
+            previous_response_id=response.id,
+            tools=[TOOL],
+            input=[{
+                "type": "computer_call_output",
+                "call_id": computer_call.call_id,
+                "output": {"type": "input_image", "image_url": screenshot_url},
+            }],
+        )
 ```
 
-### cURL
+---
+
+## Examples
+
+| Example | Description |
+|---|---|
+| [`simple.py`](examples/simple.py) | Basic CUA loop — the minimal agent |
+| [`persistent_session.py`](examples/persistent_session.py) | Persistent browser sessions for authenticated workflows |
+| [`streaming.py`](examples/streaming.py) | FastAPI SSE endpoint wrapping the CUA loop |
+| [`interactive.py`](examples/interactive.py) | Human-in-the-loop — pauses for CAPTCHAs, 2FA, ambiguity |
+| [`shell.py`](examples/shell.py) | Desktop session mixing browser + shell commands |
+| [`multi_tab.py`](examples/multi_tab.py) | Multi-tab comparison across sites |
+| [`monitor.py`](examples/monitor.py) | Screenshot-only observer for dashboard monitoring |
 
 ```bash
-curl -X POST https://api.tzafon.ai/v1/responses \
-  -H "Authorization: Bearer $TZAFON_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "tzafon.northstar-cua-fast",
-    "instructions": "Click on the Firefox icon.",
-    "tools": [{"type": "computer_use", "display_width": 1024, "display_height": 768}]
-  }'
-```
+# Run the simple example
+export TZAFON_API_KEY="your-api-key"
+python examples/simple.py
 
-> **[Try it in the Playground](https://docs.tzafon.ai/api-reference/introduction)** — no setup required.
+# Run the streaming server
+pip install 'lightcone[streaming]'
+uvicorn examples.streaming:app
+curl -N -X POST http://localhost:8000/tasks/stream \
+  -H "Content-Type: application/json" \
+  -d '{"instruction": "Go to wikipedia.org and search for Alan Turing"}'
+```
 
 ---
 
@@ -134,7 +154,16 @@ curl -X POST https://api.tzafon.ai/v1/responses \
 
 `click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser only) · `wait` · `terminate`
 
-Via **Chat Completions** (`/v1/chat/completions`), the model returns raw 0–999 normalized coordinates. Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport pixels (default 1024×768). Multi-turn conversations are supported via `previous_response_id`.
+Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport pixels and responses are structured — no parsing required. Multi-turn conversations are managed server-side via `previous_response_id`.
+
+---
+
+## SDKs
+
+| SDK | Install | Source |
+|---|---|---|
+| Python | `pip install tzafon` | [`sdks/python`](sdks/python) |
+| TypeScript | `npm install @tzafon/lightcone` | [`sdks/typescript`](sdks/typescript) |
 
 ---
 
@@ -152,85 +181,6 @@ Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop t
 | **Overall** | **53.1%** | 41.6% | 37.01% |
 
 > At 4B parameters, Northstar CUA Fast is competitive with open-source models at twice its size on single-app tasks. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
-
----
-
-## Agent Harness
-
-This repository includes **Lightcone**, an agent harness that wraps Northstar CUA Fast into a full desktop automation loop: screenshot, think, act, repeat.
-
-### Install
-
-```bash
-# Requires Python 3.12+ and a Rust toolchain
-git clone https://github.com/tzafon/lightcone.git
-cd lightcone
-uv venv && uv sync --extra dev
-uv run maturin develop -m native/Cargo.toml
-```
-
-### Run a Task
-
-```bash
-export TZAFON_API_KEY="your-api-key"
-
-# CLI
-lightcone run --task "Open Firefox and search for 'hello world'"
-
-# Python
-from lightcone.agent import CUAAgent
-
-agent = CUAAgent(prompt_profile="browser")
-status, result = agent.run(task="Navigate to https://example.com")
-```
-
-### Start the Server
-
-```bash
-lightcone serve --port 8000
-
-# SSE streaming
-curl -N -X POST http://localhost:8000/tasks/stream \
-  -H "Authorization: Bearer $TZAFON_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"instruction": "Open Firefox"}'
-```
-
-### Architecture
-
-```
-screenshot → Northstar CUA Fast → parse action → execute on computer → repeat
-```
-
-- **Pure-async FastAPI** server with SSE streaming.
-- **Sliding-window context management** — automatically shrinks history on context-length errors.
-- **Rust-accelerated image processing** — screenshot decode, resize, and encode in a single GIL-free call.
-- **Auto-discovering tool registry** — add new tools by dropping a file.
-
----
-
-## Configuration
-
-All settings are loaded from environment variables:
-
-| Variable | Default | Description |
-|---|---|---|
-| `TZAFON_API_KEY` | — | API key (required) |
-| `LIGHTCONE_LLM_MODEL` | `auto` | Model name or alias |
-| `LIGHTCONE_LLM_BASE_URL` | `https://api.tzafon.ai/v1` | LLM endpoint |
-| `LIGHTCONE_MAX_STEPS` | `150` | Max agent steps per task |
-| `LIGHTCONE_MAX_HISTORY_TURNS` | `4` | Sliding window size |
-| `LIGHTCONE_PROMPT_PROFILE` | `default` | Prompt profile (`default`, `browser`, `terminal`, `desktop`) |
-
----
-
-## What's Open Source vs Hosted
-
-| Component | License | Status |
-|---|---|---|
-| Lightcone agent harness | Apache 2.0 | This repo |
-| Python SDK (`tzafon`) | MIT | [PyPI](https://pypi.org/project/tzafon/) |
-| Model weights | — | [Tzafon API](https://docs.tzafon.ai/api-reference/introduction) |
 
 ---
 
