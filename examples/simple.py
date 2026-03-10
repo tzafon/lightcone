@@ -22,16 +22,31 @@ def execute_action(computer, action):
         computer.click(action.x, action.y)
     elif t == "double_click":
         computer.double_click(action.x, action.y)
+    elif t == "triple_click":
+        computer.click(action.x, action.y)
+        computer.click(action.x, action.y)
+        computer.click(action.x, action.y)
     elif t == "right_click":
         computer.right_click(action.x, action.y)
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
         computer.hotkey(action.keys)
+    elif t == "key_down":
+        computer.key_down(action.keys[0])
+    elif t == "key_up":
+        computer.key_up(action.keys[0])
     elif t == "scroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
+            x=action.x or 0,
+            y=action.y or 0,
+        )
+    elif t == "hscroll":
+        computer.scroll(
+            dx=action.scroll_x or 0,
+            dy=0,
             x=action.x or 0,
             y=action.y or 0,
         )
@@ -48,7 +63,6 @@ with client.computer.create(kind="browser") as computer:
 
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
-        instructions=TASK,
         tools=[TOOL],
         input=[{
             "role": "user",

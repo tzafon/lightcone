@@ -77,7 +77,6 @@ with client.computer.create(kind="browser") as computer:
 
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
-        instructions=TASK,
         tools=[TOOL],
         input=[{"role": "user", "content": [
             {"type": "input_text", "text": TASK},

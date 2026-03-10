@@ -38,13 +38,6 @@ with client.computer.create(kind="browser") as computer:
 
         response = client.responses.create(
             model="tzafon.northstar-cua-fast",
-            instructions=prompt,
-            tools=[{
-                "type": "computer_use",
-                "display_width": 1280,
-                "display_height": 720,
-                "environment": "browser",
-            }],
             input=[{
                 "role": "user",
                 "content": [

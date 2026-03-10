@@ -30,7 +30,6 @@ def ask_model_about_screenshot(screenshot_url, prompt):
     """One-shot: send a screenshot + question, get a text answer."""
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
-        instructions=prompt,
         tools=[TOOL],
         input=[{
             "role": "user",

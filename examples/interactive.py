@@ -30,16 +30,31 @@ def execute_action(computer, action):
         computer.click(action.x, action.y)
     elif t == "double_click":
         computer.double_click(action.x, action.y)
+    elif t == "triple_click":
+        computer.click(action.x, action.y)
+        computer.click(action.x, action.y)
+        computer.click(action.x, action.y)
     elif t == "right_click":
         computer.right_click(action.x, action.y)
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
         computer.hotkey(action.keys)
+    elif t == "key_down":
+        computer.key_down(action.keys[0])
+    elif t == "key_up":
+        computer.key_up(action.keys[0])
     elif t == "scroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
+            x=action.x or 0,
+            y=action.y or 0,
+        )
+    elif t == "hscroll":
+        computer.scroll(
+            dx=action.scroll_x or 0,
+            dy=0,
             x=action.x or 0,
             y=action.y or 0,
         )
@@ -82,7 +97,6 @@ with client.computer.create(kind="browser") as computer:
 
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
-        instructions=task,
         tools=[TOOL],
         input=[{
             "role": "user",
@@ -120,23 +134,25 @@ with client.computer.create(kind="browser") as computer:
             elif human_input.lower().startswith("go "):
                 computer.navigate(human_input[3:])
 
-            # After human intervention, re-screenshot and give the agent
-            # a fresh instruction incorporating their input.
+            # After human intervention, re-screenshot and tell the agent
+            # what happened so it can continue.
             computer.wait(1)
             screenshot_url = computer.get_screenshot_url(computer.screenshot())
 
-            new_instruction = task
-            if human_input and not human_input.startswith(("q", "type", "click", "go")):
-                new_instruction = human_input if human_input else task
+            if human_input.lower().startswith(("type ", "click ", "go ")):
+                context = f"The user manually performed: {human_input}. Continue with the original task: {task}"
+            elif human_input:
+                context = f"The user says: {human_input}. Continue with the original task: {task}"
+            else:
+                context = f"The user asked you to retry. Continue with the original task: {task}"
 
             response = client.responses.create(
                 model="tzafon.northstar-cua-fast",
-                instructions=new_instruction,
                 tools=[TOOL],
                 input=[{
                     "role": "user",
                     "content": [
-                        {"type": "input_text", "text": new_instruction},
+                        {"type": "input_text", "text": context},
                         {"type": "input_image", "image_url": screenshot_url},
                     ],
                 }],
