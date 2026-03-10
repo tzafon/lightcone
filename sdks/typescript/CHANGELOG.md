@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.2 (2026-03-09)
+
+Full Changelog: [v0.5.1...v0.5.2](https://github.com/tzafon/lightcone-typescript/compare/v0.5.1...v0.5.2)
+
+### Chores
+
+* **internal:** update dependencies to address dependabot vulnerabilities ([cec9e04](https://github.com/tzafon/lightcone-typescript/commit/cec9e04cff4415a35680004a95664e01198112a2))
+
 ## 0.5.1 (2026-03-07)
 
 Full Changelog: [v0.5.0...v0.5.1](https://github.com/tzafon/lightcone-typescript/compare/v0.5.0...v0.5.1)
