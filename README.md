@@ -1,8 +1,12 @@
 <div align="center">
 
-# Northstar CUA Fast
+# Lightcone
 
-### 4B computer-use model trained with reinforcement learning
+### SDKs and examples for Tzafon's computer-use agents
+
+<img src="northstar.svg" alt="Northstar" width="160">
+
+Featuring **Northstar CUA Fast** — a 4B model trained with reinforcement learning
 
 [API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
 
@@ -14,7 +18,7 @@
 
 ---
 
-A 4B computer-use model trained with GUI reinforcement learning. Recovers from mistakes, generalizes across environments, and outperforms open-source models at twice its size. Built for agentic loops where every step is a model call. < $1/M tokens.
+Northstar CUA Fast recovers from mistakes, generalizes across environments, and outperforms open-source models at twice its size. Built for agentic loops where every step is a model call.
 
 | | |
 |---|---|
