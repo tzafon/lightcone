@@ -1,4 +1,9 @@
-"""Simple CUA loop — screenshot, think, act, repeat."""
+"""Desktop CUA loop — Northstar operates a full Lightcone OS desktop.
+
+Launches a cloud computer, opens the terminal, runs a command, and reads
+the output. Demonstrates the core loop on a desktop environment:
+screenshot → think → act → repeat.
+"""
 
 import os
 from tzafon import Lightcone
@@ -9,14 +14,18 @@ TOOL = {
     "type": "computer_use",
     "display_width": 1280,
     "display_height": 720,
-    "environment": "browser",
+    "environment": "desktop",
 }
 
-TASK = "Go to wikipedia.org and search for 'Alan Turing'"
-MAX_STEPS = 50
+TASK = (
+    "Open the terminal. Run 'uname -a' to check the system info, "
+    "then run 'df -h' to check disk usage. Report back what you find."
+)
+MAX_STEPS = 30
+
 
 def execute_action(computer, action):
-    """Execute a model action on the computer session."""
+    """Execute a model action on the computer."""
     t = action.type
     if t == "click":
         computer.click(action.x, action.y)
@@ -58,7 +67,7 @@ def execute_action(computer, action):
         computer.wait(2)
 
 
-with client.computer.create(kind="browser") as computer:
+with client.computer.create(kind="desktop") as computer:
     screenshot_url = computer.get_screenshot_url(computer.screenshot())
 
     response = client.responses.create(

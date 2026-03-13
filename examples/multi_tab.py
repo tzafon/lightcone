@@ -1,6 +1,6 @@
 """Multi-tab comparison — open several sites, gather info, compare.
 
-Opens each URL in its own tab, asks the model to extract a value from each,
+Opens each URL in its own tab, asks Northstar to extract a value from each,
 then prints a summary. Useful for price comparison, competitive analysis,
 or any task that needs cross-site data.
 """

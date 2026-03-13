@@ -1,8 +1,8 @@
 """Human-in-the-loop CUA — pauses for user input on CAPTCHAs, 2FA, or ambiguity.
 
-The agent runs autonomously but yields control to the human when it encounters
-something it can't handle. The human can type instructions, press Enter to
-continue, or type 'q' to quit.
+Northstar operates the computer but yields control to the human when it
+encounters something it can't handle. The human can type instructions, press
+Enter to continue, or type 'q' to quit.
 """
 
 import os
@@ -19,7 +19,7 @@ TOOL = {
 TASK = "Log in to https://example.com/dashboard"
 MAX_STEPS = 75
 
-# Action types that signal the agent is stuck or needs human help.
+# Action types that signal Northstar is stuck or needs human help.
 PAUSE_SIGNALS = {"wait", "terminate", "done", "answer"}
 
 
@@ -79,10 +79,10 @@ def ask_human(step, action, messages):
         if item.type == "message":
             for block in item.content or []:
                 if block.text:
-                    print(f"  Agent: {block.text}")
+                    print(f"  Northstar: {block.text}")
 
     print("\nOptions:")
-    print("  [Enter]          Continue (agent retries)")
+    print("  [Enter]          Continue (Northstar retries)")
     print("  'type <text>'    Type text into the active field")
     print("  'click <x> <y>'  Click at coordinates")
     print("  'go <url>'       Navigate to URL")
@@ -134,7 +134,7 @@ with client.computer.create(kind="browser") as computer:
             elif human_input.lower().startswith("go "):
                 computer.navigate(human_input[3:])
 
-            # After human intervention, re-screenshot and tell the agent
+            # After human intervention, re-screenshot and tell Northstar
             # what happened so it can continue.
             computer.wait(1)
             screenshot_url = computer.get_screenshot_url(computer.screenshot())

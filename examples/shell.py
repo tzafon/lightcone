@@ -1,6 +1,6 @@
 """Desktop session mixing browser actions with shell commands.
 
-Uses kind="desktop" for full OS access — the agent can browse the web,
+Uses kind="desktop" for full OS access — Northstar can browse the web,
 open a terminal, run scripts, and pipe data between them.
 """
 
