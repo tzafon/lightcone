@@ -49,4 +49,4 @@ class Tool(TypedDict, total=False):
 
     environment: str
 
-    type: Literal["computer_use"]
+    type: Literal["computer_use", "computer_use_preview"]

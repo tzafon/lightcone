@@ -103,8 +103,10 @@ class ComputersResource(SyncAPIResource):
         context_id: str | Omit = omit,
         display: computer_create_params.Display | Omit = omit,
         environment_id: str | Omit = omit,
+        idle_timeout_enabled: bool | Omit = omit,
         inactivity_timeout_seconds: int | Omit = omit,
         kind: str | Omit = omit,
+        max_lifetime_seconds: int | Omit = omit,
         persistent: bool | Omit = omit,
         stealth: object | Omit = omit,
         timeout_seconds: int | Omit = omit,
@@ -120,18 +122,26 @@ class ComputersResource(SyncAPIResource):
 
         Set kind to "browser" for web automation or
         "desktop" for OS-level automation. Defaults to "browser" if not specified.
-        timeout_seconds controls max lifetime, inactivity_timeout_seconds controls idle
-        timeout, and auto_kill disables only the idle timeout (max lifetime still
-        applies).
+        max_lifetime_seconds controls max lifetime, inactivity_timeout_seconds controls
+        idle timeout, and idle_timeout_enabled (default true) controls whether idle
+        timeout is enforced (max lifetime always applies). The deprecated fields
+        timeout_seconds and auto_kill are still accepted but will be removed after
+        2026-06-06.
 
         Args:
-          auto_kill: If true (default), kill session after inactivity
+          auto_kill: Deprecated: use idle_timeout_enabled
 
-          inactivity_timeout_seconds: Idle timeout before auto-kill
+          idle_timeout_enabled: If true (default), kill session after inactivity
+
+          inactivity_timeout_seconds: Idle timeout before kill
 
           kind: "browser" (default) or "desktop"
 
+          max_lifetime_seconds: Max session duration in seconds
+
           persistent: Persist cookies/storage state to DB on session teardown only if true
+
+          timeout_seconds: Deprecated: use max_lifetime_seconds
 
           use_advanced_proxy: If true (browser sessions), use ADVANCED_PROXY_URL on session start
 
@@ -151,8 +161,10 @@ class ComputersResource(SyncAPIResource):
                     "context_id": context_id,
                     "display": display,
                     "environment_id": environment_id,
+                    "idle_timeout_enabled": idle_timeout_enabled,
                     "inactivity_timeout_seconds": inactivity_timeout_seconds,
                     "kind": kind,
+                    "max_lifetime_seconds": max_lifetime_seconds,
                     "persistent": persistent,
                     "stealth": stealth,
                     "timeout_seconds": timeout_seconds,
@@ -1342,8 +1354,10 @@ class AsyncComputersResource(AsyncAPIResource):
         context_id: str | Omit = omit,
         display: computer_create_params.Display | Omit = omit,
         environment_id: str | Omit = omit,
+        idle_timeout_enabled: bool | Omit = omit,
         inactivity_timeout_seconds: int | Omit = omit,
         kind: str | Omit = omit,
+        max_lifetime_seconds: int | Omit = omit,
         persistent: bool | Omit = omit,
         stealth: object | Omit = omit,
         timeout_seconds: int | Omit = omit,
@@ -1359,18 +1373,26 @@ class AsyncComputersResource(AsyncAPIResource):
 
         Set kind to "browser" for web automation or
         "desktop" for OS-level automation. Defaults to "browser" if not specified.
-        timeout_seconds controls max lifetime, inactivity_timeout_seconds controls idle
-        timeout, and auto_kill disables only the idle timeout (max lifetime still
-        applies).
+        max_lifetime_seconds controls max lifetime, inactivity_timeout_seconds controls
+        idle timeout, and idle_timeout_enabled (default true) controls whether idle
+        timeout is enforced (max lifetime always applies). The deprecated fields
+        timeout_seconds and auto_kill are still accepted but will be removed after
+        2026-06-06.
 
         Args:
-          auto_kill: If true (default), kill session after inactivity
+          auto_kill: Deprecated: use idle_timeout_enabled
 
-          inactivity_timeout_seconds: Idle timeout before auto-kill
+          idle_timeout_enabled: If true (default), kill session after inactivity
+
+          inactivity_timeout_seconds: Idle timeout before kill
 
           kind: "browser" (default) or "desktop"
 
+          max_lifetime_seconds: Max session duration in seconds
+
           persistent: Persist cookies/storage state to DB on session teardown only if true
+
+          timeout_seconds: Deprecated: use max_lifetime_seconds
 
           use_advanced_proxy: If true (browser sessions), use ADVANCED_PROXY_URL on session start
 
@@ -1390,8 +1412,10 @@ class AsyncComputersResource(AsyncAPIResource):
                     "context_id": context_id,
                     "display": display,
                     "environment_id": environment_id,
+                    "idle_timeout_enabled": idle_timeout_enabled,
                     "inactivity_timeout_seconds": inactivity_timeout_seconds,
                     "kind": kind,
+                    "max_lifetime_seconds": max_lifetime_seconds,
                     "persistent": persistent,
                     "stealth": stealth,
                     "timeout_seconds": timeout_seconds,

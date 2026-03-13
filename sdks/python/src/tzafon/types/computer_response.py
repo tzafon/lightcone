@@ -11,6 +11,7 @@ class ComputerResponse(BaseModel):
     id: Optional[str] = None
 
     auto_kill: Optional[bool] = None
+    """Deprecated: mirrors IdleTimeoutEnabled. Remove after 2026-06-06."""
 
     created_at: Optional[str] = None
 
@@ -19,6 +20,8 @@ class ComputerResponse(BaseModel):
     expires_at: Optional[str] = None
 
     idle_expires_at: Optional[str] = None
+
+    idle_timeout_enabled: Optional[bool] = None
 
     inactivity_timeout_seconds: Optional[int] = None
 
