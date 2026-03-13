@@ -50,7 +50,7 @@ class ModelsResource(SyncAPIResource):
     ) -> object:
         """Show Available Models"""
         return self._get(
-            "/models",
+            "/v1/models",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -90,7 +90,7 @@ class AsyncModelsResource(AsyncAPIResource):
     ) -> object:
         """Show Available Models"""
         return await self._get(
-            "/models",
+            "/v1/models",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
