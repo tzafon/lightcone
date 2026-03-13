@@ -1,0 +1,7 @@
+{
+  "name": "lightcone",
+  "private": true,
+  "workspaces": [
+    "sdks/typescript"
+  ]
+}

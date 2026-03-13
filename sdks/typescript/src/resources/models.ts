@@ -9,7 +9,7 @@ export class Models extends APIResource {
    * Show Available Models
    */
   list(options?: RequestOptions): APIPromise<unknown> {
-    return this._client.get('/models', options);
+    return this._client.get('/v1/models', options);
   }
 }
 

@@ -9,6 +9,12 @@ dependencies = [
     "tzafon>=2.8.0",
 ]
 
+[tool.uv.sources]
+tzafon = { workspace = true }
+
+[tool.uv.workspace]
+members = ["sdks/python"]
+
 [project.optional-dependencies]
 streaming = [
     "fastapi>=0.115.0",

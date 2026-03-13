@@ -17,9 +17,11 @@ export class Computers extends APIResource {
   /**
    * Create a new automation session. Set kind to "browser" for web automation or
    * "desktop" for OS-level automation. Defaults to "browser" if not specified.
-   * timeout_seconds controls max lifetime, inactivity_timeout_seconds controls idle
-   * timeout, and auto_kill disables only the idle timeout (max lifetime still
-   * applies).
+   * max_lifetime_seconds controls max lifetime, inactivity_timeout_seconds controls
+   * idle timeout, and idle_timeout_enabled (default true) controls whether idle
+   * timeout is enforced (max lifetime always applies). The deprecated fields
+   * timeout_seconds and auto_kill are still accepted but will be removed after
+   * 2026-06-06.
    *
    * @example
    * ```ts
@@ -563,6 +565,9 @@ export namespace ComputerAction {
 export interface ComputerResponse {
   id?: string;
 
+  /**
+   * Deprecated: mirrors IdleTimeoutEnabled. Remove after 2026-06-06.
+   */
   auto_kill?: boolean;
 
   created_at?: string;
@@ -572,6 +577,8 @@ export interface ComputerResponse {
   expires_at?: string;
 
   idle_expires_at?: string;
+
+  idle_timeout_enabled?: boolean;
 
   inactivity_timeout_seconds?: number;
 
@@ -617,6 +624,9 @@ export type ComputerKeepaliveResponse = { [key: string]: unknown };
 export interface ComputerRetrieveStatusResponse {
   id?: string;
 
+  /**
+   * Deprecated: mirrors IdleTimeoutEnabled. Remove after 2026-06-06.
+   */
   auto_kill?: boolean;
 
   created_at?: string;
@@ -624,6 +634,8 @@ export interface ComputerRetrieveStatusResponse {
   expires_at?: string;
 
   idle_expires_at?: string;
+
+  idle_timeout_enabled?: boolean;
 
   inactivity_timeout_seconds?: number;
 
@@ -636,7 +648,7 @@ export interface ComputerRetrieveStatusResponse {
 
 export interface ComputerCreateParams {
   /**
-   * If true (default), kill session after inactivity
+   * Deprecated: use idle_timeout_enabled
    */
   auto_kill?: boolean;
 
@@ -647,7 +659,12 @@ export interface ComputerCreateParams {
   environment_id?: string;
 
   /**
-   * Idle timeout before auto-kill
+   * If true (default), kill session after inactivity
+   */
+  idle_timeout_enabled?: boolean;
+
+  /**
+   * Idle timeout before kill
    */
   inactivity_timeout_seconds?: number;
 
@@ -657,12 +674,20 @@ export interface ComputerCreateParams {
   kind?: string;
 
   /**
+   * Max session duration in seconds
+   */
+  max_lifetime_seconds?: number;
+
+  /**
    * Persist cookies/storage state to DB on session teardown only if true
    */
   persistent?: boolean;
 
   stealth?: unknown;
 
+  /**
+   * Deprecated: use max_lifetime_seconds
+   */
   timeout_seconds?: number;
 
   /**

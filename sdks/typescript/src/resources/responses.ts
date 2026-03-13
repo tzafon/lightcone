@@ -201,7 +201,7 @@ export namespace ResponseCreateParams {
 
     environment?: string;
 
-    type?: 'computer_use';
+    type?: 'computer_use' | 'computer_use_preview';
   }
 }
 

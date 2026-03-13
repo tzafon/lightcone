@@ -9,7 +9,7 @@ export class Chat extends APIResource {
    * Create Chat Completion
    */
   createCompletion(body: ChatCreateCompletionParams, options?: RequestOptions): APIPromise<unknown> {
-    return this._client.post('/chat/completions', { body, ...options });
+    return this._client.post('/v1/chat/completions', { body, ...options });
   }
 }
 
