@@ -2,13 +2,13 @@
 
 # Lightcone
 
-### SDKs and examples for Tzafon's computer-use agents
+### The API for Northstar, a vision-language model by Tzafon
 
 <img src="northstar.svg" alt="Northstar" width="160">
 
-Featuring **Northstar CUA Fast** — a 4B model trained with reinforcement learning
+**Northstar CUA Fast** — 4B parameters, trained with GUI reinforcement learning
 
-[API Docs](https://docs.tzafon.ai/api-reference/introduction) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
+[Docs](https://docs.lightcone.ai) | [API Reference](https://docs.lightcone.ai/api) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![PyPI - tzafon](https://img.shields.io/pypi/v/tzafon?label=tzafon&color=blue)](https://pypi.org/project/tzafon/)
@@ -18,7 +18,9 @@ Featuring **Northstar CUA Fast** — a 4B model trained with reinforcement learn
 
 ---
 
-Northstar CUA Fast recovers from mistakes, generalizes across environments, and outperforms open-source models at twice its size. Built for agentic loops where every step is a model call.
+Northstar sees screens and acts on them. Give it a screenshot, it decides where to click, what to type, when to scroll. Give it a task in plain language, it operates a computer from start to finish — opening apps, navigating between pages, filling forms, reading results.
+
+It recovers from mistakes, generalizes across desktop environments, and outperforms open-source models at twice its size. Built for computer-use loops where every step is a model call.
 
 | | |
 |---|---|
@@ -40,7 +42,7 @@ Northstar CUA Fast recovers from mistakes, generalizes across environments, and 
 pip install tzafon
 ```
 
-### Make your first call
+### Give Northstar a task
 
 ```python
 import os
@@ -48,24 +50,20 @@ from tzafon import Lightcone
 
 client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
-response = client.responses.create(
-    model="tzafon.northstar-cua-fast",
-    instructions="Click on the Firefox icon.",
-    tools=[{
-        "type": "computer_use",
-        "display_width": 1024,
-        "display_height": 768,
-        "environment": "browser",
-    }],
-)
-print(response.output)
+for event in client.agent.tasks.start_stream(
+    instruction="Go to wikipedia.org, search for 'Alan Turing', and tell me the first sentence",
+    kind="desktop",
+):
+    print(event)
 ```
+
+Northstar spins up a computer, opens a browser, searches Wikipedia, reads the article, and reports back. You just described what you wanted.
 
 ---
 
 ## CUA Loop
 
-The Responses API handles context, parsing, and coordinate scaling — your agent loop is just screenshot, think, act, repeat:
+For full control, build the loop yourself. Northstar looks at a screenshot, decides the next action, you execute it, feed back the result:
 
 ```python
 import os
@@ -73,10 +71,10 @@ from tzafon import Lightcone
 
 client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
-TOOL = {"type": "computer_use", "display_width": 1280, "display_height": 720, "environment": "browser"}
-TASK = "Go to wikipedia.org and search for 'Alan Turing'"
+TOOL = {"type": "computer_use", "display_width": 1280, "display_height": 720, "environment": "desktop"}
+TASK = "Open the terminal, run 'uname -a', then run 'df -h' and report the results"
 
-with client.computer.create(kind="browser") as computer:
+with client.computer.create(kind="desktop") as computer:
     screenshot_url = computer.get_screenshot_url(computer.screenshot())
 
     response = client.responses.create(
@@ -130,32 +128,27 @@ with client.computer.create(kind="browser") as computer:
 
 | Example | Description |
 |---|---|
-| [`simple.py`](examples/simple.py) | Basic CUA loop — the minimal agent |
-| [`persistent_session.py`](examples/persistent_session.py) | Persistent browser sessions for authenticated workflows |
+| [`desktop.py`](examples/desktop.py) | Northstar operates a desktop — opens terminal, runs commands, reads output |
+| [`simple.py`](examples/simple.py) | Minimal browser CUA loop |
+| [`shell.py`](examples/shell.py) | Mixes Northstar with direct shell commands |
+| [`competitor_research.py`](examples/competitor_research.py) | Two-phase: Northstar explores, then extracts structured data |
+| [`persistent_session.py`](examples/persistent_session.py) | Persistent state for authenticated workflows |
 | [`streaming.py`](examples/streaming.py) | FastAPI SSE endpoint wrapping the CUA loop |
 | [`interactive.py`](examples/interactive.py) | Human-in-the-loop — pauses for CAPTCHAs, 2FA, ambiguity |
-| [`shell.py`](examples/shell.py) | Desktop session mixing browser + shell commands |
 | [`multi_tab.py`](examples/multi_tab.py) | Multi-tab comparison across sites |
-| [`monitor.py`](examples/monitor.py) | Screenshot-only observer for dashboard monitoring |
+| [`visualize.py`](examples/visualize.py) | Save annotated screenshots showing every decision Northstar makes |
+| [`monitor.py`](examples/monitor.py) | Screenshot-only observer for monitoring |
 
 ```bash
-# Run the simple example
 export TZAFON_API_KEY="your-api-key"
-python examples/simple.py
-
-# Run the streaming server
-pip install 'lightcone[streaming]'
-uvicorn examples.streaming:app
-curl -N -X POST http://localhost:8000/tasks/stream \
-  -H "Content-Type: application/json" \
-  -d '{"instruction": "Go to wikipedia.org and search for Alan Turing"}'
+python examples/desktop.py
 ```
 
 ---
 
 ## Supported Actions
 
-`click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser only) · `wait` · `terminate`
+`click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser mode) · `wait` · `terminate`
 
 Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport pixels and responses are structured — no parsing required. Multi-turn conversations are managed server-side via `previous_response_id`.
 
