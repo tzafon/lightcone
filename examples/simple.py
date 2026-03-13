@@ -11,9 +11,9 @@ TOOL = {
     "display_height": 720,
     "environment": "browser",
 }
+
 TASK = "Go to wikipedia.org and search for 'Alan Turing'"
 MAX_STEPS = 50
-
 
 def execute_action(computer, action):
     """Execute a model action on the computer session."""
@@ -106,6 +106,8 @@ with client.computer.create(kind="browser") as computer:
                 "output": {"type": "input_image", "image_url": screenshot_url},
             }],
         )
+
+    print(f"Final state: {screenshot_url}")
 
     for item in response.output or []:
         if item.type == "message":
