@@ -124,6 +124,37 @@ with client.computer.create(kind="desktop") as computer:
 
 ---
 
+## Try it
+
+Run Northstar against a live enterprise app (OrangeHRM) and see every step:
+
+```bash
+export TZAFON_API_KEY="your-api-key"
+uv run python -m examples.harness.evaluate
+```
+
+With annotated screenshots saved to a directory:
+
+```bash
+uv run --with Pillow --with httpx python -m examples.harness.evaluate --screenshots steps/
+```
+
+Reliability check (3 runs):
+
+```bash
+uv run python -m examples.harness.evaluate --runs 3
+```
+
+Custom target:
+
+```bash
+uv run python -m examples.harness.evaluate \
+  --url "https://any-web-app.com/login" \
+  --instruction "Log in with user/pass, then do something"
+```
+
+---
+
 ## Examples
 
 | Example | Description |

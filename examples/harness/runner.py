@@ -1,4 +1,7 @@
-"""Reusable harness for Lightcone computer-use loops."""
+"""Reusable harness for Lightcone computer-use loops.
+
+Drives a screenshot-think-act loop around Northstar via the Responses API.
+"""
 
 from __future__ import annotations
 
@@ -11,18 +14,32 @@ from typing import Any, Callable
 
 TERMINAL_ACTION_TYPES = frozenset({"terminate", "done", "answer"})
 
+# Default behavioral guidance for Northstar.
+DEFAULT_SYSTEM_INSTRUCTIONS = (
+    "You are operating enterprise software through the GUI. "
+    "Tips: "
+    "To scroll the main page (not an inner editor), scroll at the far left edge (x=20). "
+    "For dropdown menus, type the first few letters to filter options after clicking. "
+    "If a Save/Submit button is off-screen, press End to jump to the bottom of the page. "
+    "If you see a cookie banner or popup, dismiss it first. "
+    "If you get stuck repeating an action, try a completely different approach."
+)
+
 
 @dataclass(slots=True)
 class RunConfig:
     model: str
-    kind: str = "browser"
-    environment: str = "browser"
+    kind: str = "desktop"
     display_width: int = 1280
     display_height: int = 720
     max_steps: int = 50
-    step_delay_seconds: float = 1.0
+    step_delay_seconds: float = 0.0
     wait_action_seconds: float = 2.0
     initial_navigation_delay_seconds: float = 2.0
+    system_instructions: str | None = DEFAULT_SYSTEM_INSTRUCTIONS
+    circuit_breaker_threshold: int = 3
+    scroll_max_delta: int = 500
+    budget_warning_pct: float = 0.7
     trace_path: str | None = None
     print_progress: bool = False
     persistent: bool = False
@@ -101,7 +118,7 @@ def _json_default(value: Any) -> Any:
 
 
 class CuaRunner:
-    """Drive a screenshot-think-act loop around Lightcone's Responses API."""
+    """Drive a screenshot-think-act loop around Northstar."""
 
     def __init__(
         self,
@@ -136,18 +153,13 @@ class CuaRunner:
 
         with context as session:
             computer_id = getattr(session, "id", None)
-            self._log(
-                f"starting run kind={self.config.kind} computer_id={computer_id}",
-            )
-            self._trace(
-                "run_started",
-                {
-                    "instruction": instruction,
-                    "computer_id": computer_id,
-                    "config": self.config,
-                    "start_url": start_url,
-                },
-            )
+            self._log(f"starting run kind={self.config.kind} computer_id={computer_id}")
+            self._trace("run_started", {
+                "instruction": instruction,
+                "computer_id": computer_id,
+                "config": self.config,
+                "start_url": start_url,
+            })
 
             if start_url:
                 self._log(f"navigate start_url={start_url}")
@@ -156,6 +168,9 @@ class CuaRunner:
 
             screenshot_url = self._capture_screenshot(session)
             response = self._create_initial_response(instruction, screenshot_url)
+
+            recent_actions: list[str] = []
+            budget_warning_sent = False
 
             for step in range(1, self.config.max_steps + 1):
                 self._emit_messages(step, response, computer_id)
@@ -171,9 +186,7 @@ class CuaRunner:
                         last_screenshot_url=screenshot_url,
                         trace_path=self.config.trace_path,
                     )
-                    self._log(
-                        f"completed status={result.status} steps={result.steps}",
-                    )
+                    self._log(f"completed status={result.status} steps={result.steps}")
                     self._trace("run_completed", result)
                     return result
 
@@ -188,23 +201,46 @@ class CuaRunner:
                 )
                 if self.on_action is not None:
                     self.on_action(event)
-                self._log(
-                    f"[{step}] action={action.type}{self._format_action_details(action)}",
-                )
+                self._log(f"[{step}] action={action.type}{self._format_action_details(action)}")
 
+                # Detect repeated actions and redirect.
+                action_sig = self._action_signature(action, step)
+                recent_actions.append(action_sig)
+                if len(recent_actions) > self.config.circuit_breaker_threshold:
+                    recent_actions.pop(0)
+
+                if (
+                    len(recent_actions) == self.config.circuit_breaker_threshold
+                    and len(set(recent_actions)) == 1
+                ):
+                    self._log(f"[{step}] repeated action detected, redirecting")
+                    self._trace("circuit_breaker", {"step": step, "action_sig": action_sig})
+                    session.wait(2)
+                    screenshot_url = self._capture_screenshot(session)
+                    response = self._create_follow_up_response(
+                        response_id=response.id,
+                        call_id=computer_call.call_id,
+                        screenshot_url=screenshot_url,
+                        message=(
+                            "You are repeating the same action. This approach is not working. "
+                            "Try a completely different approach — click somewhere else, use a "
+                            "different method, or if the task is blocked, report what you see and stop."
+                        ),
+                    )
+                    recent_actions.clear()
+                    continue
+
+                # --- Before-action hook ---
                 decision = (
                     self.before_action(event) if self.before_action is not None else None
                 ) or ActionDecision()
-                self._trace(
-                    "action_selected",
-                    {
-                        "step": step,
-                        "computer_id": computer_id,
-                        "response_id": getattr(response, "id", None),
-                        "action": action,
-                        "decision": decision,
-                    },
-                )
+                self._trace("action_selected", {
+                    "step": step,
+                    "computer_id": computer_id,
+                    "response_id": getattr(response, "id", None),
+                    "action": action,
+                    "decision": decision,
+                })
 
                 if not decision.continue_run:
                     result = RunResult(
@@ -216,9 +252,7 @@ class CuaRunner:
                         last_screenshot_url=screenshot_url,
                         trace_path=self.config.trace_path,
                     )
-                    self._log(
-                        f"stopped status={result.status} steps={result.steps}",
-                    )
+                    self._log(f"stopped status={result.status} steps={result.steps}")
                     self._trace("run_completed", result)
                     return result
 
@@ -239,9 +273,7 @@ class CuaRunner:
                         last_screenshot_url=screenshot_url,
                         trace_path=self.config.trace_path,
                     )
-                    self._log(
-                        f"completed status={result.status} steps={result.steps}",
-                    )
+                    self._log(f"completed status={result.status} steps={result.steps}")
                     self._trace("run_completed", result)
                     return result
 
@@ -254,15 +286,28 @@ class CuaRunner:
                 if wait_seconds is None:
                     wait_seconds = self.config.step_delay_seconds
                 if wait_seconds > 0:
-                    self._log(f"[{step}] wait={wait_seconds}s")
                     session.wait(wait_seconds)
 
                 screenshot_url = self._capture_screenshot(session)
+
+                # Warn Northstar to wrap up if running low on steps.
+                extra_message = decision.message
+                budget_step = int(self.config.max_steps * self.config.budget_warning_pct)
+                if step >= budget_step and not budget_warning_sent:
+                    budget_warning_sent = True
+                    budget_msg = (
+                        f"You have used {step} of {self.config.max_steps} allowed steps. "
+                        "Wrap up: finish the current action, then report your results. "
+                        "If the task is not complete, describe what you accomplished and what remains."
+                    )
+                    extra_message = f"{extra_message} {budget_msg}" if extra_message else budget_msg
+                    self._log(f"[{step}] step budget warning ({step}/{self.config.max_steps})")
+
                 response = self._create_follow_up_response(
                     response_id=response.id,
                     call_id=computer_call.call_id,
                     screenshot_url=screenshot_url,
-                    message=decision.message,
+                    message=extra_message,
                 )
 
             result = RunResult(
@@ -274,37 +319,51 @@ class CuaRunner:
                 last_screenshot_url=screenshot_url,
                 trace_path=self.config.trace_path,
             )
-            self._log(
-                f"completed status={result.status} steps={result.steps}",
-            )
+            self._log(f"completed status={result.status} steps={result.steps}")
             self._trace("run_completed", result)
             return result
+
+    @staticmethod
+    def _action_signature(action: Any, step: int) -> str:
+        """Build a dedup key for repeated-action detection.
+
+        Scroll and hscroll are exempt (scrolling multiple times is normal).
+        """
+        if action.type in ("scroll", "hscroll"):
+            return f"{action.type}:_exempt_:{step}"
+        return (
+            f"{action.type}:"
+            f"{getattr(action, 'x', '')}:"
+            f"{getattr(action, 'y', '')}:"
+            f"{getattr(action, 'url', '')}:"
+            f"{getattr(action, 'text', '')}"
+        )
+
 
     def _tool(self) -> dict[str, Any]:
         return {
             "type": "computer_use",
             "display_width": self.config.display_width,
             "display_height": self.config.display_height,
-            "environment": self.config.environment,
+            "environment": self.config.kind,
         }
+
 
     def _capture_screenshot(self, computer: Any) -> str | None:
         result = computer.screenshot()
         screenshot_url = computer.get_screenshot_url(result)
-        self._trace(
-            "screenshot_captured",
-            {
-                "computer_id": getattr(computer, "id", None),
-                "screenshot_url": screenshot_url,
-            },
-        )
+        self._trace("screenshot_captured", {
+            "computer_id": getattr(computer, "id", None),
+            "screenshot_url": screenshot_url,
+        })
         return screenshot_url
 
+
     def _create_initial_response(self, instruction: str, screenshot_url: str | None) -> Any:
-        return self.client.responses.create(
-            model=self.config.model,
-            tools=[self._tool()],
-            input=[{
+        kwargs: dict[str, Any] = {
+            "model": self.config.model,
+            "tools": [self._tool()],
+            "input": [{
                 "role": "user",
                 "content": [
                     {"type": "input_text", "text": instruction},
@@ -312,7 +371,10 @@ class CuaRunner:
                 ],
             }],
             **self.config.response_kwargs,
-        )
+        }
+        if self.config.system_instructions:
+            kwargs["instructions"] = self.config.system_instructions
+        return self.client.responses.create(**kwargs)
 
     def _create_follow_up_response(
         self,
@@ -340,6 +402,7 @@ class CuaRunner:
             **self.config.response_kwargs,
         )
 
+
     def _emit_messages(self, step: int, response: Any, computer_id: str) -> None:
         for item in getattr(response, "output", None) or []:
             if item.type != "message":
@@ -348,20 +411,14 @@ class CuaRunner:
                 if not getattr(block, "text", None):
                     continue
                 event = MessageEvent(
-                    step=step,
-                    text=block.text,
-                    response=response,
-                    computer_id=computer_id,
+                    step=step, text=block.text, response=response, computer_id=computer_id,
                 )
-                self._trace(
-                    "message_received",
-                    {
-                        "step": step,
-                        "computer_id": computer_id,
-                        "response_id": getattr(response, "id", None),
-                        "text": block.text,
-                    },
-                )
+                self._trace("message_received", {
+                    "step": step,
+                    "computer_id": computer_id,
+                    "response_id": getattr(response, "id", None),
+                    "text": block.text,
+                })
                 if self.on_message is not None:
                     self.on_message(event)
                 self._log(f"[{step}] model={block.text}")
@@ -387,47 +444,56 @@ class CuaRunner:
         return "\n".join(chunks)
 
     def _default_execute_action(self, computer: Any, action: Any) -> None:
-        action_type = action.type
-        if action_type == "click":
+        t = action.type
+        if t == "click":
             computer.click(action.x, action.y)
-        elif action_type == "double_click":
+        elif t == "double_click":
             computer.double_click(action.x, action.y)
-        elif action_type == "triple_click":
+        elif t == "triple_click":
             computer.click(action.x, action.y)
             computer.click(action.x, action.y)
             computer.click(action.x, action.y)
-        elif action_type == "right_click":
+        elif t == "right_click":
             computer.right_click(action.x, action.y)
-        elif action_type == "type":
+        elif t == "type":
+            # Click first to ensure the field has focus.
+            if getattr(action, "x", None) is not None and getattr(action, "y", None) is not None:
+                computer.click(action.x, action.y)
             computer.type(action.text)
-        elif action_type in ("key", "keypress"):
+        elif t in ("key", "keypress"):
             computer.hotkey(action.keys)
-        elif action_type == "key_down":
+        elif t == "key_down":
             computer.key_down(action.keys[0])
-        elif action_type == "key_up":
+        elif t == "key_up":
             computer.key_up(action.keys[0])
-        elif action_type == "scroll":
+        elif t == "scroll":
+            # Clamp deltas to display bounds.
+            cap = self.config.scroll_max_delta
+            w, h = self.config.display_width, self.config.display_height
             computer.scroll(
-                dx=action.scroll_x or 0,
-                dy=action.scroll_y or 0,
-                x=action.x or 0,
-                y=action.y or 0,
+                dx=max(-cap, min(cap, action.scroll_x or 0)),
+                dy=max(-cap, min(cap, action.scroll_y or 0)),
+                x=max(0, min(w, action.x or w // 2)),
+                y=max(0, min(h, action.y or h // 2)),
             )
-        elif action_type == "hscroll":
+        elif t == "hscroll":
+            cap = self.config.scroll_max_delta
+            w, h = self.config.display_width, self.config.display_height
             computer.scroll(
-                dx=action.scroll_x or 0,
+                dx=max(-cap, min(cap, action.scroll_x or 0)),
                 dy=0,
-                x=action.x or 0,
-                y=action.y or 0,
+                x=max(0, min(w, action.x or w // 2)),
+                y=max(0, min(h, action.y or h // 2)),
             )
-        elif action_type == "navigate":
+        elif t == "navigate":
             computer.navigate(action.url)
-        elif action_type == "drag":
+        elif t == "drag":
             computer.drag(action.x, action.y, action.end_x, action.end_y)
-        elif action_type == "wait":
+        elif t == "wait":
             computer.wait(self.config.wait_action_seconds)
         else:
-            raise ValueError(f"Unsupported action type: {action_type}")
+            raise ValueError(f"Unsupported action type: {t}")
+
 
     def _log(self, message: str) -> None:
         if self.config.print_progress:

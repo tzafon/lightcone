@@ -37,7 +37,6 @@ def main() -> None:
         config=RunConfig(
             model="tzafon.northstar-cua-fast",
             kind="browser",
-            environment="browser",
             max_steps=50,
             trace_path="runs/simple.jsonl",
         ),
