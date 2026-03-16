@@ -8,11 +8,12 @@
 
 **Northstar CUA Fast** — 4B parameters, trained with GUI reinforcement learning
 
-[Docs](https://docs.lightcone.ai) | [API Reference](https://docs.lightcone.ai/api) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
+[Docs](https://docs.lightcone.ai) | [API Reference](https://docs.lightcone.ai/api) | [Model](https://huggingface.co/Tzafon/Northstar-CUA-Fast) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![PyPI - tzafon](https://img.shields.io/pypi/v/tzafon?label=tzafon&color=blue)](https://pypi.org/project/tzafon/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Northstar--CUA--Fast-yellow)](https://huggingface.co/Tzafon/Northstar-CUA-Fast)
 
 </div>
 
@@ -22,10 +23,14 @@ Northstar sees screens and acts on them. Give it a screenshot, it decides where 
 
 It recovers from mistakes, generalizes across desktop environments, and outperforms open-source models at twice its size. Built for computer-use loops where every step is a model call.
 
+<div align="center">
+<img src="assets/3.gif" alt="Northstar searching for a product on a Linux desktop" width="720">
+</div>
+
 | | |
 |---|---|
 | **Parameters** | 4B |
-| **Context** | 64K |
+| **Context** | 64K tokens |
 | **Training** | GUI reinforcement learning |
 | **Input** | Text + screenshot |
 | **Output** | GUI actions — `click`, `type`, `scroll`, `key`, `drag`, ... |
@@ -126,7 +131,14 @@ with client.computer.create(kind="desktop") as computer:
 
 ## Try it
 
-Run Northstar against a live enterprise app (OrangeHRM) and see every step:
+Run Northstar against a live enterprise app and see every step:
+
+<table>
+<tr>
+<td align="center"><img src="assets/1.gif" alt="Northstar logging in and adding an employee in OrangeHRM" width="420"><br><sub>OrangeHRM — login & add employee</sub></td>
+<td align="center"><img src="assets/2.gif" alt="Northstar creating a contact record in SuiteCRM" width="420"><br><sub>SuiteCRM — create contact record</sub></td>
+</tr>
+</table>
 
 ```bash
 export TZAFON_API_KEY="your-api-key"
@@ -179,7 +191,7 @@ python examples/desktop.py
 
 ## Supported Actions
 
-`click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser mode) · `wait` · `terminate`
+`click` · `double_click` · `triple_click` · `right_click` · `drag` · `type` · `key` · `scroll` · `hscroll` · `navigate` (browser only) · `wait` · `terminate`
 
 Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport pixels and responses are structured — no parsing required. Multi-turn conversations are managed server-side via `previous_response_id`.
 
@@ -194,7 +206,7 @@ Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport 
 
 ---
 
-## OSWorld Benchmark (pass@1)
+## OSWorld Benchmark (pass@1, 50 steps)
 
 Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop tasks.
 
@@ -207,7 +219,7 @@ Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop t
 | VLC | 49.94% | 34.41% | **43.87%** |
 | **Overall** | **53.1%** | 41.6% | 37.01% |
 
-> At 4B parameters, Northstar CUA Fast is competitive with open-source models at twice its size on single-app tasks. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
+> At 4B parameters, Northstar CUA Fast is competitive with open-source models at twice its size on single-app tasks. Using the EVOCUA agent harness: EVOCUA-8B averages 32.5% vs Northstar CUA Fast (RL) at 37.0%. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
 
 ---
 
