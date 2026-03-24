@@ -38,6 +38,8 @@ class V2GoBackendInternalServiceAction(BaseModel):
             "keypress",
             "key_down",
             "key_up",
+            "mouse_down",
+            "mouse_up",
             "scroll",
             "hscroll",
             "navigate",
