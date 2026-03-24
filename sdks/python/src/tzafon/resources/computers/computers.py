@@ -47,7 +47,7 @@ from ...types import (
     computer_double_click_params,
 )
 from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, SequenceNotStr, omit, not_given
-from ..._utils import maybe_transform, async_maybe_transform
+from ..._utils import path_template, maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
 from ..._response import (
@@ -204,7 +204,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/computers/{id}",
+            path_template("/computers/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -278,7 +278,7 @@ class ComputersResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
-            f"/computers/{id}",
+            path_template("/computers/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -312,7 +312,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/batch",
+            path_template("/computers/{id}/batch", id=id),
             body=maybe_transform({"actions": actions}, computer_batch_params.ComputerBatchParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -347,7 +347,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/change-proxy",
+            path_template("/computers/{id}/change-proxy", id=id),
             body=maybe_transform({"proxy_url": proxy_url}, computer_change_proxy_params.ComputerChangeProxyParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -388,7 +388,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/click",
+            path_template("/computers/{id}/click", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -435,7 +435,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/debug",
+            path_template("/computers/{id}/debug", id=id),
             body=maybe_transform(
                 {
                     "command": command,
@@ -482,7 +482,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/double-click",
+            path_template("/computers/{id}/double-click", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -530,7 +530,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/drag",
+            path_template("/computers/{id}/drag", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -575,7 +575,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/execute",
+            path_template("/computers/{id}/execute", id=id),
             body=maybe_transform({"action": action}, computer_execute_params.ComputerExecuteParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -613,7 +613,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/hotkey",
+            path_template("/computers/{id}/hotkey", id=id),
             body=maybe_transform(
                 {
                     "keys": keys,
@@ -657,7 +657,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/html",
+            path_template("/computers/{id}/html", id=id),
             body=maybe_transform(
                 {
                     "auto_detect_encoding": auto_detect_encoding,
@@ -697,7 +697,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/keepalive",
+            path_template("/computers/{id}/keepalive", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -748,7 +748,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/key-down",
+            path_template("/computers/{id}/key-down", id=id),
             body=maybe_transform(
                 {
                     "key": key,
@@ -801,7 +801,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/key-up",
+            path_template("/computers/{id}/key-up", id=id),
             body=maybe_transform(
                 {
                     "key": key,
@@ -829,10 +829,19 @@ class ComputersResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ActionResult:
-        """
-        Press and hold the left mouse button at the specified x,y coordinates.
-        Coordinates are screenshot pixel positions. Optionally specify tab_id (browser
-        sessions only)
+        """Press and hold the left mouse button at the specified x,y coordinates.
+
+        The
+        button stays held until a corresponding mouse-up call. Coordinates are
+        screenshot pixel positions.
+
+        **Use cases:** Long press, map panning, combining with /key-down for
+        Shift+Click, or fine-grained control over drag sequences.
+
+        **For drag-and-drop**, prefer the /drag endpoint which handles the full
+        press-move-release sequence automatically.
+
+        **Important:** Always pair with a mouse-up call to release the button.
 
         Args:
           extra_headers: Send extra headers
@@ -846,7 +855,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/mouse-down",
+            path_template("/computers/{id}/mouse-down", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -877,8 +886,15 @@ class ComputersResource(SyncAPIResource):
     ) -> ActionResult:
         """Release the left mouse button at the specified x,y coordinates.
 
-        Coordinates are
-        screenshot pixel positions. Optionally specify tab_id (browser sessions only)
+        Use after a
+        mouse-down call to complete a drag-and-drop or long-press interaction.
+        Coordinates are screenshot pixel positions.
+
+        The release position can differ from the press position — this is how
+        drag-and-drop works: mouse-down at source, mouse-up at destination.
+
+        **Important:** Always release the mouse after a mouse-down to prevent the button
+        from staying held across subsequent actions.
 
         Args:
           extra_headers: Send extra headers
@@ -892,7 +908,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/mouse-up",
+            path_template("/computers/{id}/mouse-up", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -937,7 +953,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/navigate",
+            path_template("/computers/{id}/navigate", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -978,7 +994,7 @@ class ComputersResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._get(
-            f"/computers/{id}/events",
+            path_template("/computers/{id}/events", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1013,7 +1029,7 @@ class ComputersResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._get(
-            f"/computers/{id}/screencast",
+            path_template("/computers/{id}/screencast", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1046,7 +1062,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/computers/{id}/status",
+            path_template("/computers/{id}/status", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1080,7 +1096,7 @@ class ComputersResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._get(
-            f"/computers/{id}/ws",
+            path_template("/computers/{id}/ws", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1118,7 +1134,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/right-click",
+            path_template("/computers/{id}/right-click", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -1162,7 +1178,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/screenshot",
+            path_template("/computers/{id}/screenshot", id=id),
             body=maybe_transform(
                 {
                     "base64": base64,
@@ -1209,7 +1225,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/scroll",
+            path_template("/computers/{id}/scroll", id=id),
             body=maybe_transform(
                 {
                     "dx": dx,
@@ -1256,7 +1272,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/type",
+            path_template("/computers/{id}/type", id=id),
             body=maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -1302,7 +1318,7 @@ class ComputersResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/computers/{id}/viewport",
+            path_template("/computers/{id}/viewport", id=id),
             body=maybe_transform(
                 {
                     "height": height,
@@ -1455,7 +1471,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/computers/{id}",
+            path_template("/computers/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1529,7 +1545,7 @@ class AsyncComputersResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
-            f"/computers/{id}",
+            path_template("/computers/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -1563,7 +1579,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/batch",
+            path_template("/computers/{id}/batch", id=id),
             body=await async_maybe_transform({"actions": actions}, computer_batch_params.ComputerBatchParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -1598,7 +1614,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/change-proxy",
+            path_template("/computers/{id}/change-proxy", id=id),
             body=await async_maybe_transform(
                 {"proxy_url": proxy_url}, computer_change_proxy_params.ComputerChangeProxyParams
             ),
@@ -1641,7 +1657,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/click",
+            path_template("/computers/{id}/click", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -1688,7 +1704,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/debug",
+            path_template("/computers/{id}/debug", id=id),
             body=await async_maybe_transform(
                 {
                     "command": command,
@@ -1735,7 +1751,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/double-click",
+            path_template("/computers/{id}/double-click", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -1783,7 +1799,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/drag",
+            path_template("/computers/{id}/drag", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -1828,7 +1844,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/execute",
+            path_template("/computers/{id}/execute", id=id),
             body=await async_maybe_transform({"action": action}, computer_execute_params.ComputerExecuteParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -1866,7 +1882,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/hotkey",
+            path_template("/computers/{id}/hotkey", id=id),
             body=await async_maybe_transform(
                 {
                     "keys": keys,
@@ -1910,7 +1926,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/html",
+            path_template("/computers/{id}/html", id=id),
             body=await async_maybe_transform(
                 {
                     "auto_detect_encoding": auto_detect_encoding,
@@ -1950,7 +1966,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/keepalive",
+            path_template("/computers/{id}/keepalive", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -2001,7 +2017,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/key-down",
+            path_template("/computers/{id}/key-down", id=id),
             body=await async_maybe_transform(
                 {
                     "key": key,
@@ -2054,7 +2070,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/key-up",
+            path_template("/computers/{id}/key-up", id=id),
             body=await async_maybe_transform(
                 {
                     "key": key,
@@ -2082,10 +2098,19 @@ class AsyncComputersResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ActionResult:
-        """
-        Press and hold the left mouse button at the specified x,y coordinates.
-        Coordinates are screenshot pixel positions. Optionally specify tab_id (browser
-        sessions only)
+        """Press and hold the left mouse button at the specified x,y coordinates.
+
+        The
+        button stays held until a corresponding mouse-up call. Coordinates are
+        screenshot pixel positions.
+
+        **Use cases:** Long press, map panning, combining with /key-down for
+        Shift+Click, or fine-grained control over drag sequences.
+
+        **For drag-and-drop**, prefer the /drag endpoint which handles the full
+        press-move-release sequence automatically.
+
+        **Important:** Always pair with a mouse-up call to release the button.
 
         Args:
           extra_headers: Send extra headers
@@ -2099,7 +2124,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/mouse-down",
+            path_template("/computers/{id}/mouse-down", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -2130,8 +2155,15 @@ class AsyncComputersResource(AsyncAPIResource):
     ) -> ActionResult:
         """Release the left mouse button at the specified x,y coordinates.
 
-        Coordinates are
-        screenshot pixel positions. Optionally specify tab_id (browser sessions only)
+        Use after a
+        mouse-down call to complete a drag-and-drop or long-press interaction.
+        Coordinates are screenshot pixel positions.
+
+        The release position can differ from the press position — this is how
+        drag-and-drop works: mouse-down at source, mouse-up at destination.
+
+        **Important:** Always release the mouse after a mouse-down to prevent the button
+        from staying held across subsequent actions.
 
         Args:
           extra_headers: Send extra headers
@@ -2145,7 +2177,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/mouse-up",
+            path_template("/computers/{id}/mouse-up", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -2190,7 +2222,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/navigate",
+            path_template("/computers/{id}/navigate", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -2231,7 +2263,7 @@ class AsyncComputersResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._get(
-            f"/computers/{id}/events",
+            path_template("/computers/{id}/events", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -2266,7 +2298,7 @@ class AsyncComputersResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._get(
-            f"/computers/{id}/screencast",
+            path_template("/computers/{id}/screencast", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -2299,7 +2331,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/computers/{id}/status",
+            path_template("/computers/{id}/status", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -2333,7 +2365,7 @@ class AsyncComputersResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._get(
-            f"/computers/{id}/ws",
+            path_template("/computers/{id}/ws", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -2371,7 +2403,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/right-click",
+            path_template("/computers/{id}/right-click", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -2415,7 +2447,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/screenshot",
+            path_template("/computers/{id}/screenshot", id=id),
             body=await async_maybe_transform(
                 {
                     "base64": base64,
@@ -2462,7 +2494,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/scroll",
+            path_template("/computers/{id}/scroll", id=id),
             body=await async_maybe_transform(
                 {
                     "dx": dx,
@@ -2509,7 +2541,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/type",
+            path_template("/computers/{id}/type", id=id),
             body=await async_maybe_transform(
                 {
                     "tab_id": tab_id,
@@ -2555,7 +2587,7 @@ class AsyncComputersResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/computers/{id}/viewport",
+            path_template("/computers/{id}/viewport", id=id),
             body=await async_maybe_transform(
                 {
                     "height": height,
