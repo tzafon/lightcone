@@ -367,7 +367,7 @@ class CuaRunner:
                 "role": "user",
                 "content": [
                     {"type": "input_text", "text": instruction},
-                    {"type": "input_image", "image_url": screenshot_url},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 ],
             }],
             **self.config.response_kwargs,
@@ -387,7 +387,7 @@ class CuaRunner:
         payload: list[dict[str, Any]] = [{
             "type": "computer_call_output",
             "call_id": call_id,
-            "output": {"type": "input_image", "image_url": screenshot_url},
+            "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
         }]
         if message:
             payload.append({

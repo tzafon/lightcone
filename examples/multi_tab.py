@@ -35,7 +35,7 @@ def ask_model_about_screenshot(screenshot_url, prompt):
             "role": "user",
             "content": [
                 {"type": "input_text", "text": prompt},
-                {"type": "input_image", "image_url": screenshot_url},
+                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             ],
         }],
     )

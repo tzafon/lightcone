@@ -44,7 +44,7 @@ def visual_eval(screenshot_url):
                             "If the page looks correct and functional, say so. Be brief."
                         ),
                     },
-                    {"type": "input_image", "image_url": screenshot_url},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 ],
             }
         ],

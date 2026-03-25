@@ -95,7 +95,7 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
                 "role": "user",
                 "content": [
                     {"type": "input_text", "text": req.instruction},
-                    {"type": "input_image", "image_url": screenshot_url},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 ],
             }],
         )
@@ -132,7 +132,7 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
                 input=[{
                     "type": "computer_call_output",
                     "call_id": computer_call.call_id,
-                    "output": {"type": "input_image", "image_url": screenshot_url},
+                    "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 }],
             )
 

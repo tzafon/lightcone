@@ -103,7 +103,7 @@ def research_page(computer, url, prompt, max_explore_steps=10):
                     "type": "input_text",
                     "text": "Scroll down slowly. Dismiss any popups or cookie banners. Stop when you can see transaction fees or per-payment pricing.",
                 },
-                {"type": "input_image", "image_url": screenshot_url},
+                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             ],
         }],
     )
@@ -139,7 +139,7 @@ def research_page(computer, url, prompt, max_explore_steps=10):
             input=[{
                 "type": "computer_call_output",
                 "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url},
+                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             }],
         )
 
@@ -152,7 +152,7 @@ def research_page(computer, url, prompt, max_explore_steps=10):
             "role": "user",
             "content": [
                 {"type": "input_text", "text": prompt},
-                {"type": "input_image", "image_url": screenshot_url},
+                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             ],
         }],
         # No tools — forces a text response instead of actions.

@@ -83,7 +83,7 @@ def main():
                 "role": "user",
                 "content": [
                     {"type": "input_text", "text": "Click the search bar."},
-                    {"type": "input_image", "image_url": screenshot_url},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 ],
             }],
         )

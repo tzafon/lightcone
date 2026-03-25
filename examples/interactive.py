@@ -102,7 +102,7 @@ with client.computer.create(kind="browser") as computer:
             "role": "user",
             "content": [
                 {"type": "input_text", "text": task},
-                {"type": "input_image", "image_url": screenshot_url},
+                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             ],
         }],
     )
@@ -153,7 +153,7 @@ with client.computer.create(kind="browser") as computer:
                     "role": "user",
                     "content": [
                         {"type": "input_text", "text": context},
-                        {"type": "input_image", "image_url": screenshot_url},
+                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                     ],
                 }],
             )
@@ -177,7 +177,7 @@ with client.computer.create(kind="browser") as computer:
             input=[{
                 "type": "computer_call_output",
                 "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url},
+                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             }],
         )
 
