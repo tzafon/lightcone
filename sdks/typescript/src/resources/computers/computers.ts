@@ -269,9 +269,17 @@ export class Computers extends APIResource {
   }
 
   /**
-   * Press and hold the left mouse button at the specified x,y coordinates.
-   * Coordinates are screenshot pixel positions. Optionally specify tab_id (browser
-   * sessions only)
+   * Press and hold the left mouse button at the specified x,y coordinates. The
+   * button stays held until a corresponding mouse-up call. Coordinates are
+   * screenshot pixel positions.
+   *
+   * **Use cases:** Long press, map panning, combining with /key-down for
+   * Shift+Click, or fine-grained control over drag sequences.
+   *
+   * **For drag-and-drop**, prefer the /drag endpoint which handles the full
+   * press-move-release sequence automatically.
+   *
+   * **Important:** Always pair with a mouse-up call to release the button.
    *
    * @example
    * ```ts
@@ -283,8 +291,15 @@ export class Computers extends APIResource {
   }
 
   /**
-   * Release the left mouse button at the specified x,y coordinates. Coordinates are
-   * screenshot pixel positions. Optionally specify tab_id (browser sessions only)
+   * Release the left mouse button at the specified x,y coordinates. Use after a
+   * mouse-down call to complete a drag-and-drop or long-press interaction.
+   * Coordinates are screenshot pixel positions.
+   *
+   * The release position can differ from the press position — this is how
+   * drag-and-drop works: mouse-down at source, mouse-up at destination.
+   *
+   * **Important:** Always release the mouse after a mouse-down to prevent the button
+   * from staying held across subsequent actions.
    *
    * @example
    * ```ts
@@ -447,7 +462,7 @@ export interface ActionResult {
 
   executed_tab_id?: string;
 
-  page_context?: V2GoBackendInternalTypesPageContext;
+  page_context?: ActionResult.PageContext;
 
   request_id?: string;
 
@@ -456,6 +471,32 @@ export interface ActionResult {
   status?: string;
 
   timestamp?: string;
+}
+
+export namespace ActionResult {
+  export interface PageContext {
+    device_scale_factor?: number;
+
+    is_main_tab?: boolean;
+
+    page_height?: number;
+
+    page_width?: number;
+
+    scroll_x?: number;
+
+    scroll_y?: number;
+
+    tab_id?: string;
+
+    title?: string;
+
+    url?: string;
+
+    viewport_height?: number;
+
+    viewport_width?: number;
+  }
 }
 
 export interface ComputerAction {
@@ -589,30 +630,6 @@ export interface ComputerResponse {
   max_lifetime_seconds?: number;
 
   status?: string;
-}
-
-export interface V2GoBackendInternalTypesPageContext {
-  device_scale_factor?: number;
-
-  is_main_tab?: boolean;
-
-  page_height?: number;
-
-  page_width?: number;
-
-  scroll_x?: number;
-
-  scroll_y?: number;
-
-  tab_id?: string;
-
-  title?: string;
-
-  url?: string;
-
-  viewport_height?: number;
-
-  viewport_width?: number;
 }
 
 export type ComputerListResponse = Array<ComputerResponse>;
@@ -871,7 +888,6 @@ export declare namespace Computers {
     type ActionResult as ActionResult,
     type ComputerAction as ComputerAction,
     type ComputerResponse as ComputerResponse,
-    type V2GoBackendInternalTypesPageContext as V2GoBackendInternalTypesPageContext,
     type ComputerListResponse as ComputerListResponse,
     type ComputerBatchResponse as ComputerBatchResponse,
     type ComputerKeepaliveResponse as ComputerKeepaliveResponse,
