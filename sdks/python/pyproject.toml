@@ -1,6 +1,6 @@
 [project]
 name = "tzafon"
-version = "2.31.0"
+version = "2.34.1"
 description = "The official Python library for the lightcone API"
 dynamic = ["readme"]
 license = "Apache-2.0"
@@ -56,7 +56,7 @@ conflicts = [
 [dependency-groups]
 # version pins are in uv.lock
 dev = [
-    "pyright==1.1.399",
+    "pyright==1.1.408",
     "mypy==1.17",
     "respx",
     "pytest",

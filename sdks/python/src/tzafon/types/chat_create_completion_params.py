@@ -6,63 +6,44 @@ from typing import Dict, Union, Iterable, Optional
 from typing_extensions import Literal, Required, TypeAlias, TypedDict
 
 from .._types import SequenceNotStr
+from .file_param import FileParam
+from .message_param import MessageParam
+from .chat_completion_content_part_text_param import ChatCompletionContentPartTextParam
+from .chat_completion_content_part_audio_param import ChatCompletionContentPartAudioParam
+from .chat_completion_content_part_image_param import ChatCompletionContentPartImageParam
+from .chat_completion_content_part_refusal_param import ChatCompletionContentPartRefusalParam
+from .chat_completion_message_function_tool_call_param import ChatCompletionMessageFunctionToolCallParam
 
 __all__ = [
     "ChatCreateCompletionParams",
     "Message",
     "MessageChatCompletionDeveloperMessageParam",
-    "MessageChatCompletionDeveloperMessageParamContentUnionMember1",
     "MessageChatCompletionSystemMessageParam",
-    "MessageChatCompletionSystemMessageParamContentUnionMember1",
     "MessageChatCompletionUserMessageParam",
     "MessageChatCompletionUserMessageParamContentUnionMember1",
-    "MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartTextParam",
-    "MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParam",
-    "MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL",
-    "MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam",
-    "MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio",
-    "MessageChatCompletionUserMessageParamContentUnionMember1File",
-    "MessageChatCompletionUserMessageParamContentUnionMember1FileFile",
     "MessageChatCompletionAssistantMessageParam",
     "MessageChatCompletionAssistantMessageParamAudio",
     "MessageChatCompletionAssistantMessageParamContentUnionMember1",
-    "MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartTextParam",
-    "MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam",
     "MessageChatCompletionAssistantMessageParamFunctionCall",
     "MessageChatCompletionAssistantMessageParamToolCall",
-    "MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParam",
-    "MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParamFunction",
     "MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParam",
     "MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParamCustom",
     "MessageChatCompletionToolMessageParam",
-    "MessageChatCompletionToolMessageParamContentUnionMember1",
     "MessageChatCompletionFunctionMessageParam",
     "MessageCustomChatCompletionMessageParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartTextParam",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParam",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1File",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1FileFile",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParamAudioURL",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParamVideoURL",
-    "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleImageParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageEmbedsParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioEmbedsParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleAudioParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleVideoParam",
     "MessageCustomChatCompletionMessageParamContentUnionMember1CustomThinkCompletionContentParam",
-    "MessageCustomChatCompletionMessageParamToolCall",
-    "MessageCustomChatCompletionMessageParamToolCallFunction",
     "MessageCustomChatCompletionMessageParamTool",
     "MessageCustomChatCompletionMessageParamToolFunction",
-    "MessageMessage",
-    "MessageMessageAuthor",
     "LogitsProcessor",
     "LogitsProcessorLogitsProcessorConstructor",
     "ResponseFormat",
@@ -270,16 +251,6 @@ class ChatCreateCompletionParams(TypedDict, total=False):
     """
 
 
-class MessageChatCompletionDeveloperMessageParamContentUnionMember1(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
-
-
 class MessageChatCompletionDeveloperMessageParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
     """
     Developer-provided instructions that the model should follow, regardless of
@@ -287,21 +258,11 @@ class MessageChatCompletionDeveloperMessageParam(TypedDict, total=False, extra_i
     replace the previous `system` messages.
     """
 
-    content: Required[Union[str, Iterable[MessageChatCompletionDeveloperMessageParamContentUnionMember1]]]
+    content: Required[Union[str, Iterable[ChatCompletionContentPartTextParam]]]
 
     role: Required[Literal["developer"]]
 
     name: str
-
-
-class MessageChatCompletionSystemMessageParamContentUnionMember1(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
 
 
 class MessageChatCompletionSystemMessageParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
@@ -311,88 +272,18 @@ class MessageChatCompletionSystemMessageParam(TypedDict, total=False, extra_item
     for this purpose instead.
     """
 
-    content: Required[Union[str, Iterable[MessageChatCompletionSystemMessageParamContentUnionMember1]]]
+    content: Required[Union[str, Iterable[ChatCompletionContentPartTextParam]]]
 
     role: Required[Literal["system"]]
 
     name: str
 
 
-class MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartTextParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    url: Required[str]
-
-    detail: Literal["auto", "low", "high"]
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """Learn about [image inputs](https://platform.openai.com/docs/guides/vision)."""
-
-    image_url: Required[
-        MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL
-    ]
-
-    type: Required[Literal["image_url"]]
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    data: Required[str]
-
-    format: Required[Literal["wav", "mp3"]]
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """Learn about [audio inputs](https://platform.openai.com/docs/guides/audio)."""
-
-    input_audio: Required[
-        MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio
-    ]
-
-    type: Required[Literal["input_audio"]]
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1FileFile(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    file_data: str
-
-    file_id: str
-
-    filename: str
-
-
-class MessageChatCompletionUserMessageParamContentUnionMember1File(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
-    """
-
-    file: Required[MessageChatCompletionUserMessageParamContentUnionMember1FileFile]
-
-    type: Required[Literal["file"]]
-
-
 MessageChatCompletionUserMessageParamContentUnionMember1: TypeAlias = Union[
-    MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartTextParam,
-    MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartImageParam,
-    MessageChatCompletionUserMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam,
-    MessageChatCompletionUserMessageParamContentUnionMember1File,
+    ChatCompletionContentPartTextParam,
+    ChatCompletionContentPartImageParam,
+    ChatCompletionContentPartAudioParam,
+    FileParam,
 ]
 
 
@@ -418,29 +309,8 @@ class MessageChatCompletionAssistantMessageParamAudio(TypedDict, total=False, ex
     id: Required[str]
 
 
-class MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartTextParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
-
-
-class MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    refusal: Required[str]
-
-    type: Required[Literal["refusal"]]
-
-
 MessageChatCompletionAssistantMessageParamContentUnionMember1: TypeAlias = Union[
-    MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartTextParam,
-    MessageChatCompletionAssistantMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam,
+    ChatCompletionContentPartTextParam, ChatCompletionContentPartRefusalParam
 ]
 
 
@@ -455,34 +325,9 @@ class MessageChatCompletionAssistantMessageParamFunctionCall(TypedDict, total=Fa
     name: Required[str]
 
 
-class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParamFunction(
+class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParamCustom(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """The function that the model called."""
-
-    arguments: Required[str]
-
-    name: Required[str]
-
-
-class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """A call to a function tool created by the model."""
-
-    id: Required[str]
-
-    function: Required[
-        MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParamFunction
-    ]
-    """The function that the model called."""
-
-    type: Required[Literal["function"]]
-
-
-class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParamCustom(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """The custom tool that the model called."""
 
     input: Required[str]
@@ -490,9 +335,9 @@ class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCus
     name: Required[str]
 
 
-class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParam(
+class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """A call to a custom tool created by the model."""
 
     id: Required[str]
@@ -504,7 +349,7 @@ class MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCus
 
 
 MessageChatCompletionAssistantMessageParamToolCall: TypeAlias = Union[
-    MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageFunctionToolCallParam,
+    ChatCompletionMessageFunctionToolCallParam,
     MessageChatCompletionAssistantMessageParamToolCallChatCompletionMessageCustomToolCallParam,
 ]
 
@@ -536,18 +381,8 @@ class MessageChatCompletionAssistantMessageParam(TypedDict, total=False, extra_i
     tool_calls: Iterable[MessageChatCompletionAssistantMessageParamToolCall]
 
 
-class MessageChatCompletionToolMessageParamContentUnionMember1(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
-
-
 class MessageChatCompletionToolMessageParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    content: Required[Union[str, Iterable[MessageChatCompletionToolMessageParamContentUnionMember1]]]
+    content: Required[Union[str, Iterable[ChatCompletionContentPartTextParam]]]
 
     role: Required[Literal["tool"]]
 
@@ -562,85 +397,15 @@ class MessageChatCompletionFunctionMessageParam(TypedDict, total=False, extra_it
     role: Required[Literal["function"]]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartTextParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParamAudioURL(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """
-    Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-    """
-
-    text: Required[str]
-
-    type: Required[Literal["text"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    url: Required[str]
-
-    detail: Literal["auto", "low", "high"]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """Learn about [image inputs](https://platform.openai.com/docs/guides/vision)."""
-
-    image_url: Required[
-        MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParamImageURL
-    ]
-
-    type: Required[Literal["image_url"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    data: Required[str]
-
-    format: Required[Literal["wav", "mp3"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    """Learn about [audio inputs](https://platform.openai.com/docs/guides/audio)."""
-
-    input_audio: Required[
-        MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParamInputAudio
-    ]
-
-    type: Required[Literal["input_audio"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1FileFile(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    file_data: str
-
-    file_id: str
-
-    filename: str
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1File(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
-    """
-
-    file: Required[MessageCustomChatCompletionMessageParamContentUnionMember1FileFile]
-
-    type: Required[Literal["file"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParamAudioURL(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     url: Required[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     audio_url: Required[
         MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParamAudioURL
     ]
@@ -648,15 +413,15 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionCo
     type: Required[Literal["audio_url"]]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParamVideoURL(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParamVideoURL(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     url: Required[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     type: Required[Literal["video_url"]]
 
     video_url: Required[
@@ -664,17 +429,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionCo
     ]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleImageParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
-    refusal: Required[str]
-
-    type: Required[Literal["refusal"]]
-
-
-class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleImageParam(
-    TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """
     A simpler version of the param that only accepts a plain image_url.
     This is supported by OpenAI API, although it is not documented.
@@ -690,9 +447,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatComple
     uuid: Optional[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageEmbedsParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageEmbedsParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     type: Required[Literal["image_embeds"]]
 
     image_embeds: Union[str, Dict[str, str], None]
@@ -700,9 +457,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionCo
     uuid: Optional[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioEmbedsParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioEmbedsParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     type: Required[Literal["audio_embeds"]]
 
     audio_embeds: Union[str, Dict[str, str], None]
@@ -710,9 +467,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionCo
     uuid: Optional[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleAudioParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleAudioParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """A simpler version of the param that only accepts a plain audio_url.
 
     Example:
@@ -724,9 +481,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatComple
     audio_url: Optional[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleVideoParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleVideoParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """A simpler version of the param that only accepts a plain audio_url.
 
     Example:
@@ -740,9 +497,9 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatComple
     video_url: Optional[str]
 
 
-class MessageCustomChatCompletionMessageParamContentUnionMember1CustomThinkCompletionContentParam(
+class MessageCustomChatCompletionMessageParamContentUnionMember1CustomThinkCompletionContentParam(  # type: ignore[call-arg]
     TypedDict, total=False, extra_items=object
-):  # type: ignore[call-arg]
+):
     """A Think Completion Content Param that accepts a plain text and a boolean.
 
     Example:
@@ -761,13 +518,13 @@ class MessageCustomChatCompletionMessageParamContentUnionMember1CustomThinkCompl
 
 
 MessageCustomChatCompletionMessageParamContentUnionMember1: TypeAlias = Union[
-    MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartTextParam,
-    MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageParam,
-    MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartInputAudioParam,
-    MessageCustomChatCompletionMessageParamContentUnionMember1File,
+    ChatCompletionContentPartTextParam,
+    ChatCompletionContentPartImageParam,
+    ChatCompletionContentPartAudioParam,
+    FileParam,
     MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioParam,
     MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartVideoParam,
-    MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartRefusalParam,
+    ChatCompletionContentPartRefusalParam,
     MessageCustomChatCompletionMessageParamContentUnionMember1CustomChatCompletionContentSimpleImageParam,
     MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartImageEmbedsParam,
     MessageCustomChatCompletionMessageParamContentUnionMember1ChatCompletionContentPartAudioEmbedsParam,
@@ -776,25 +533,6 @@ MessageCustomChatCompletionMessageParamContentUnionMember1: TypeAlias = Union[
     str,
     MessageCustomChatCompletionMessageParamContentUnionMember1CustomThinkCompletionContentParam,
 ]
-
-
-class MessageCustomChatCompletionMessageParamToolCallFunction(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """The function that the model called."""
-
-    arguments: Required[str]
-
-    name: Required[str]
-
-
-class MessageCustomChatCompletionMessageParamToolCall(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A call to a function tool created by the model."""
-
-    id: Required[str]
-
-    function: Required[MessageCustomChatCompletionMessageParamToolCallFunction]
-    """The function that the model called."""
-
-    type: Required[Literal["function"]]
 
 
 class MessageCustomChatCompletionMessageParamToolFunction(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
@@ -828,28 +566,9 @@ class MessageCustomChatCompletionMessageParam(TypedDict, total=False, extra_item
 
     tool_call_id: Optional[str]
 
-    tool_calls: Optional[Iterable[MessageCustomChatCompletionMessageParamToolCall]]
+    tool_calls: Optional[Iterable[ChatCompletionMessageFunctionToolCallParam]]
 
     tools: Optional[Iterable[MessageCustomChatCompletionMessageParamTool]]
-
-
-class MessageMessageAuthor(TypedDict, total=False):
-    role: Required[Literal["user", "assistant", "system", "developer", "tool"]]
-    """The role of a message author (mirrors `chat::Role`)."""
-
-    name: Optional[str]
-
-
-class MessageMessage(TypedDict, total=False):
-    author: Required[MessageMessageAuthor]
-
-    channel: Optional[str]
-
-    content: Iterable[object]
-
-    content_type: Optional[str]
-
-    recipient: Optional[str]
 
 
 Message: TypeAlias = Union[
@@ -860,7 +579,7 @@ Message: TypeAlias = Union[
     MessageChatCompletionToolMessageParam,
     MessageChatCompletionFunctionMessageParam,
     MessageCustomChatCompletionMessageParam,
-    MessageMessage,
+    MessageParam,
 ]
 
 
