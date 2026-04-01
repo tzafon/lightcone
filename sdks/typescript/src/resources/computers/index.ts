@@ -5,7 +5,6 @@ export {
   type ActionResult,
   type ComputerAction,
   type ComputerResponse,
-  type V2GoBackendInternalTypesPageContext,
   type ComputerListResponse,
   type ComputerBatchResponse,
   type ComputerKeepaliveResponse,

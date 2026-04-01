@@ -1,6 +1,7 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 import { APIResource } from '../core/resource';
+import * as ChatAPI from './chat';
 import { APIPromise } from '../core/api-promise';
 import { RequestOptions } from '../internal/request-options';
 
@@ -10,6 +11,144 @@ export class Chat extends APIResource {
    */
   createCompletion(body: ChatCreateCompletionParams, options?: RequestOptions): APIPromise<unknown> {
     return this._client.post('/v1/chat/completions', { body, ...options });
+  }
+}
+
+/**
+ * Learn about [audio inputs](https://platform.openai.com/docs/guides/audio).
+ */
+export interface ChatCompletionContentPartAudio {
+  input_audio: ChatCompletionContentPartAudio.InputAudio;
+
+  type: 'input_audio';
+
+  [k: string]: unknown;
+}
+
+export namespace ChatCompletionContentPartAudio {
+  export interface InputAudio {
+    data: string;
+
+    format: 'wav' | 'mp3';
+
+    [k: string]: unknown;
+  }
+}
+
+/**
+ * Learn about [image inputs](https://platform.openai.com/docs/guides/vision).
+ */
+export interface ChatCompletionContentPartImage {
+  image_url: ChatCompletionContentPartImage.ImageURL;
+
+  type: 'image_url';
+
+  [k: string]: unknown;
+}
+
+export namespace ChatCompletionContentPartImage {
+  export interface ImageURL {
+    url: string;
+
+    detail?: 'auto' | 'low' | 'high';
+
+    [k: string]: unknown;
+  }
+}
+
+export interface ChatCompletionContentPartRefusal {
+  refusal: string;
+
+  type: 'refusal';
+
+  [k: string]: unknown;
+}
+
+/**
+ * Learn about
+ * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+ */
+export interface ChatCompletionContentPartText {
+  text: string;
+
+  type: 'text';
+
+  [k: string]: unknown;
+}
+
+/**
+ * A call to a function tool created by the model.
+ */
+export interface ChatCompletionMessageFunctionToolCall {
+  id: string;
+
+  /**
+   * The function that the model called.
+   */
+  function: ChatCompletionMessageFunctionToolCall.Function;
+
+  type: 'function';
+
+  [k: string]: unknown;
+}
+
+export namespace ChatCompletionMessageFunctionToolCall {
+  /**
+   * The function that the model called.
+   */
+  export interface Function {
+    arguments: string;
+
+    name: string;
+
+    [k: string]: unknown;
+  }
+}
+
+/**
+ * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text
+ * generation.
+ */
+export interface File {
+  file: File.File;
+
+  type: 'file';
+
+  [k: string]: unknown;
+}
+
+export namespace File {
+  export interface File {
+    file_data?: string;
+
+    file_id?: string;
+
+    filename?: string;
+
+    [k: string]: unknown;
+  }
+}
+
+export interface Message {
+  author: Message.Author;
+
+  channel?: string | null;
+
+  content?: Array<unknown>;
+
+  content_type?: string | null;
+
+  recipient?: string | null;
+}
+
+export namespace Message {
+  export interface Author {
+    /**
+     * The role of a message author (mirrors `chat::Role`).
+     */
+    role: 'user' | 'assistant' | 'system' | 'developer' | 'tool';
+
+    name?: string | null;
   }
 }
 
@@ -24,7 +163,7 @@ export interface ChatCreateCompletionParams {
     | ChatCreateCompletionParams.ChatCompletionToolMessageParam
     | ChatCreateCompletionParams.ChatCompletionFunctionMessageParam
     | ChatCreateCompletionParams.CustomChatCompletionMessageParam
-    | ChatCreateCompletionParams.Message
+    | Message
   >;
 
   /**
@@ -239,7 +378,7 @@ export namespace ChatCreateCompletionParams {
    * replace the previous `system` messages.
    */
   export interface ChatCompletionDeveloperMessageParam {
-    content: string | Array<ChatCompletionDeveloperMessageParam.UnionMember1>;
+    content: string | Array<ChatAPI.ChatCompletionContentPartText>;
 
     role: 'developer';
 
@@ -248,47 +387,19 @@ export namespace ChatCreateCompletionParams {
     [k: string]: unknown;
   }
 
-  export namespace ChatCompletionDeveloperMessageParam {
-    /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface UnionMember1 {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
-  }
-
   /**
    * Developer-provided instructions that the model should follow, regardless of
    * messages sent by the user. With o1 models and newer, use `developer` messages
    * for this purpose instead.
    */
   export interface ChatCompletionSystemMessageParam {
-    content: string | Array<ChatCompletionSystemMessageParam.UnionMember1>;
+    content: string | Array<ChatAPI.ChatCompletionContentPartText>;
 
     role: 'system';
 
     name?: string;
 
     [k: string]: unknown;
-  }
-
-  export namespace ChatCompletionSystemMessageParam {
-    /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface UnionMember1 {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
   }
 
   /**
@@ -299,10 +410,10 @@ export namespace ChatCreateCompletionParams {
     content:
       | string
       | Array<
-          | ChatCompletionUserMessageParam.ChatCompletionContentPartTextParam
-          | ChatCompletionUserMessageParam.ChatCompletionContentPartImageParam
-          | ChatCompletionUserMessageParam.ChatCompletionContentPartInputAudioParam
-          | ChatCompletionUserMessageParam.File
+          | ChatAPI.ChatCompletionContentPartText
+          | ChatAPI.ChatCompletionContentPartImage
+          | ChatAPI.ChatCompletionContentPartAudio
+          | ChatAPI.File
         >;
 
     role: 'user';
@@ -310,86 +421,6 @@ export namespace ChatCreateCompletionParams {
     name?: string;
 
     [k: string]: unknown;
-  }
-
-  export namespace ChatCompletionUserMessageParam {
-    /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface ChatCompletionContentPartTextParam {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
-
-    /**
-     * Learn about [image inputs](https://platform.openai.com/docs/guides/vision).
-     */
-    export interface ChatCompletionContentPartImageParam {
-      image_url: ChatCompletionContentPartImageParam.ImageURL;
-
-      type: 'image_url';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ChatCompletionContentPartImageParam {
-      export interface ImageURL {
-        url: string;
-
-        detail?: 'auto' | 'low' | 'high';
-
-        [k: string]: unknown;
-      }
-    }
-
-    /**
-     * Learn about [audio inputs](https://platform.openai.com/docs/guides/audio).
-     */
-    export interface ChatCompletionContentPartInputAudioParam {
-      input_audio: ChatCompletionContentPartInputAudioParam.InputAudio;
-
-      type: 'input_audio';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ChatCompletionContentPartInputAudioParam {
-      export interface InputAudio {
-        data: string;
-
-        format: 'wav' | 'mp3';
-
-        [k: string]: unknown;
-      }
-    }
-
-    /**
-     * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text
-     * generation.
-     */
-    export interface File {
-      file: File.File;
-
-      type: 'file';
-
-      [k: string]: unknown;
-    }
-
-    export namespace File {
-      export interface File {
-        file_data?: string;
-
-        file_id?: string;
-
-        filename?: string;
-
-        [k: string]: unknown;
-      }
-    }
   }
 
   /**
@@ -406,10 +437,7 @@ export namespace ChatCreateCompletionParams {
 
     content?:
       | string
-      | Array<
-          | ChatCompletionAssistantMessageParam.ChatCompletionContentPartTextParam
-          | ChatCompletionAssistantMessageParam.ChatCompletionContentPartRefusalParam
-        >
+      | Array<ChatAPI.ChatCompletionContentPartText | ChatAPI.ChatCompletionContentPartRefusal>
       | null;
 
     /**
@@ -425,7 +453,7 @@ export namespace ChatCreateCompletionParams {
     refusal?: string | null;
 
     tool_calls?: Array<
-      | ChatCompletionAssistantMessageParam.ChatCompletionMessageFunctionToolCallParam
+      | ChatAPI.ChatCompletionMessageFunctionToolCall
       | ChatCompletionAssistantMessageParam.ChatCompletionMessageCustomToolCallParam
     >;
 
@@ -444,26 +472,6 @@ export namespace ChatCreateCompletionParams {
     }
 
     /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface ChatCompletionContentPartTextParam {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
-
-    export interface ChatCompletionContentPartRefusalParam {
-      refusal: string;
-
-      type: 'refusal';
-
-      [k: string]: unknown;
-    }
-
-    /**
      * Deprecated and replaced by `tool_calls`.
      *
      * The name and arguments of a function that should be called, as generated by the
@@ -475,35 +483,6 @@ export namespace ChatCreateCompletionParams {
       name: string;
 
       [k: string]: unknown;
-    }
-
-    /**
-     * A call to a function tool created by the model.
-     */
-    export interface ChatCompletionMessageFunctionToolCallParam {
-      id: string;
-
-      /**
-       * The function that the model called.
-       */
-      function: ChatCompletionMessageFunctionToolCallParam.Function;
-
-      type: 'function';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ChatCompletionMessageFunctionToolCallParam {
-      /**
-       * The function that the model called.
-       */
-      export interface Function {
-        arguments: string;
-
-        name: string;
-
-        [k: string]: unknown;
-      }
     }
 
     /**
@@ -537,27 +516,13 @@ export namespace ChatCreateCompletionParams {
   }
 
   export interface ChatCompletionToolMessageParam {
-    content: string | Array<ChatCompletionToolMessageParam.UnionMember1>;
+    content: string | Array<ChatAPI.ChatCompletionContentPartText>;
 
     role: 'tool';
 
     tool_call_id: string;
 
     [k: string]: unknown;
-  }
-
-  export namespace ChatCompletionToolMessageParam {
-    /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface UnionMember1 {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
   }
 
   export interface ChatCompletionFunctionMessageParam {
@@ -579,13 +544,13 @@ export namespace ChatCreateCompletionParams {
     content?:
       | string
       | Array<
-          | CustomChatCompletionMessageParam.ChatCompletionContentPartTextParam
-          | CustomChatCompletionMessageParam.ChatCompletionContentPartImageParam
-          | CustomChatCompletionMessageParam.ChatCompletionContentPartInputAudioParam
-          | CustomChatCompletionMessageParam.File
+          | ChatAPI.ChatCompletionContentPartText
+          | ChatAPI.ChatCompletionContentPartImage
+          | ChatAPI.ChatCompletionContentPartAudio
+          | ChatAPI.File
           | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioParam
           | CustomChatCompletionMessageParam.ChatCompletionContentPartVideoParam
-          | CustomChatCompletionMessageParam.ChatCompletionContentPartRefusalParam
+          | ChatAPI.ChatCompletionContentPartRefusal
           | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleImageParam
           | CustomChatCompletionMessageParam.ChatCompletionContentPartImageEmbedsParam
           | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioEmbedsParam
@@ -601,7 +566,7 @@ export namespace ChatCreateCompletionParams {
 
     tool_call_id?: string | null;
 
-    tool_calls?: Array<CustomChatCompletionMessageParam.ToolCall> | null;
+    tool_calls?: Array<ChatAPI.ChatCompletionMessageFunctionToolCall> | null;
 
     tools?: Array<CustomChatCompletionMessageParam.Tool> | null;
 
@@ -609,84 +574,6 @@ export namespace ChatCreateCompletionParams {
   }
 
   export namespace CustomChatCompletionMessageParam {
-    /**
-     * Learn about
-     * [text inputs](https://platform.openai.com/docs/guides/text-generation).
-     */
-    export interface ChatCompletionContentPartTextParam {
-      text: string;
-
-      type: 'text';
-
-      [k: string]: unknown;
-    }
-
-    /**
-     * Learn about [image inputs](https://platform.openai.com/docs/guides/vision).
-     */
-    export interface ChatCompletionContentPartImageParam {
-      image_url: ChatCompletionContentPartImageParam.ImageURL;
-
-      type: 'image_url';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ChatCompletionContentPartImageParam {
-      export interface ImageURL {
-        url: string;
-
-        detail?: 'auto' | 'low' | 'high';
-
-        [k: string]: unknown;
-      }
-    }
-
-    /**
-     * Learn about [audio inputs](https://platform.openai.com/docs/guides/audio).
-     */
-    export interface ChatCompletionContentPartInputAudioParam {
-      input_audio: ChatCompletionContentPartInputAudioParam.InputAudio;
-
-      type: 'input_audio';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ChatCompletionContentPartInputAudioParam {
-      export interface InputAudio {
-        data: string;
-
-        format: 'wav' | 'mp3';
-
-        [k: string]: unknown;
-      }
-    }
-
-    /**
-     * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text
-     * generation.
-     */
-    export interface File {
-      file: File.File;
-
-      type: 'file';
-
-      [k: string]: unknown;
-    }
-
-    export namespace File {
-      export interface File {
-        file_data?: string;
-
-        file_id?: string;
-
-        filename?: string;
-
-        [k: string]: unknown;
-      }
-    }
-
     export interface ChatCompletionContentPartAudioParam {
       audio_url: ChatCompletionContentPartAudioParam.AudioURL;
 
@@ -717,14 +604,6 @@ export namespace ChatCreateCompletionParams {
 
         [k: string]: unknown;
       }
-    }
-
-    export interface ChatCompletionContentPartRefusalParam {
-      refusal: string;
-
-      type: 'refusal';
-
-      [k: string]: unknown;
     }
 
     /**
@@ -802,35 +681,6 @@ export namespace ChatCreateCompletionParams {
     }
 
     /**
-     * A call to a function tool created by the model.
-     */
-    export interface ToolCall {
-      id: string;
-
-      /**
-       * The function that the model called.
-       */
-      function: ToolCall.Function;
-
-      type: 'function';
-
-      [k: string]: unknown;
-    }
-
-    export namespace ToolCall {
-      /**
-       * The function that the model called.
-       */
-      export interface Function {
-        arguments: string;
-
-        name: string;
-
-        [k: string]: unknown;
-      }
-    }
-
-    /**
      * A function tool that can be used to generate a response.
      */
     export interface Tool {
@@ -853,29 +703,6 @@ export namespace ChatCreateCompletionParams {
 
         [k: string]: unknown;
       }
-    }
-  }
-
-  export interface Message {
-    author: Message.Author;
-
-    channel?: string | null;
-
-    content?: Array<unknown>;
-
-    content_type?: string | null;
-
-    recipient?: string | null;
-  }
-
-  export namespace Message {
-    export interface Author {
-      /**
-       * The role of a message author (mirrors `chat::Role`).
-       */
-      role: 'user' | 'assistant' | 'system' | 'developer' | 'tool';
-
-      name?: string | null;
     }
   }
 
@@ -1015,6 +842,13 @@ export namespace ChatCreateCompletionParams {
 
 export declare namespace Chat {
   export {
+    type ChatCompletionContentPartAudio as ChatCompletionContentPartAudio,
+    type ChatCompletionContentPartImage as ChatCompletionContentPartImage,
+    type ChatCompletionContentPartRefusal as ChatCompletionContentPartRefusal,
+    type ChatCompletionContentPartText as ChatCompletionContentPartText,
+    type ChatCompletionMessageFunctionToolCall as ChatCompletionMessageFunctionToolCall,
+    type File as File,
+    type Message as Message,
     type ChatCreateCompletionResponse as ChatCreateCompletionResponse,
     type ChatCreateCompletionParams as ChatCreateCompletionParams,
   };

@@ -1,6 +1,6 @@
 {
   "name": "@tzafon/lightcone",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "description": "The official TypeScript library for the Lightcone API",
   "author": "Lightcone <support@tzafon.ai>",
   "types": "dist/index.d.ts",

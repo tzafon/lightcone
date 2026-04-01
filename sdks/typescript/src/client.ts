@@ -17,18 +17,51 @@ import * as Errors from './core/error';
 import * as Uploads from './core/uploads';
 import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
-import { Chat, ChatCreateCompletionParams, ChatCreateCompletionResponse } from './resources/chat';
+import {
+  Chat,
+  ChatCompletionContentPartAudio,
+  ChatCompletionContentPartImage,
+  ChatCompletionContentPartRefusal,
+  ChatCompletionContentPartText,
+  ChatCompletionMessageFunctionToolCall,
+  ChatCreateCompletionParams,
+  ChatCreateCompletionResponse,
+  File,
+  Message,
+} from './resources/chat';
 import { ModelListResponse, Models } from './resources/models';
 import {
-  ContentBlock,
+  ActionClick,
+  ActionDoubleClick,
+  ActionDrag,
+  ActionFind,
+  ActionKeypress,
+  ActionMove,
+  ActionOpenPage,
+  ActionScreenshot,
+  ActionScroll,
+  ActionSearchSource,
+  ActionType,
+  ActionWait,
+  AnnotationContainerFileCitation,
+  AnnotationFileCitation,
+  AnnotationFilePath,
+  AnnotationURLCitation,
+  ComparisonFilter,
+  Logprob,
+  McpApprovalRequest,
+  OutputImage,
+  OutputLogs,
+  ResponseCancelResponse,
   ResponseCreateParams,
-  ResponseDeleteResponse,
+  ResponseCreateResponse,
+  ResponseInputFileParam,
+  ResponseInputImageParam,
+  ResponseInputTextParam,
+  ResponseRetrieveParams,
+  ResponseRetrieveResponse,
   Responses,
-  ResponsesResponse,
-  V2GoBackendInternalServiceAction,
-  V2GoBackendInternalServiceOutputItem,
-  V2GoBackendInternalServiceResponsesUsage,
-  V2GoBackendInternalServiceViewport,
+  Summary,
 } from './resources/responses';
 import { Agent } from './resources/agent/agent';
 import {
@@ -61,7 +94,6 @@ import {
   ComputerTypeParams,
   ComputerViewportParams,
   Computers,
-  V2GoBackendInternalTypesPageContext,
 } from './resources/computers/computers';
 import { type Fetch } from './internal/builtin-types';
 import { HeadersLike, NullableHeaders, buildHeaders } from './internal/headers';
@@ -765,16 +797,16 @@ export class Lightcone {
 
   agent: API.Agent = new API.Agent(this);
   computers: API.Computers = new API.Computers(this);
-  responses: API.Responses = new API.Responses(this);
   chat: API.Chat = new API.Chat(this);
   models: API.Models = new API.Models(this);
+  responses: API.Responses = new API.Responses(this);
 }
 
 Lightcone.Agent = Agent;
 Lightcone.Computers = Computers;
-Lightcone.Responses = Responses;
 Lightcone.Chat = Chat;
 Lightcone.Models = Models;
+Lightcone.Responses = Responses;
 
 export declare namespace Lightcone {
   export type RequestOptions = Opts.RequestOptions;
@@ -786,7 +818,6 @@ export declare namespace Lightcone {
     type ActionResult as ActionResult,
     type ComputerAction as ComputerAction,
     type ComputerResponse as ComputerResponse,
-    type V2GoBackendInternalTypesPageContext as V2GoBackendInternalTypesPageContext,
     type ComputerListResponse as ComputerListResponse,
     type ComputerBatchResponse as ComputerBatchResponse,
     type ComputerKeepaliveResponse as ComputerKeepaliveResponse,
@@ -815,22 +846,51 @@ export declare namespace Lightcone {
   };
 
   export {
-    Responses as Responses,
-    type ContentBlock as ContentBlock,
-    type ResponsesResponse as ResponsesResponse,
-    type V2GoBackendInternalServiceAction as V2GoBackendInternalServiceAction,
-    type V2GoBackendInternalServiceOutputItem as V2GoBackendInternalServiceOutputItem,
-    type V2GoBackendInternalServiceResponsesUsage as V2GoBackendInternalServiceResponsesUsage,
-    type V2GoBackendInternalServiceViewport as V2GoBackendInternalServiceViewport,
-    type ResponseDeleteResponse as ResponseDeleteResponse,
-    type ResponseCreateParams as ResponseCreateParams,
-  };
-
-  export {
     Chat as Chat,
+    type ChatCompletionContentPartAudio as ChatCompletionContentPartAudio,
+    type ChatCompletionContentPartImage as ChatCompletionContentPartImage,
+    type ChatCompletionContentPartRefusal as ChatCompletionContentPartRefusal,
+    type ChatCompletionContentPartText as ChatCompletionContentPartText,
+    type ChatCompletionMessageFunctionToolCall as ChatCompletionMessageFunctionToolCall,
+    type File as File,
+    type Message as Message,
     type ChatCreateCompletionResponse as ChatCreateCompletionResponse,
     type ChatCreateCompletionParams as ChatCreateCompletionParams,
   };
 
   export { Models as Models, type ModelListResponse as ModelListResponse };
+
+  export {
+    Responses as Responses,
+    type ActionClick as ActionClick,
+    type ActionDoubleClick as ActionDoubleClick,
+    type ActionDrag as ActionDrag,
+    type ActionFind as ActionFind,
+    type ActionKeypress as ActionKeypress,
+    type ActionMove as ActionMove,
+    type ActionOpenPage as ActionOpenPage,
+    type ActionScreenshot as ActionScreenshot,
+    type ActionScroll as ActionScroll,
+    type ActionSearchSource as ActionSearchSource,
+    type ActionType as ActionType,
+    type ActionWait as ActionWait,
+    type AnnotationContainerFileCitation as AnnotationContainerFileCitation,
+    type AnnotationFileCitation as AnnotationFileCitation,
+    type AnnotationFilePath as AnnotationFilePath,
+    type AnnotationURLCitation as AnnotationURLCitation,
+    type ComparisonFilter as ComparisonFilter,
+    type Logprob as Logprob,
+    type McpApprovalRequest as McpApprovalRequest,
+    type OutputImage as OutputImage,
+    type OutputLogs as OutputLogs,
+    type ResponseInputFileParam as ResponseInputFileParam,
+    type ResponseInputImageParam as ResponseInputImageParam,
+    type ResponseInputTextParam as ResponseInputTextParam,
+    type Summary as Summary,
+    type ResponseCreateResponse as ResponseCreateResponse,
+    type ResponseRetrieveResponse as ResponseRetrieveResponse,
+    type ResponseCancelResponse as ResponseCancelResponse,
+    type ResponseCreateParams as ResponseCreateParams,
+    type ResponseRetrieveParams as ResponseRetrieveParams,
+  };
 }
