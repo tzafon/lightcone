@@ -6,6 +6,7 @@ Call:   curl -N -X POST http://localhost:8000/tasks/stream \
           -d '{"instruction": "Go to wikipedia.org and search for Alan Turing"}'
 """
 
+import asyncio
 import json
 import os
 from collections.abc import AsyncIterator
@@ -32,19 +33,25 @@ class TaskRequest(BaseModel):
     max_steps: int = 50
 
 
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
+
+
 def execute_action(computer, action):
     """Execute a model action on the computer session."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "triple_click":
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "right_click":
-        computer.right_click(action.x, action.y)
+        computer.right_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -57,20 +64,22 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "hscroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
     elif t == "drag":
-        computer.drag(action.x, action.y, action.end_x, action.end_y)
+        computer.drag(
+            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
+        )
     elif t == "wait":
         computer.wait(2)
 
@@ -91,13 +100,15 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
         response = client.responses.create(
             model="tzafon.northstar-cua-fast",
             tools=[TOOL],
-            input=[{
-                "role": "user",
-                "content": [
-                    {"type": "input_text", "text": req.instruction},
-                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                ],
-            }],
+            input=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": req.instruction},
+                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                    ],
+                }
+            ],
         )
 
         step = 0
@@ -113,10 +124,13 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
             yield sse("action", {"step": step, "type": action.type})
 
             if action.type in ("terminate", "done", "answer"):
-                yield sse("completed", {
-                    "step": step,
-                    "result": action.result or action.text or action.status,
-                })
+                yield sse(
+                    "completed",
+                    {
+                        "step": step,
+                        "result": action.result or action.text or action.status,
+                    },
+                )
                 return
 
             execute_action(computer, action)
@@ -129,16 +143,46 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
                 model="tzafon.northstar-cua-fast",
                 previous_response_id=response.id,
                 tools=[TOOL],
-                input=[{
-                    "type": "computer_call_output",
-                    "call_id": computer_call.call_id,
-                    "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                }],
+                input=[
+                    {
+                        "type": "computer_call_output",
+                        "call_id": computer_call.call_id,
+                        "output": {
+                            "type": "input_image",
+                            "image_url": screenshot_url,
+                            "detail": "auto",
+                        },
+                    }
+                ],
             )
 
         yield sse("completed", {"step": step + 1})
 
 
+async def run_smoke_test() -> None:
+    req = TaskRequest(
+        instruction=os.getenv("LIGHTCONE_TASK", "Go to wikipedia.org and search for Alan Turing"),
+        start_url=os.getenv("LIGHTCONE_START_URL") or None,
+        max_steps=int(os.getenv("LIGHTCONE_MAX_STEPS", "6")),
+    )
+    max_events = int(os.getenv("LIGHTCONE_MAX_EVENTS", "8"))
+    count = 0
+    async for event in run_loop(req):
+        print(event.strip())
+        count += 1
+        if count >= max_events:
+            break
+
+
 @app.post("/tasks/stream")
 async def stream_task(req: TaskRequest):
     return StreamingResponse(run_loop(req), media_type="text/event-stream")
+
+
+if __name__ == "__main__" and os.getenv("LIGHTCONE_STREAMING_SMOKE", "").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}:
+    asyncio.run(run_smoke_test())

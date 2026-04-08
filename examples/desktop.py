@@ -17,26 +17,30 @@ TOOL = {
     "environment": "desktop",
 }
 
-TASK = (
-    "Open the terminal. Run 'uname -a' to check the system info, "
-    "then run 'df -h' to check disk usage. Report back what you find."
-)
+TASK = """Open the terminal. Run 'uname -a' to check the system info,
+then run 'df -h' to check disk usage. Report back what you find."""
 MAX_STEPS = 30
+
+
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
 
 
 def execute_action(computer, action):
     """Execute a model action on the computer."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "triple_click":
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "right_click":
-        computer.right_click(action.x, action.y)
+        computer.right_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -49,20 +53,22 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "hscroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
     elif t == "drag":
-        computer.drag(action.x, action.y, action.end_x, action.end_y)
+        computer.drag(
+            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
+        )
     elif t == "wait":
         computer.wait(2)
 
@@ -73,13 +79,15 @@ with client.computer.create(kind="desktop") as computer:
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": TASK},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": TASK},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
 
     for step in range(MAX_STEPS):
@@ -115,11 +123,17 @@ with client.computer.create(kind="desktop") as computer:
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
             tools=[TOOL],
-            input=[{
-                "type": "computer_call_output",
-                "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            }],
+            input=[
+                {
+                    "type": "computer_call_output",
+                    "call_id": computer_call.call_id,
+                    "output": {
+                        "type": "input_image",
+                        "image_url": screenshot_url,
+                        "detail": "auto",
+                    },
+                }
+            ],
         )
 
     print(f"Final state: {screenshot_url}")

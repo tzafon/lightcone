@@ -14,9 +14,7 @@ import os
 
 from tzafon import Lightcone
 
-lc = Lightcone(
-    api_key=os.environ["TZAFON_API_KEY"]
-)
+lc = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
 URL = sys.argv[1] if len(sys.argv) > 1 else "https://wagyu-finder-sf.lovable.app"
 DESCRIPTION = sys.argv[2] if len(sys.argv) > 2 else "a web application"
@@ -72,11 +70,7 @@ def structural_crawl(computer):
     # Check title
     title_match = re.search(r"<title>(.*?)</title>", html, re.IGNORECASE)
     title = title_match.group(1).strip() if title_match else ""
-    if (
-        not title
-        or title in ("Vite + React", "React App")
-        or "untitled" in title.lower()
-    ):
+    if not title or title in ("Vite + React", "React App") or "untitled" in title.lower():
         findings.append(f"Page title is generic/placeholder: '{title}'")
 
     # Count links
@@ -94,9 +88,7 @@ def structural_crawl(computer):
         findings.append(f"Dead link: '{text}' → '{href}'")
 
     # Count buttons
-    buttons = re.findall(
-        r"<button[^>]*>(.*?)</button>", html, re.DOTALL | re.IGNORECASE
-    )
+    buttons = re.findall(r"<button[^>]*>(.*?)</button>", html, re.DOTALL | re.IGNORECASE)
     disabled_buttons = re.findall(
         r"<button[^>]*disabled[^>]*>(.*?)</button>", html, re.DOTALL | re.IGNORECASE
     )
@@ -105,9 +97,7 @@ def structural_crawl(computer):
         findings.append(f"Disabled button: '{text}'")
 
     # Check images
-    images = re.findall(
-        r'<img\s[^>]*src=["\']([^"\']*)["\'][^>]*/?>', html, re.IGNORECASE
-    )
+    images = re.findall(r'<img\s[^>]*src=["\']([^"\']*)["\'][^>]*/?>', html, re.IGNORECASE)
     imgs_no_alt = re.findall(r"<img\s(?![^>]*alt=)[^>]*/?>", html, re.IGNORECASE)
     if imgs_no_alt:
         findings.append(f"{len(imgs_no_alt)} image(s) missing alt text")

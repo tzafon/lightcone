@@ -21,7 +21,7 @@ from pathlib import Path
 
 import httpx
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from tzafon import Lightcone
 
 client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
@@ -32,9 +32,14 @@ TOOL = {
     "display_height": 720,
     "environment": "desktop",
 }
-TASK = "Open the terminal, run 'uname -a', and tell me what operating system this is"
+TASK = """Open the terminal, run 'uname -a', and tell me what operating system this is"""
 MAX_STEPS = 20
-OUTPUT_DIR = Path("steps")
+OUTPUT_DIR = "steps"
+
+
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
 
 
 def annotate_screenshot(screenshot_url: str, action, step: int) -> Path:
@@ -43,13 +48,12 @@ def annotate_screenshot(screenshot_url: str, action, step: int) -> Path:
     img = Image.open(BytesIO(img_data))
     draw = ImageDraw.Draw(img)
 
-    # Scale from display coordinates to actual image pixels
-    scale_x = img.width / 1280
-    scale_y = img.height / 720
-
     # Draw the action
-    if action.type in ("click", "double_click", "triple_click", "right_click") and action.x is not None:
-        px, py = int(action.x * scale_x), int(action.y * scale_y)
+    if (
+        action.type in ("click", "double_click", "triple_click", "right_click")
+        and action.x is not None
+    ):
+        px, py = _px(action.x, img.width), _px(action.y, img.height)
         r = 18
         # Red crosshair
         draw.ellipse((px - r, py - r, px + r, py + r), fill="red", outline="darkred", width=3)
@@ -66,7 +70,7 @@ def annotate_screenshot(screenshot_url: str, action, step: int) -> Path:
         draw.text((10, 8), f"key: {'+'.join(action.keys)}", fill="cyan")
 
     elif action.type == "scroll" and action.x is not None:
-        px, py = int(action.x * scale_x), int(action.y * scale_y)
+        px, py = _px(action.x, img.width), _px(action.y, img.height)
         direction = "↓" if (action.scroll_y or 0) > 0 else "↑"
         draw.text((px - 10, py - 10), direction, fill="orange")
 
@@ -87,17 +91,18 @@ def annotate_screenshot(screenshot_url: str, action, step: int) -> Path:
 
 def execute_action(computer, action):
     """Execute a model action on the computer."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "triple_click":
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "right_click":
-        computer.right_click(action.x, action.y)
+        computer.right_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -106,13 +111,15 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
     elif t == "drag":
-        computer.drag(action.x, action.y, action.end_x, action.end_y)
+        computer.drag(
+            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
+        )
     elif t == "wait":
         computer.wait(2)
 
@@ -123,13 +130,15 @@ with client.computer.create(kind="desktop") as computer:
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": TASK},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": TASK},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
 
     for step in range(1, MAX_STEPS + 1):
@@ -158,11 +167,17 @@ with client.computer.create(kind="desktop") as computer:
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
             tools=[TOOL],
-            input=[{
-                "type": "computer_call_output",
-                "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            }],
+            input=[
+                {
+                    "type": "computer_call_output",
+                    "call_id": computer_call.call_id,
+                    "output": {
+                        "type": "input_image",
+                        "image_url": screenshot_url,
+                        "detail": "auto",
+                    },
+                }
+            ],
         )
 
     # Save the final state too

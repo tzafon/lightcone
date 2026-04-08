@@ -2,7 +2,7 @@
 
 With Playwright/Selenium, you'd need custom selectors for every
 site, and they'd break whenever the site redesigns. With Lightcone, Northstar
-just *reads the screen* like a human would. One script works on any site.
+just reads the screen like a human would..
 
 Demonstrates the two-phase pattern:
   Phase 1 (explore): CUA loop WITH tools — Northstar scrolls, dismisses popups, etc.
@@ -26,7 +26,7 @@ TOOL = {
     "environment": "browser",
 }
 
-# These are totally different sites with different layouts — doesn't matter.
+# Sites with different layouts
 COMPANIES = [
     {"name": "Stripe", "url": "https://stripe.com/pricing"},
     {"name": "Square", "url": "https://squareup.com/us/en/pricing"},
@@ -45,13 +45,19 @@ EXTRACT_PROMPT = """Look at this pricing page and extract the following as JSON:
 Reply with ONLY the JSON, no other text."""
 
 
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
+
+
 def execute_action(computer, action):
     """Execute a single model action on the computer session."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -60,8 +66,8 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
@@ -96,16 +102,18 @@ def research_page(computer, url, prompt, max_explore_steps=10):
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {
-                    "type": "input_text",
-                    "text": "Scroll down slowly. Dismiss any popups or cookie banners. Stop when you can see transaction fees or per-payment pricing.",
-                },
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": "Scroll down slowly. Dismiss any popups or cookie banners. Stop when you can see transaction fees or per-payment pricing.",
+                    },
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
 
     for step in range(max_explore_steps):
@@ -136,11 +144,17 @@ def research_page(computer, url, prompt, max_explore_steps=10):
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
             tools=[TOOL],
-            input=[{
-                "type": "computer_call_output",
-                "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            }],
+            input=[
+                {
+                    "type": "computer_call_output",
+                    "call_id": computer_call.call_id,
+                    "output": {
+                        "type": "input_image",
+                        "image_url": screenshot_url,
+                        "detail": "auto",
+                    },
+                }
+            ],
         )
 
     # --- Phase 2: Extract structured data (no tools = text response) ---
@@ -148,13 +162,15 @@ def research_page(computer, url, prompt, max_explore_steps=10):
     screenshot_url = computer.get_screenshot_url(computer.screenshot())
     extraction = client.responses.create(
         model="tzafon.northstar-cua-fast",
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": prompt},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": prompt},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
         # No tools — forces a text response instead of actions.
     )
 
@@ -174,7 +190,12 @@ def main():
             print(f"\n--- Researching {company['name']} ---")
             print(f"    URL: {company['url']}")
 
-            raw = research_page(computer, company["url"], EXTRACT_PROMPT)
+            raw = research_page(
+                computer,
+                company["url"],
+                EXTRACT_PROMPT,
+                max_explore_steps=int(os.getenv("LIGHTCONE_MAX_EXPLORE_STEPS", "10")),
+            )
 
             if raw:
                 # Try to parse as JSON; if the model wrapped it in markdown, strip that.
@@ -182,9 +203,11 @@ def main():
                 try:
                     data = json.loads(cleaned)
                     results.append(data)
-                    print(f"    -> {data.get('main_product', '?')}: "
-                          f"{data.get('transaction_fee_percent', '?')} + "
-                          f"{data.get('per_transaction_fee', '?')}/txn")
+                    print(
+                        f"    -> {data.get('main_product', '?')}: "
+                        f"{data.get('transaction_fee_percent', '?')} + "
+                        f"{data.get('per_transaction_fee', '?')}/txn"
+                    )
                 except json.JSONDecodeError:
                     print(f"    -> Raw response: {raw[:200]}")
                     results.append({"company": company["name"], "raw": raw})

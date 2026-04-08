@@ -1,149 +1,130 @@
 """
-Run the coordinate scaling example and save before/after screenshots.
+Demonstrate coordinate denormalization: Northstar outputs coordinates in a
+0–1000 space; your code converts them to pixel coordinates before clicking.
+
+Run:
+    export TZAFON_API_KEY=...
+    python examples/coordinate_scaling.py
+
+Output:
+    steps/coordinate-scaling-smoke/coordinates-before.png   (original screenshot)
+    steps/coordinate-scaling-smoke/coordinates-annotated.png (crosshair overlay)
+    steps/coordinate-scaling-smoke/coordinates-after.png    (after clicking)
 """
 
-from tzafon import Lightcone
-from PIL import Image, ImageDraw, ImageFont
-import base64
-import json
 import io
+import os
+from pathlib import Path
 
-SYSTEM_PROMPT = """\
-You are controlling a computer via screenshots and actions.
+import urllib.request
+from PIL import Image, ImageDraw
+from tzafon import Lightcone
 
-Screen information:
-- Viewport size: {viewport_width}x{viewport_height} pixels.
-- Coordinates range from (0,0) at the top-left to (999,999) at the bottom-right.
-- All coordinate values must be integers between 0 and 999 inclusive.
+client = Lightcone()
 
-When you want to click on something:
-- Look at the screenshot to find the element.
-- Return the coordinates in the 0-999 range. They will be scaled to actual pixels.
-- Click elements in their CENTER, not on edges.
+TOOL = {
+    "type": "computer_use",
+    "display_width": int(os.getenv("LIGHTCONE_VIEWPORT_WIDTH", "1280")),
+    "display_height": int(os.getenv("LIGHTCONE_VIEWPORT_HEIGHT", "720")),
+    "environment": "browser",
+}
 
-Respond with JSON: {{"action": "click", "coordinate": [x, y], "reason": "..."}}
-"""
-
-
-def scale_coordinates(model_x, model_y, viewport_width, viewport_height):
-    x = int(model_x * (viewport_width - 1) / 999)
-    y = int(model_y * (viewport_height - 1) / 999)
-    return x, y
+OUTPUT_DIR = Path(os.getenv("LIGHTCONE_COORDINATE_OUTPUT_DIR", "steps/coordinate-scaling"))
 
 
-def annotate_screenshot(image_bytes, pixel_x, pixel_y, model_x, model_y, output_path):
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
+
+
+def annotate(image_bytes, model_x, model_y, pixel_x, pixel_y, output_path):
+    """Draw a red crosshair on the screenshot to visualize the click target."""
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     draw = ImageDraw.Draw(img)
-
     r = 15
     draw.ellipse((pixel_x - r, pixel_y - r, pixel_x + r, pixel_y + r), outline="red", width=3)
     draw.line((pixel_x - r, pixel_y, pixel_x + r, pixel_y), fill="red", width=2)
     draw.line((pixel_x, pixel_y - r, pixel_x, pixel_y + r), fill="red", width=2)
-
     label = f"model=({model_x},{model_y}) pixel=({pixel_x},{pixel_y})"
     draw.text((pixel_x + r + 5, pixel_y - 10), label, fill="red")
-
     img.save(output_path)
     print(f"Saved: {output_path}")
 
 
 def main():
-    VIEWPORT_WIDTH = 1280
-    VIEWPORT_HEIGHT = 720
-
-    client = Lightcone()
-    output_dir = "src/assets"
+    w, h = TOOL["display_width"], TOOL["display_height"]
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     with client.computer.create(kind="browser") as computer:
-        computer.navigate("https://en.wikipedia.org/wiki/Ada_Lovelace")
+        computer.navigate(
+            os.getenv("LIGHTCONE_START_URL", "https://en.wikipedia.org/wiki/Ada_Lovelace")
+        )
         computer.wait(4)
 
-        # Take screenshot as URL (for the API) and also download for annotation
         result = computer.screenshot()
         screenshot_url = computer.get_screenshot_url(result)
-        print(f"Screenshot URL: {screenshot_url}")
 
-        # Download the screenshot for local annotation
-        import urllib.request
         with urllib.request.urlopen(screenshot_url) as resp:
             screenshot_bytes = resp.read()
 
-        # Save the "before" screenshot
-        Image.open(io.BytesIO(screenshot_bytes)).save(f"{output_dir}/coordinates-before.png")
-        print(f"Saved: {output_dir}/coordinates-before.png")
+        before_path = OUTPUT_DIR / "coordinates-before.png"
+        Image.open(io.BytesIO(screenshot_bytes)).save(before_path)
+        print(f"Saved: {before_path}")
 
-        # Ask the model where to click
+        # Ask the model where to click. Coordinates come back in 0–1000 space.
         response = client.responses.create(
             model="tzafon.northstar-cua-fast",
-            instructions=SYSTEM_PROMPT.format(
-                viewport_width=VIEWPORT_WIDTH,
-                viewport_height=VIEWPORT_HEIGHT,
-            ),
-            input=[{
-                "role": "user",
-                "content": [
-                    {"type": "input_text", "text": "Click the search bar."},
-                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                ],
-            }],
+            tools=[TOOL],
+            input=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": os.getenv("LIGHTCONE_COORDINATE_TASK", "Click the search bar."),
+                        },
+                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                    ],
+                }
+            ],
         )
 
-        # Parse response
-        reply = None
-        for item in response.output:
-            print(f"  output item: type={item.type}")
-            if item.type == "message":
-                text = item.content[0].text
-                print(f"  raw text: {text}")
-                try:
-                    reply = json.loads(text)
-                except json.JSONDecodeError:
-                    # Try to extract JSON from the text
-                    import re
-                    m = re.search(r'\{.*\}', text, re.DOTALL)
-                    if m:
-                        reply = json.loads(m.group())
-            elif item.type == "computer_call":
-                action = item.action
-                print(f"  computer_call: type={action.type} x={getattr(action, 'x', None)} y={getattr(action, 'y', None)}")
-                # If we got a computer_call, use those coordinates directly
-                # (they're already scaled by the Responses API)
-                reply = {"coordinate": [getattr(action, 'x', 500), getattr(action, 'y', 500)], "reason": f"computer_call: {action.type}", "prescaled": True}
-
-        if not reply:
-            print("No response from model!")
+        computer_call = next(
+            (item for item in (response.output or []) if item.type == "computer_call"), None
+        )
+        if not computer_call:
+            print("No computer_call in response.")
             return
 
-        if reply.get("prescaled"):
-            # Responses API already scaled these
-            pixel_x, pixel_y = reply["coordinate"]
-            # Back-calculate model coords for the annotation
-            model_x = round(pixel_x * 999 / (VIEWPORT_WIDTH - 1))
-            model_y = round(pixel_y * 999 / (VIEWPORT_HEIGHT - 1))
-        else:
-            model_x, model_y = reply["coordinate"]
-            pixel_x, pixel_y = scale_coordinates(model_x, model_y, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        action = computer_call.action
+        model_x, model_y = action.x, action.y
+
+        # Denormalize: 0–1000 model space → pixel coordinates.
+        pixel_x = _px(model_x, w)
+        pixel_y = _px(model_y, h)
 
         print(f"Model coords: ({model_x}, {model_y})")
-        print(f"Pixel coords: ({pixel_x}, {pixel_y})")
+        print(f"Pixel coords: ({pixel_x}, {pixel_y})  [viewport {w}×{h}]")
 
-        # Save annotated "before" with crosshair
-        annotate_screenshot(
-            screenshot_bytes, pixel_x, pixel_y, model_x, model_y,
-            f"{output_dir}/coordinates-annotated.png",
+        annotate(
+            screenshot_bytes,
+            model_x,
+            model_y,
+            pixel_x,
+            pixel_y,
+            OUTPUT_DIR / "coordinates-annotated.png",
         )
 
-        # Click it
         computer.click(pixel_x, pixel_y)
         computer.wait(2)
 
-        # Take after screenshot
         after_result = computer.screenshot()
         after_url = computer.get_screenshot_url(after_result)
         with urllib.request.urlopen(after_url) as resp:
             after_bytes = resp.read()
-        Image.open(io.BytesIO(after_bytes)).save(f"{output_dir}/coordinates-after.png")
-        print(f"Saved: {output_dir}/coordinates-after.png")
+        after_path = OUTPUT_DIR / "coordinates-after.png"
+        Image.open(io.BytesIO(after_bytes)).save(after_path)
+        print(f"Saved: {after_path}")
 
     print("Done!")
 

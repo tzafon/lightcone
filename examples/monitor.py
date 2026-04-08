@@ -12,14 +12,12 @@ from tzafon import Lightcone
 
 client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
 
-URL = "https://example.com/dashboard"
+URL = os.getenv("LIGHTCONE_URL", "https://example.com/dashboard")
 INTERVAL_SECONDS = 30
 MAX_CHECKS = 100
-PROMPT = (
-    "Describe what you see on this screen. Note any errors, warnings, "
-    "unusual values, or changes from what you'd expect on a healthy dashboard. "
-    "Be concise — one paragraph."
-)
+PROMPT = """Describe what you see on this screen. Note any errors, warnings,
+unusual values, or changes from what you'd expect on a healthy dashboard.
+Be concise — one paragraph."""
 
 
 with client.computer.create(kind="browser") as computer:
@@ -38,13 +36,15 @@ with client.computer.create(kind="browser") as computer:
 
         response = client.responses.create(
             model="tzafon.northstar-cua-fast",
-            input=[{
-                "role": "user",
-                "content": [
-                    {"type": "input_text", "text": prompt},
-                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                ],
-            }],
+            input=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": prompt},
+                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                    ],
+                }
+            ],
         )
 
         # Extract the model's description (it may come as a message or reasoning).

@@ -145,21 +145,28 @@ class CuaRunner:
         start_url: str | None = None,
         computer: Any | None = None,
     ) -> RunResult:
-        context = nullcontext(computer) if computer is not None else self.client.computer.create(
-            kind=self.config.kind,
-            persistent=self.config.persistent,
-            **self.config.computer_kwargs,
+        context = (
+            nullcontext(computer)
+            if computer is not None
+            else self.client.computer.create(
+                kind=self.config.kind,
+                persistent=self.config.persistent,
+                **self.config.computer_kwargs,
+            )
         )
 
         with context as session:
             computer_id = getattr(session, "id", None)
             self._log(f"starting run kind={self.config.kind} computer_id={computer_id}")
-            self._trace("run_started", {
-                "instruction": instruction,
-                "computer_id": computer_id,
-                "config": self.config,
-                "start_url": start_url,
-            })
+            self._trace(
+                "run_started",
+                {
+                    "instruction": instruction,
+                    "computer_id": computer_id,
+                    "config": self.config,
+                    "start_url": start_url,
+                },
+            )
 
             if start_url:
                 self._log(f"navigate start_url={start_url}")
@@ -234,13 +241,16 @@ class CuaRunner:
                 decision = (
                     self.before_action(event) if self.before_action is not None else None
                 ) or ActionDecision()
-                self._trace("action_selected", {
-                    "step": step,
-                    "computer_id": computer_id,
-                    "response_id": getattr(response, "id", None),
-                    "action": action,
-                    "decision": decision,
-                })
+                self._trace(
+                    "action_selected",
+                    {
+                        "step": step,
+                        "computer_id": computer_id,
+                        "response_id": getattr(response, "id", None),
+                        "action": action,
+                        "decision": decision,
+                    },
+                )
 
                 if not decision.continue_run:
                     result = RunResult(
@@ -339,7 +349,6 @@ class CuaRunner:
             f"{getattr(action, 'text', '')}"
         )
 
-
     def _tool(self) -> dict[str, Any]:
         return {
             "type": "computer_use",
@@ -348,28 +357,31 @@ class CuaRunner:
             "environment": self.config.kind,
         }
 
-
     def _capture_screenshot(self, computer: Any) -> str | None:
         result = computer.screenshot()
         screenshot_url = computer.get_screenshot_url(result)
-        self._trace("screenshot_captured", {
-            "computer_id": getattr(computer, "id", None),
-            "screenshot_url": screenshot_url,
-        })
+        self._trace(
+            "screenshot_captured",
+            {
+                "computer_id": getattr(computer, "id", None),
+                "screenshot_url": screenshot_url,
+            },
+        )
         return screenshot_url
-
 
     def _create_initial_response(self, instruction: str, screenshot_url: str | None) -> Any:
         kwargs: dict[str, Any] = {
             "model": self.config.model,
             "tools": [self._tool()],
-            "input": [{
-                "role": "user",
-                "content": [
-                    {"type": "input_text", "text": instruction},
-                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                ],
-            }],
+            "input": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": instruction},
+                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                    ],
+                }
+            ],
             **self.config.response_kwargs,
         }
         if self.config.system_instructions:
@@ -384,16 +396,20 @@ class CuaRunner:
         screenshot_url: str | None,
         message: str | None,
     ) -> Any:
-        payload: list[dict[str, Any]] = [{
-            "type": "computer_call_output",
-            "call_id": call_id,
-            "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-        }]
+        payload: list[dict[str, Any]] = [
+            {
+                "type": "computer_call_output",
+                "call_id": call_id,
+                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+            }
+        ]
         if message:
-            payload.append({
-                "role": "user",
-                "content": [{"type": "input_text", "text": message}],
-            })
+            payload.append(
+                {
+                    "role": "user",
+                    "content": [{"type": "input_text", "text": message}],
+                }
+            )
         return self.client.responses.create(
             model=self.config.model,
             previous_response_id=response_id,
@@ -401,7 +417,6 @@ class CuaRunner:
             input=payload,
             **self.config.response_kwargs,
         )
-
 
     def _emit_messages(self, step: int, response: Any, computer_id: str) -> None:
         for item in getattr(response, "output", None) or []:
@@ -411,14 +426,20 @@ class CuaRunner:
                 if not getattr(block, "text", None):
                     continue
                 event = MessageEvent(
-                    step=step, text=block.text, response=response, computer_id=computer_id,
+                    step=step,
+                    text=block.text,
+                    response=response,
+                    computer_id=computer_id,
                 )
-                self._trace("message_received", {
-                    "step": step,
-                    "computer_id": computer_id,
-                    "response_id": getattr(response, "id", None),
-                    "text": block.text,
-                })
+                self._trace(
+                    "message_received",
+                    {
+                        "step": step,
+                        "computer_id": computer_id,
+                        "response_id": getattr(response, "id", None),
+                        "text": block.text,
+                    },
+                )
                 if self.on_message is not None:
                     self.on_message(event)
                 self._log(f"[{step}] model={block.text}")
@@ -444,21 +465,26 @@ class CuaRunner:
         return "\n".join(chunks)
 
     def _default_execute_action(self, computer: Any, action: Any) -> None:
+        w, h = self.config.display_width, self.config.display_height
+
+        def px(coord, dim):
+            return int(coord / 1000 * dim)
+
         t = action.type
         if t == "click":
-            computer.click(action.x, action.y)
+            computer.click(px(action.x, w), px(action.y, h))
         elif t == "double_click":
-            computer.double_click(action.x, action.y)
+            computer.double_click(px(action.x, w), px(action.y, h))
         elif t == "triple_click":
-            computer.click(action.x, action.y)
-            computer.click(action.x, action.y)
-            computer.click(action.x, action.y)
+            computer.click(px(action.x, w), px(action.y, h))
+            computer.click(px(action.x, w), px(action.y, h))
+            computer.click(px(action.x, w), px(action.y, h))
         elif t == "right_click":
-            computer.right_click(action.x, action.y)
+            computer.right_click(px(action.x, w), px(action.y, h))
         elif t == "type":
             # Click first to ensure the field has focus.
             if getattr(action, "x", None) is not None and getattr(action, "y", None) is not None:
-                computer.click(action.x, action.y)
+                computer.click(px(action.x, w), px(action.y, h))
             computer.type(action.text)
         elif t in ("key", "keypress"):
             computer.hotkey(action.keys)
@@ -467,33 +493,32 @@ class CuaRunner:
         elif t == "key_up":
             computer.key_up(action.keys[0])
         elif t == "scroll":
-            # Clamp deltas to display bounds.
+            # Clamp deltas; denormalize position coordinates.
             cap = self.config.scroll_max_delta
-            w, h = self.config.display_width, self.config.display_height
             computer.scroll(
                 dx=max(-cap, min(cap, action.scroll_x or 0)),
                 dy=max(-cap, min(cap, action.scroll_y or 0)),
-                x=max(0, min(w, action.x or w // 2)),
-                y=max(0, min(h, action.y or h // 2)),
+                x=max(0, min(w, px(action.x or 0, w))),
+                y=max(0, min(h, px(action.y or 0, h))),
             )
         elif t == "hscroll":
             cap = self.config.scroll_max_delta
-            w, h = self.config.display_width, self.config.display_height
             computer.scroll(
                 dx=max(-cap, min(cap, action.scroll_x or 0)),
                 dy=0,
-                x=max(0, min(w, action.x or w // 2)),
-                y=max(0, min(h, action.y or h // 2)),
+                x=max(0, min(w, px(action.x or 0, w))),
+                y=max(0, min(h, px(action.y or 0, h))),
             )
         elif t == "navigate":
             computer.navigate(action.url)
         elif t == "drag":
-            computer.drag(action.x, action.y, action.end_x, action.end_y)
+            computer.drag(
+                px(action.x, w), px(action.y, h), px(action.end_x, w), px(action.end_y, h)
+            )
         elif t == "wait":
             computer.wait(self.config.wait_action_seconds)
         else:
             raise ValueError(f"Unsupported action type: {t}")
-
 
     def _log(self, message: str) -> None:
         if self.config.print_progress:
@@ -504,7 +529,10 @@ class CuaRunner:
         details: list[str] = []
         if getattr(action, "x", None) is not None and getattr(action, "y", None) is not None:
             details.append(f"x={action.x} y={action.y}")
-        if getattr(action, "end_x", None) is not None and getattr(action, "end_y", None) is not None:
+        if (
+            getattr(action, "end_x", None) is not None
+            and getattr(action, "end_y", None) is not None
+        ):
             details.append(f"end_x={action.end_x} end_y={action.end_y}")
         if getattr(action, "url", None):
             details.append(f"url={action.url}")

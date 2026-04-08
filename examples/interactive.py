@@ -16,26 +16,34 @@ TOOL = {
     "display_height": 720,
     "environment": "browser",
 }
-TASK = "Log in to https://example.com/dashboard"
+TASK = """Log in to https://example.com/dashboard"""
 MAX_STEPS = 75
+AUTO_INPUTS = []
+FORCE_HUMAN_STEP = False
 
 # Action types that signal Northstar is stuck or needs human help.
 PAUSE_SIGNALS = {"wait", "terminate", "done", "answer"}
 
 
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
+
+
 def execute_action(computer, action):
     """Execute a model action on the computer session."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "triple_click":
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "right_click":
-        computer.right_click(action.x, action.y)
+        computer.right_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -48,26 +56,33 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "hscroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
     elif t == "drag":
-        computer.drag(action.x, action.y, action.end_x, action.end_y)
+        computer.drag(
+            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
+        )
     elif t == "wait":
         computer.wait(2)
 
 
 def ask_human(step, action, messages):
     """Pause and ask the human what to do."""
+    if AUTO_INPUTS:
+        value = str(AUTO_INPUTS.pop(0))
+        print(f"\n--- AUTO INPUT at step {step + 1}: {value!r} ---")
+        return value
+
     print(f"\n--- PAUSED at step {step + 1} ---")
     if action:
         print(f"  Last action: {action.type}")
@@ -98,13 +113,15 @@ with client.computer.create(kind="browser") as computer:
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": task},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": task},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
 
     for step in range(MAX_STEPS):
@@ -116,6 +133,7 @@ with client.computer.create(kind="browser") as computer:
         needs_human = (
             not computer_call
             or computer_call.action.type in PAUSE_SIGNALS
+            or (FORCE_HUMAN_STEP and step == 0)
         )
 
         if needs_human:
@@ -149,13 +167,15 @@ with client.computer.create(kind="browser") as computer:
             response = client.responses.create(
                 model="tzafon.northstar-cua-fast",
                 tools=[TOOL],
-                input=[{
-                    "role": "user",
-                    "content": [
-                        {"type": "input_text", "text": context},
-                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                    ],
-                }],
+                input=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "input_text", "text": context},
+                            {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                        ],
+                    }
+                ],
             )
             continue
 
@@ -174,11 +194,17 @@ with client.computer.create(kind="browser") as computer:
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
             tools=[TOOL],
-            input=[{
-                "type": "computer_call_output",
-                "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            }],
+            input=[
+                {
+                    "type": "computer_call_output",
+                    "call_id": computer_call.call_id,
+                    "output": {
+                        "type": "input_image",
+                        "image_url": screenshot_url,
+                        "detail": "auto",
+                    },
+                }
+            ],
         )
 
     print("Done.")

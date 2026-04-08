@@ -6,7 +6,7 @@
 
 <img src="northstar.svg" alt="Northstar" width="160">
 
-**Northstar CUA Fast** — 4B parameters, trained with GUI reinforcement learning
+**Northstar CUA Fast** — trained with GUI reinforcement learning
 
 [Docs](https://docs.lightcone.ai) | [API Reference](https://docs.lightcone.ai/api) | [Model](https://huggingface.co/Tzafon/Northstar-CUA-Fast) | [Pricing](https://docs.tzafon.ai/pricing) | [X (Twitter)](https://x.com/tzafon_company)
 
@@ -29,13 +29,12 @@ It recovers from mistakes, generalizes across desktop environments, and outperfo
 
 | | |
 |---|---|
-| **Parameters** | 4B |
 | **Context** | 64K tokens |
 | **Training** | GUI reinforcement learning |
 | **Input** | Text + screenshot |
 | **Output** | GUI actions — `click`, `type`, `scroll`, `key`, `drag`, ... |
-| **Coordinates** | 0–999 normalized (model) · pixel-scaled (Responses API) |
-| **Pricing** | < $1/M tokens ([details](https://docs.tzafon.ai/pricing)) |
+| **Coordinates** | 0–999 normalized — denormalize to pixels in your code |
+| **Pricing** | $1/M input · $5/M output ([details](https://docs.tzafon.ai/pricing)) |
 
 ---
 
@@ -210,7 +209,7 @@ Via the **Responses API** (`/v1/responses`), coordinates are scaled to viewport 
 
 Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop tasks.
 
-| Domain | UI-TARS 2 | Qwen3 Flash | **Northstar CUA Fast (4B)** |
+| Domain | UI-TARS 2 | Qwen3 Flash | **Northstar CUA Fast** |
 |---|---|---|---|
 | Chrome | 62.96% | 56.43% | **55.30%** |
 | Thunderbird | 73.33% | 66.67% | **62.40%** |
@@ -219,7 +218,7 @@ Evaluated on [OSWorld](https://os-world.github.io/) — 369 real-world desktop t
 | VLC | 49.94% | 34.41% | **43.87%** |
 | **Overall** | **53.1%** | 41.6% | 37.01% |
 
-> At 4B parameters, Northstar CUA Fast is competitive with open-source models at twice its size on single-app tasks. Using the EVOCUA agent harness: EVOCUA-8B averages 32.5% vs Northstar CUA Fast (RL) at 37.0%. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
+> Northstar CUA Fast is competitive with open-source models on single-app tasks. Using the EVOCUA agent harness: EVOCUA-8B averages 32.5% vs Northstar CUA Fast (RL) at 37.0%. See our [research blog](https://www.tzafon.ai/blog/training-vlm-for-cua) for training details.
 
 ---
 

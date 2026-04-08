@@ -4,6 +4,7 @@ Persistent sessions save cookies and storage state across reconnects,
 so you can log in once and run multiple tasks without re-authenticating.
 """
 
+import json
 import os
 import sys
 from tzafon import Lightcone
@@ -19,19 +20,25 @@ TOOL = {
 }
 
 
+def _px(coord, dim):
+    """Convert a 0–1000 model coordinate to a pixel coordinate."""
+    return int(coord / 1000 * dim)
+
+
 def execute_action(computer, action):
     """Execute a model action on the computer session."""
+    w, h = TOOL["display_width"], TOOL["display_height"]
     t = action.type
     if t == "click":
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "double_click":
-        computer.double_click(action.x, action.y)
+        computer.double_click(_px(action.x, w), _px(action.y, h))
     elif t == "triple_click":
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
-        computer.click(action.x, action.y)
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
+        computer.click(_px(action.x, w), _px(action.y, h))
     elif t == "right_click":
-        computer.right_click(action.x, action.y)
+        computer.right_click(_px(action.x, w), _px(action.y, h))
     elif t == "type":
         computer.type(action.text)
     elif t in ("key", "keypress"):
@@ -44,20 +51,22 @@ def execute_action(computer, action):
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=action.scroll_y or 0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "hscroll":
         computer.scroll(
             dx=action.scroll_x or 0,
             dy=0,
-            x=action.x or 0,
-            y=action.y or 0,
+            x=_px(action.x or 0, w),
+            y=_px(action.y or 0, h),
         )
     elif t == "navigate":
         computer.navigate(action.url)
     elif t == "drag":
-        computer.drag(action.x, action.y, action.end_x, action.end_y)
+        computer.drag(
+            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
+        )
     elif t == "wait":
         computer.wait(2)
 
@@ -72,13 +81,15 @@ def run_task(computer, task, start_url=None, max_steps=50):
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": task},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": task},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
 
     for step in range(max_steps):
@@ -103,11 +114,17 @@ def run_task(computer, task, start_url=None, max_steps=50):
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
             tools=[TOOL],
-            input=[{
-                "type": "computer_call_output",
-                "call_id": computer_call.call_id,
-                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            }],
+            input=[
+                {
+                    "type": "computer_call_output",
+                    "call_id": computer_call.call_id,
+                    "output": {
+                        "type": "input_image",
+                        "image_url": screenshot_url,
+                        "detail": "auto",
+                    },
+                }
+            ],
         )
 
 
@@ -122,14 +139,32 @@ else:
     print(f"Created persistent session: {computer.id}")
     print(f"  Re-run with: python {sys.argv[0]} {computer.id}")
 
-# Log in once — cookies persist across tasks
-print("\nTask 1: Log in")
-run_task(computer, "Log in with username 'demo' and password 'demo123'",
-         start_url="https://example.com/login")
+_tasks_env = os.getenv("LIGHTCONE_PERSISTENT_TASKS_JSON")
+tasks = (
+    json.loads(_tasks_env)
+    if _tasks_env
+    else [
+        {
+            "label": "Task 1: Log in",
+            "task": "Log in with username 'demo' and password 'demo123'",
+            "start_url": "https://example.com/login",
+        },
+        {
+            "label": "Task 2: Export report",
+            "task": "Go to the dashboard and export the monthly report",
+        },
+        {
+            "label": "Task 3: Update settings",
+            "task": "Navigate to settings and update notification preferences",
+        },
+    ]
+)
 
-# Subsequent tasks reuse the authenticated session
-print("\nTask 2: Export report")
-run_task(computer, "Go to the dashboard and export the monthly report")
-
-print("\nTask 3: Update settings")
-run_task(computer, "Navigate to settings and update notification preferences")
+for entry in tasks[: int(os.getenv("LIGHTCONE_MAX_TASKS", str(len(tasks))))]:
+    print(f"\n{entry['label']}")
+    run_task(
+        computer,
+        entry["task"],
+        start_url=entry.get("start_url"),
+        max_steps=entry.get("max_steps", 50),
+    )

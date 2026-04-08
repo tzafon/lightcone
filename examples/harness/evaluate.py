@@ -72,10 +72,15 @@ def make_action_printer(screenshot_dir: Path | None = None):
                 sx = img.width / 1280
                 sy = img.height / 720
 
-                if action.type in ("click", "double_click", "triple_click", "right_click") and getattr(action, "x", None) is not None:
+                if (
+                    action.type in ("click", "double_click", "triple_click", "right_click")
+                    and getattr(action, "x", None) is not None
+                ):
                     px, py = int(action.x * sx), int(action.y * sy)
                     r = 18
-                    draw.ellipse((px - r, py - r, px + r, py + r), fill="red", outline="darkred", width=3)
+                    draw.ellipse(
+                        (px - r, py - r, px + r, py + r), fill="red", outline="darkred", width=3
+                    )
                     draw.line((px - r, py, px + r, py), fill="white", width=2)
                     draw.line((px, py - r, px, py + r), fill="white", width=2)
                 elif action.type == "type" and getattr(action, "text", None):
@@ -86,7 +91,9 @@ def make_action_printer(screenshot_dir: Path | None = None):
                     draw.text((10, 8), f"key: {'+'.join(action.keys)}", fill="cyan")
 
                 label_text = f"Step {event.step}: {action.type}"
-                draw.rectangle((0, img.height - 28, len(label_text) * 8 + 16, img.height), fill=(0, 0, 0, 200))
+                draw.rectangle(
+                    (0, img.height - 28, len(label_text) * 8 + 16, img.height), fill=(0, 0, 0, 200)
+                )
                 draw.text((8, img.height - 22), label_text, fill="white")
 
                 path = screenshot_dir / f"step-{event.step:02d}-{action.type}.png"
@@ -131,7 +138,9 @@ def main() -> None:
     parser.add_argument("--kind", default="browser", help="Environment kind (browser/desktop)")
     parser.add_argument("--runs", type=int, default=1, help="Number of runs")
     parser.add_argument("--trace", default=None, help="Path to save JSONL trace")
-    parser.add_argument("--screenshots", default=None, help="Directory to save annotated screenshots")
+    parser.add_argument(
+        "--screenshots", default=None, help="Directory to save annotated screenshots"
+    )
     args = parser.parse_args()
 
     client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
@@ -200,9 +209,11 @@ def main() -> None:
     if args.runs > 1:
         passes = sum(1 for v in verdicts if v["verdict"].startswith("PASS"))
         print("=" * 50)
-        print(f"  {passes}/{args.runs} PASS  |  "
-              f"Avg steps: {sum(v['steps'] for v in verdicts) / len(verdicts):.0f}  |  "
-              f"Reliability: {passes / args.runs * 100:.0f}%")
+        print(
+            f"  {passes}/{args.runs} PASS  |  "
+            f"Avg steps: {sum(v['steps'] for v in verdicts) / len(verdicts):.0f}  |  "
+            f"Reliability: {passes / args.runs * 100:.0f}%"
+        )
         print("=" * 50)
 
 

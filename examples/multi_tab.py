@@ -22,8 +22,10 @@ URLS = [
     "https://example.com/product-b",
     "https://example.com/product-c",
 ]
-EXTRACT_PROMPT = "Look at this page and tell me the product name and price. Reply with just: <name> — $<price>"
-COMPARE_PROMPT = "Here are the results:\n{results}\n\nWhich is the cheapest? Reply in one sentence."
+EXTRACT_PROMPT = """Look at this page and tell me the product name and price. Reply with just: <name> — $<price>"""
+COMPARE_PROMPT = (
+    """Here are the results:\n{results}\n\nWhich is the cheapest? Reply in one sentence."""
+)
 
 
 def ask_model_about_screenshot(screenshot_url, prompt):
@@ -31,13 +33,15 @@ def ask_model_about_screenshot(screenshot_url, prompt):
     response = client.responses.create(
         model="tzafon.northstar-cua-fast",
         tools=[TOOL],
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": prompt},
-                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-            ],
-        }],
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": prompt},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ],
     )
     for item in response.output or []:
         if item.type == "message":

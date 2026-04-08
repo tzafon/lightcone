@@ -42,10 +42,7 @@ def maybe_intervene(event: ActionEvent) -> ActionDecision | None:
         event.computer.type(command[5:])
         return ActionDecision(
             execute_action=False,
-            message=(
-                f"The user manually performed: {command}. "
-                "Continue with the original task."
-            ),
+            message=(f"The user manually performed: {command}. Continue with the original task."),
         )
     if command.lower().startswith("click "):
         parts = command.split()
@@ -54,18 +51,14 @@ def maybe_intervene(event: ActionEvent) -> ActionDecision | None:
             return ActionDecision(
                 execute_action=False,
                 message=(
-                    f"The user manually performed: {command}. "
-                    "Continue with the original task."
+                    f"The user manually performed: {command}. Continue with the original task."
                 ),
             )
     if command.lower().startswith("go "):
         event.computer.navigate(command[3:])
         return ActionDecision(
             execute_action=False,
-            message=(
-                f"The user manually performed: {command}. "
-                "Continue with the original task."
-            ),
+            message=(f"The user manually performed: {command}. Continue with the original task."),
         )
     return ActionDecision(
         execute_action=False,

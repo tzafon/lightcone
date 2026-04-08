@@ -1519,7 +1519,7 @@ wheels = [
 
 [[package]]
 name = "tzafon"
-version = "2.29.2"
+version = "2.31.0"
 source = { editable = "sdks/python" }
 dependencies = [
     { name = "anyio" },
@@ -1567,7 +1567,7 @@ requires-dist = [
     { name = "httpx-aiohttp", marker = "extra == 'aiohttp'", specifier = ">=0.1.9" },
     { name = "pydantic", specifier = ">=1.9.0,<3" },
     { name = "sniffio" },
-    { name = "typing-extensions", specifier = ">=4.10,<5" },
+    { name = "typing-extensions", specifier = ">=4.14,<5" },
 ]
 provides-extras = ["aiohttp"]
 
