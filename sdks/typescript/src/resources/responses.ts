@@ -11,7 +11,7 @@ export class Responses extends APIResource {
   /**
    * Create Responses
    */
-  create(body: ResponseCreateParams, options?: RequestOptions): APIPromise<unknown> {
+  create(body: ResponseCreateParams, options?: RequestOptions): APIPromise<ResponseCreateResponse> {
     return this._client.post('/v1/responses', { body, ...options });
   }
 
@@ -394,7 +394,170 @@ export interface Summary {
   [k: string]: unknown;
 }
 
-export type ResponseCreateResponse = unknown;
+/**
+ * The response object returned by the Responses API.
+ */
+export interface ResponseCreateResponse {
+  id: string;
+
+  created_at: number;
+
+  model: string;
+
+  object: 'response';
+
+  output: Array<
+    | ResponseCreateResponse.ResponseOutputMessage
+    | ResponseCreateResponse.ResponseFunctionToolCall
+    | ResponseCreateResponse.ResponseComputerToolCall
+    | { [key: string]: unknown }
+  >;
+
+  status: 'completed' | 'failed' | 'in_progress' | 'incomplete' | 'cancelled';
+
+  error?: { [key: string]: unknown } | null;
+
+  tools?: Array<{ [key: string]: unknown }>;
+
+  usage?: ResponseCreateResponse.Usage | null;
+
+  [k: string]: unknown;
+}
+
+export namespace ResponseCreateResponse {
+  /**
+   * An output message from the model.
+   */
+  export interface ResponseOutputMessage {
+    id: string;
+
+    content: Array<ResponseOutputMessage.ResponseOutputText | ResponseOutputMessage.ResponseOutputRefusal>;
+
+    role: 'assistant';
+
+    status: 'in_progress' | 'completed' | 'incomplete';
+
+    type: 'message';
+
+    [k: string]: unknown;
+  }
+
+  export namespace ResponseOutputMessage {
+    /**
+     * A text output from the model.
+     */
+    export interface ResponseOutputText {
+      annotations: Array<
+        | ResponsesAPI.AnnotationFileCitation
+        | ResponsesAPI.AnnotationURLCitation
+        | ResponsesAPI.AnnotationContainerFileCitation
+        | ResponsesAPI.AnnotationFilePath
+      >;
+
+      text: string;
+
+      type: 'output_text';
+
+      logprobs?: Array<ResponsesAPI.Logprob> | null;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * A refusal from the model.
+     */
+    export interface ResponseOutputRefusal {
+      refusal: string;
+
+      type: 'refusal';
+
+      [k: string]: unknown;
+    }
+  }
+
+  /**
+   * A tool call to run a function.
+   *
+   * See the
+   * [function calling guide](https://platform.openai.com/docs/guides/function-calling)
+   * for more information.
+   */
+  export interface ResponseFunctionToolCall {
+    arguments: string;
+
+    call_id: string;
+
+    name: string;
+
+    type: 'function_call';
+
+    id?: string | null;
+
+    status?: 'in_progress' | 'completed' | 'incomplete' | null;
+
+    [k: string]: unknown;
+  }
+
+  /**
+   * A tool call to a computer use tool.
+   *
+   * See the
+   * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use)
+   * for more information.
+   */
+  export interface ResponseComputerToolCall {
+    id: string;
+
+    /**
+     * A click action.
+     */
+    action:
+      | ResponsesAPI.ActionClick
+      | ResponsesAPI.ActionDoubleClick
+      | ResponsesAPI.ActionDrag
+      | ResponsesAPI.ActionKeypress
+      | ResponsesAPI.ActionMove
+      | ResponsesAPI.ActionScreenshot
+      | ResponsesAPI.ActionScroll
+      | ResponsesAPI.ActionType
+      | ResponsesAPI.ActionWait;
+
+    call_id: string;
+
+    pending_safety_checks: Array<ResponseComputerToolCall.PendingSafetyCheck>;
+
+    status: 'in_progress' | 'completed' | 'incomplete';
+
+    type: 'computer_call';
+
+    [k: string]: unknown;
+  }
+
+  export namespace ResponseComputerToolCall {
+    /**
+     * A pending safety check for the computer call.
+     */
+    export interface PendingSafetyCheck {
+      id: string;
+
+      code?: string | null;
+
+      message?: string | null;
+
+      [k: string]: unknown;
+    }
+  }
+
+  export interface Usage {
+    input_tokens?: number;
+
+    output_tokens?: number;
+
+    total_tokens?: number;
+
+    [k: string]: unknown;
+  }
+}
 
 export type ResponseRetrieveResponse = unknown;
 
