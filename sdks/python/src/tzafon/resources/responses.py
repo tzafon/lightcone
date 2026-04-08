@@ -19,6 +19,7 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
+from ..types.response_create_response import ResponseCreateResponse
 
 __all__ = ["ResponsesResource", "AsyncResponsesResource"]
 
@@ -98,7 +99,7 @@ class ResponsesResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> object:
+    ) -> ResponseCreateResponse:
         """
         Create Responses
 
@@ -193,7 +194,7 @@ class ResponsesResource(SyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=object,
+            cast_to=ResponseCreateResponse,
         )
 
     def retrieve(
@@ -350,7 +351,7 @@ class AsyncResponsesResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> object:
+    ) -> ResponseCreateResponse:
         """
         Create Responses
 
@@ -445,7 +446,7 @@ class AsyncResponsesResource(AsyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=object,
+            cast_to=ResponseCreateResponse,
         )
 
     async def retrieve(

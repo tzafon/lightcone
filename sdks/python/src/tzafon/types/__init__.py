@@ -2,21 +2,32 @@
 
 from __future__ import annotations
 
+from .logprob import Logprob as Logprob
 from .file_param import FileParam as FileParam
+from .action_drag import ActionDrag as ActionDrag
+from .action_move import ActionMove as ActionMove
+from .action_type import ActionType as ActionType
+from .action_wait import ActionWait as ActionWait
+from .action_click import ActionClick as ActionClick
 from .action_result import ActionResult as ActionResult
+from .action_scroll import ActionScroll as ActionScroll
 from .logprob_param import LogprobParam as LogprobParam
 from .message_param import MessageParam as MessageParam
 from .summary_param import SummaryParam as SummaryParam
+from .action_keypress import ActionKeypress as ActionKeypress
 from .action_drag_param import ActionDragParam as ActionDragParam
 from .action_find_param import ActionFindParam as ActionFindParam
 from .action_move_param import ActionMoveParam as ActionMoveParam
+from .action_screenshot import ActionScreenshot as ActionScreenshot
 from .action_type_param import ActionTypeParam as ActionTypeParam
 from .action_wait_param import ActionWaitParam as ActionWaitParam
 from .computer_response import ComputerResponse as ComputerResponse
 from .output_logs_param import OutputLogsParam as OutputLogsParam
 from .action_click_param import ActionClickParam as ActionClickParam
 from .output_image_param import OutputImageParam as OutputImageParam
+from .action_double_click import ActionDoubleClick as ActionDoubleClick
 from .action_scroll_param import ActionScrollParam as ActionScrollParam
+from .annotation_file_path import AnnotationFilePath as AnnotationFilePath
 from .computer_drag_params import ComputerDragParams as ComputerDragParams
 from .computer_html_params import ComputerHTMLParams as ComputerHTMLParams
 from .computer_list_params import ComputerListParams as ComputerListParams
@@ -34,13 +45,16 @@ from .computer_list_response import ComputerListResponse as ComputerListResponse
 from .computer_scroll_params import ComputerScrollParams as ComputerScrollParams
 from .response_create_params import ResponseCreateParams as ResponseCreateParams
 from .action_screenshot_param import ActionScreenshotParam as ActionScreenshotParam
+from .annotation_url_citation import AnnotationURLCitation as AnnotationURLCitation
 from .comparison_filter_param import ComparisonFilterParam as ComparisonFilterParam
 from .computer_batch_response import ComputerBatchResponse as ComputerBatchResponse
 from .computer_execute_params import ComputerExecuteParams as ComputerExecuteParams
+from .annotation_file_citation import AnnotationFileCitation as AnnotationFileCitation
 from .computer_key_down_params import ComputerKeyDownParams as ComputerKeyDownParams
 from .computer_mouse_up_params import ComputerMouseUpParams as ComputerMouseUpParams
 from .computer_navigate_params import ComputerNavigateParams as ComputerNavigateParams
 from .computer_viewport_params import ComputerViewportParams as ComputerViewportParams
+from .response_create_response import ResponseCreateResponse as ResponseCreateResponse
 from .response_retrieve_params import ResponseRetrieveParams as ResponseRetrieveParams
 from .action_double_click_param import ActionDoubleClickParam as ActionDoubleClickParam
 from .response_input_file_param import ResponseInputFileParam as ResponseInputFileParam
@@ -59,6 +73,7 @@ from .annotation_url_citation_param import AnnotationURLCitationParam as Annotat
 from .chat_create_completion_params import ChatCreateCompletionParams as ChatCreateCompletionParams
 from .annotation_file_citation_param import AnnotationFileCitationParam as AnnotationFileCitationParam
 from .computer_retrieve_status_response import ComputerRetrieveStatusResponse as ComputerRetrieveStatusResponse
+from .annotation_container_file_citation import AnnotationContainerFileCitation as AnnotationContainerFileCitation
 from .chat_completion_content_part_text_param import (
     ChatCompletionContentPartTextParam as ChatCompletionContentPartTextParam,
 )
