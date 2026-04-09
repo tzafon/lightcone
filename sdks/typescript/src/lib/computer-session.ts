@@ -11,16 +11,22 @@ import type {
 export class ComputerSession {
   readonly id: string;
   private _client: Lightcone;
+  width: number;
+  height: number;
 
-  constructor(client: Lightcone, id: string) {
+  constructor(client: Lightcone, id: string, width = 1024, height = 768) {
     this._client = client;
     this.id = id;
+    this.width = width;
+    this.height = height;
   }
 
   static async create(client: Lightcone, params: ComputerCreateParams = {}): Promise<ComputerSession> {
     const response = await client.computers.create(params);
     if (!response.id) throw new Error('Computer creation did not return an id');
-    return new ComputerSession(client, response.id);
+    const width = params.display?.width ?? 1024;
+    const height = params.display?.height ?? 768;
+    return new ComputerSession(client, response.id, width, height);
   }
 
   // Navigation
@@ -79,8 +85,11 @@ export class ComputerSession {
     return this._client.computers.scroll(this.id, { dx, dy, x, y });
   }
 
-  setViewport(width: number, height: number, scaleFactor = 1): Promise<ActionResult> {
-    return this._client.computers.viewport(this.id, { width, height, scale_factor: scaleFactor });
+  async setViewport(width: number, height: number, scaleFactor = 1): Promise<ActionResult> {
+    const result = await this._client.computers.viewport(this.id, { width, height, scale_factor: scaleFactor });
+    this.width = width;
+    this.height = height;
+    return result;
   }
 
   // Content

@@ -51,7 +51,10 @@ class ComputerResource:
         """
         response = self._client.computers.create(kind=kind, **kwargs)
         assert response.id is not None
-        return ComputerSession(self._client, response.id)
+        display = kwargs.get("display") or {}
+        width = display.get("width", 1024)
+        height = display.get("height", 768)
+        return ComputerSession(self._client, response.id, width=width, height=height)
 
 
 class ComputerSession:
@@ -71,9 +74,11 @@ class ComputerSession:
             # automatically terminated on exit
     """
 
-    def __init__(self, client: Lightcone, computer_id: str) -> None:
+    def __init__(self, client: Lightcone, computer_id: str, width: int = 1024, height: int = 768) -> None:
         self._client = client
         self.id = computer_id
+        self.width = width
+        self.height = height
 
     # ── Navigation ────────────────────────────────────────────────
 
@@ -153,7 +158,10 @@ class ComputerSession:
 
     def set_viewport(self, width: int, height: int, scale_factor: float = 1.0) -> ActionResult:
         """Change viewport dimensions."""
-        return self._client.computers.viewport(self.id, width=width, height=height, scale_factor=scale_factor)
+        result = self._client.computers.viewport(self.id, width=width, height=height, scale_factor=scale_factor)
+        self.width = width
+        self.height = height
+        return result
 
     # ── Content ───────────────────────────────────────────────────
 
