@@ -113,6 +113,10 @@ with client.computer.create(kind="browser") as computer:
         computer.wait(1)
 
         screenshot_url = computer.get_screenshot_url(computer.screenshot())
+
+        # previous_response_id tells the server to prepend the full prior
+        # conversation (including the model's own output) to our new input,
+        # so we only need to send what's new: the screenshot after the action.
         response = client.responses.create(
             model="tzafon.northstar-cua-fast",
             previous_response_id=response.id,
