@@ -224,14 +224,12 @@ class ComputerSession:
 
         Stops on first error::
 
-            computer.batch(
-                [
-                    {"type": "go_to_url", "url": "https://example.com"},
-                    {"type": "wait", "ms": 2000},
-                    {"type": "click", "x": 100, "y": 200},
-                    {"type": "screenshot"},
-                ]
-            )
+            computer.batch([
+                {"type": "go_to_url", "url": "https://example.com"},
+                {"type": "wait", "ms": 2000},
+                {"type": "click", "x": 100, "y": 200},
+                {"type": "screenshot"},
+            ])
         """
         return self._client.computers.batch(self.id, actions=actions)
 
