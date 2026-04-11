@@ -520,7 +520,12 @@ export namespace ResponseCreateResponse {
       | ResponsesAPI.ActionScreenshot
       | ResponsesAPI.ActionScroll
       | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait;
+      | ResponsesAPI.ActionWait
+      | ResponseComputerToolCall.ActionPointAndType
+      | ResponseComputerToolCall.ActionMouseDown
+      | ResponseComputerToolCall.ActionMouseUp
+      | ResponseComputerToolCall.ActionKeyDown
+      | ResponseComputerToolCall.ActionKeyUp;
 
     call_id: string;
 
@@ -534,6 +539,69 @@ export namespace ResponseCreateResponse {
   }
 
   export namespace ResponseComputerToolCall {
+    /**
+     * Click at a position then type text.
+     */
+    export interface ActionPointAndType {
+      text: string;
+
+      type: 'point_and_type';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold the left mouse button at a position.
+     */
+    export interface ActionMouseDown {
+      type: 'mouse_down';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release the left mouse button at a position.
+     */
+    export interface ActionMouseUp {
+      type: 'mouse_up';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold a key.
+     */
+    export interface ActionKeyDown {
+      keys: Array<string>;
+
+      type: 'key_down';
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release a held key.
+     */
+    export interface ActionKeyUp {
+      keys: Array<string>;
+
+      type: 'key_up';
+
+      [k: string]: unknown;
+    }
+
     /**
      * A pending safety check for the computer call.
      */
@@ -917,7 +985,12 @@ export namespace ResponseCreateParams {
       | ResponsesAPI.ActionScreenshot
       | ResponsesAPI.ActionScroll
       | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait;
+      | ResponsesAPI.ActionWait
+      | ResponseComputerToolCallParam.ActionPointAndType
+      | ResponseComputerToolCallParam.ActionMouseDown
+      | ResponseComputerToolCallParam.ActionMouseUp
+      | ResponseComputerToolCallParam.ActionKeyDown
+      | ResponseComputerToolCallParam.ActionKeyUp;
 
     call_id: string;
 
@@ -931,6 +1004,69 @@ export namespace ResponseCreateParams {
   }
 
   export namespace ResponseComputerToolCallParam {
+    /**
+     * Click at a position then type text.
+     */
+    export interface ActionPointAndType {
+      text: string;
+
+      type: 'point_and_type';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold the left mouse button at a position.
+     */
+    export interface ActionMouseDown {
+      type: 'mouse_down';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release the left mouse button at a position.
+     */
+    export interface ActionMouseUp {
+      type: 'mouse_up';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold a key.
+     */
+    export interface ActionKeyDown {
+      keys: Array<string>;
+
+      type: 'key_down';
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release a held key.
+     */
+    export interface ActionKeyUp {
+      keys: Array<string>;
+
+      type: 'key_up';
+
+      [k: string]: unknown;
+    }
+
     /**
      * A pending safety check for the computer call.
      */
@@ -1737,7 +1873,12 @@ export namespace ResponseCreateParams {
       | ResponsesAPI.ActionScreenshot
       | ResponsesAPI.ActionScroll
       | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait;
+      | ResponsesAPI.ActionWait
+      | ResponseComputerToolCall.ActionPointAndType
+      | ResponseComputerToolCall.ActionMouseDown
+      | ResponseComputerToolCall.ActionMouseUp
+      | ResponseComputerToolCall.ActionKeyDown
+      | ResponseComputerToolCall.ActionKeyUp;
 
     call_id: string;
 
@@ -1751,6 +1892,69 @@ export namespace ResponseCreateParams {
   }
 
   export namespace ResponseComputerToolCall {
+    /**
+     * Click at a position then type text.
+     */
+    export interface ActionPointAndType {
+      text: string;
+
+      type: 'point_and_type';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold the left mouse button at a position.
+     */
+    export interface ActionMouseDown {
+      type: 'mouse_down';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release the left mouse button at a position.
+     */
+    export interface ActionMouseUp {
+      type: 'mouse_up';
+
+      x: number;
+
+      y: number;
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Press and hold a key.
+     */
+    export interface ActionKeyDown {
+      keys: Array<string>;
+
+      type: 'key_down';
+
+      [k: string]: unknown;
+    }
+
+    /**
+     * Release a held key.
+     */
+    export interface ActionKeyUp {
+      keys: Array<string>;
+
+      type: 'key_up';
+
+      [k: string]: unknown;
+    }
+
     /**
      * A pending safety check for the computer call.
      */
@@ -1826,9 +2030,7 @@ export namespace ResponseCreateParams {
 
     type: 'image_generation_call';
 
-    result?: string | null;
-
-    [k: string]: unknown;
+    result: string | null;
   }
 
   /**
@@ -1866,8 +2068,6 @@ export namespace ResponseCreateParams {
     status: 'in_progress' | 'completed' | 'incomplete';
 
     type: 'local_shell_call';
-
-    [k: string]: unknown;
   }
 
   export namespace LocalShellCall {
@@ -1886,8 +2086,6 @@ export namespace ResponseCreateParams {
       user?: string | null;
 
       working_directory?: string | null;
-
-      [k: string]: unknown;
     }
   }
 
@@ -2094,9 +2292,7 @@ export namespace ResponseCreateParams {
 
     output?: string | null;
 
-    status?: 'in_progress' | 'completed' | 'incomplete' | 'calling' | 'failed' | null;
-
-    [k: string]: unknown;
+    status?: 'in_progress' | 'completed' | 'incomplete' | 'calling' | 'failed';
   }
 
   /**
@@ -2112,8 +2308,6 @@ export namespace ResponseCreateParams {
     type: 'mcp_list_tools';
 
     error?: string | null;
-
-    [k: string]: unknown;
   }
 
   export namespace McpListTools {
@@ -2128,8 +2322,6 @@ export namespace ResponseCreateParams {
       annotations?: unknown;
 
       description?: string | null;
-
-      [k: string]: unknown;
     }
   }
 

@@ -86,7 +86,11 @@ export class ComputerSession {
   }
 
   async setViewport(width: number, height: number, scaleFactor = 1): Promise<ActionResult> {
-    const result = await this._client.computers.viewport(this.id, { width, height, scale_factor: scaleFactor });
+    const result = await this._client.computers.viewport(this.id, {
+      width,
+      height,
+      scale_factor: scaleFactor,
+    });
     this.width = width;
     this.height = height;
     return result;

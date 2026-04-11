@@ -5,12 +5,14 @@ import prettier from 'eslint-plugin-prettier';
 
 export default tseslint.config(
   {
+    ignores: ['dist/'],
+  },
+  {
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: { sourceType: 'module' },
     },
     files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
-    ignores: ['dist/'],
     plugins: {
       '@typescript-eslint': tseslint.plugin,
       'unused-imports': unusedImports,
