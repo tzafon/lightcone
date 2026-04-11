@@ -13,8 +13,9 @@ import time
 import os
 
 from tzafon import Lightcone
+from _cua import get_messages
 
-lc = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
+lc = Lightcone()
 
 URL = sys.argv[1] if len(sys.argv) > 1 else "https://wagyu-finder-sf.lovable.app"
 DESCRIPTION = sys.argv[2] if len(sys.argv) > 2 else "a web application"
@@ -47,12 +48,8 @@ def visual_eval(screenshot_url):
             }
         ],
     )
-    for item in response.output or []:
-        if item.type == "message":
-            for block in item.content or []:
-                if hasattr(block, "text"):
-                    return block.text
-    return ""
+    texts = get_messages(response.output)
+    return texts[0] if texts else ""
 
 
 def structural_crawl(computer):
@@ -67,13 +64,11 @@ def structural_crawl(computer):
     if not html:
         return ["Could not retrieve page HTML"]
 
-    # Check title
     title_match = re.search(r"<title>(.*?)</title>", html, re.IGNORECASE)
     title = title_match.group(1).strip() if title_match else ""
     if not title or title in ("Vite + React", "React App") or "untitled" in title.lower():
         findings.append(f"Page title is generic/placeholder: '{title}'")
 
-    # Count links
     links = re.findall(
         r'<a\s[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)</a>',
         html,
@@ -85,9 +80,8 @@ def structural_crawl(computer):
         if not href or href == "#" or href.startswith("javascript:")
     ]
     for href, text in dead_links:
-        findings.append(f"Dead link: '{text}' → '{href}'")
+        findings.append(f"Dead link: '{text}' -> '{href}'")
 
-    # Count buttons
     buttons = re.findall(r"<button[^>]*>(.*?)</button>", html, re.DOTALL | re.IGNORECASE)
     disabled_buttons = re.findall(
         r"<button[^>]*disabled[^>]*>(.*?)</button>", html, re.DOTALL | re.IGNORECASE
@@ -96,19 +90,16 @@ def structural_crawl(computer):
         text = re.sub(r"<[^>]+>", "", btn).strip()[:40]
         findings.append(f"Disabled button: '{text}'")
 
-    # Check images
     images = re.findall(r'<img\s[^>]*src=["\']([^"\']*)["\'][^>]*/?>', html, re.IGNORECASE)
     imgs_no_alt = re.findall(r"<img\s(?![^>]*alt=)[^>]*/?>", html, re.IGNORECASE)
     if imgs_no_alt:
         findings.append(f"{len(imgs_no_alt)} image(s) missing alt text")
 
-    # Check for placeholder/lorem text
     if "lorem ipsum" in html.lower():
         findings.append("Lorem ipsum placeholder text found")
     if "TODO" in html or "FIXME" in html:
         findings.append("TODO/FIXME comments found in rendered HTML")
 
-    # Check for console errors via exec
     lc.computers.exec.sync(
         computer.id,
         command="DISPLAY=:1 xdotool key F12 2>/dev/null; sleep 0.5; echo done",
@@ -132,21 +123,18 @@ def structural_crawl(computer):
     return findings
 
 
-# ── Main ─────────────────────────────────────────────────────────────────
 print(f"QA: {URL}\n")
 t0 = time.time()
 
 with lc.computer.create(
-    kind="browser", idle_timeout_enabled=False, max_lifetime_seconds=120
+    kind="desktop", idle_timeout_enabled=False, max_lifetime_seconds=120
 ) as computer:
-    # Navigate + screenshot — minimal wait
     computer.navigate(URL)
     computer.wait(1)
     ss = computer.screenshot()
     screenshot_url = computer.get_screenshot_url(ss)
     log(f"screenshot ({time.time() - t0:.1f}s) — starting eval...")
 
-    # Fire everything in parallel
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=2)
     f_visual = pool.submit(visual_eval, screenshot_url)
     f_crawl = pool.submit(structural_crawl, computer)
@@ -154,18 +142,18 @@ with lc.computer.create(
     crawl_findings = f_crawl.result()
     log(f"structural crawl done ({time.time() - t0:.1f}s)")
 
-    print(f"\n{'═' * 60}")
+    print(f"\n{'=' * 60}")
     print("  STRUCTURAL ANALYSIS")
-    print(f"{'═' * 60}\n")
+    print(f"{'=' * 60}\n")
     for i, f in enumerate(crawl_findings):
         print(f"  {i + 1}. {f}")
 
     visual_report = f_visual.result()
     log(f"visual eval done ({time.time() - t0:.1f}s)")
 
-    print(f"\n{'═' * 60}")
+    print(f"\n{'=' * 60}")
     print("  VISUAL ANALYSIS")
-    print(f"{'═' * 60}\n")
+    print(f"{'=' * 60}\n")
     print(visual_report)
     pool.shutdown(wait=False)
 

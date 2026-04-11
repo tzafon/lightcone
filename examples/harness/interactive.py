@@ -72,7 +72,7 @@ def main() -> None:
         client,
         config=RunConfig(
             model="tzafon.northstar-cua-fast",
-            kind="browser",
+            kind="desktop",
             max_steps=75,
             trace_path="runs/interactive.jsonl",
         ),

@@ -5,96 +5,42 @@ encounters something it can't handle. The human can type instructions, press
 Enter to continue, or type 'q' to quit.
 """
 
+import json
 import os
+import time
 from tzafon import Lightcone
+from _cua import get_computer_calls, get_messages, format_action, is_terminal_action, DONE_TOOL
 
-client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
+client = Lightcone()
 
 TOOL = {
     "type": "computer_use",
     "display_width": 1280,
     "display_height": 720,
-    "environment": "browser",
+    "environment": "desktop",
 }
-TASK = """Log in to https://example.com/dashboard"""
-MAX_STEPS = 75
-AUTO_INPUTS = []
-FORCE_HUMAN_STEP = False
 
-# Action types that signal Northstar is stuck or needs human help.
-PAUSE_SIGNALS = {"wait", "terminate", "done", "answer"}
+TASK = "Log in to https://example.com/dashboard"
 
-
-def _px(coord, dim):
-    """Convert a 0–1000 model coordinate to a pixel coordinate."""
-    return int(coord / 1000 * dim)
+# For automated testing: pre-fill inputs instead of waiting for stdin.
+# Set LIGHTCONE_AUTO_INPUTS_JSON='["q"]' to auto-quit after one pause.
+_auto = os.getenv("LIGHTCONE_AUTO_INPUTS_JSON")
+AUTO_INPUTS = json.loads(_auto) if _auto else []
+FORCE_HUMAN_STEP = os.getenv("LIGHTCONE_FORCE_HUMAN_STEP", "").lower() in ("1", "true")
 
 
-def execute_action(computer, action):
-    """Execute a model action on the computer session."""
-    w, h = TOOL["display_width"], TOOL["display_height"]
-    t = action.type
-    if t == "click":
-        computer.click(_px(action.x, w), _px(action.y, h))
-    elif t == "double_click":
-        computer.double_click(_px(action.x, w), _px(action.y, h))
-    elif t == "triple_click":
-        computer.click(_px(action.x, w), _px(action.y, h))
-        computer.click(_px(action.x, w), _px(action.y, h))
-        computer.click(_px(action.x, w), _px(action.y, h))
-    elif t == "right_click":
-        computer.right_click(_px(action.x, w), _px(action.y, h))
-    elif t == "type":
-        computer.type(action.text)
-    elif t in ("key", "keypress"):
-        computer.hotkey(action.keys)
-    elif t == "key_down":
-        computer.key_down(action.keys[0])
-    elif t == "key_up":
-        computer.key_up(action.keys[0])
-    elif t == "scroll":
-        computer.scroll(
-            dx=action.scroll_x or 0,
-            dy=action.scroll_y or 0,
-            x=_px(action.x or 0, w),
-            y=_px(action.y or 0, h),
-        )
-    elif t == "hscroll":
-        computer.scroll(
-            dx=action.scroll_x or 0,
-            dy=0,
-            x=_px(action.x or 0, w),
-            y=_px(action.y or 0, h),
-        )
-    elif t == "navigate":
-        computer.navigate(action.url)
-    elif t == "drag":
-        computer.drag(
-            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
-        )
-    elif t == "wait":
-        computer.wait(2)
-
-
-def ask_human(step, action, messages):
+def ask_human(step, action_dict, messages):
     """Pause and ask the human what to do."""
     if AUTO_INPUTS:
         value = str(AUTO_INPUTS.pop(0))
-        print(f"\n--- AUTO INPUT at step {step + 1}: {value!r} ---")
+        print(f"\n--- AUTO INPUT at step {step}: {value!r} ---")
         return value
 
-    print(f"\n--- PAUSED at step {step + 1} ---")
-    if action:
-        print(f"  Last action: {action.type}")
-        if action.result or action.text:
-            print(f"  Message: {action.result or action.text}")
-
-    # Check for model messages (e.g. "I see a CAPTCHA" or "Please provide 2FA code")
-    for item in messages or []:
-        if item.type == "message":
-            for block in item.content or []:
-                if block.text:
-                    print(f"  Northstar: {block.text}")
+    print(f"\n--- PAUSED at step {step} ---")
+    if action_dict:
+        print(f"  Last action: {format_action(action_dict)}")
+    for text in messages:
+        print(f"  Northstar: {text}")
 
     print("\nOptions:")
     print("  [Enter]          Continue (Northstar retries)")
@@ -106,39 +52,39 @@ def ask_human(step, action, messages):
     return input("> ").strip()
 
 
-with client.computer.create(kind="browser") as computer:
+with client.computer.create(kind="desktop") as computer:
     screenshot_url = computer.get_screenshot_url(computer.screenshot())
-    task = TASK
 
-    response = client.responses.create(
-        model="tzafon.northstar-cua-fast",
-        tools=[TOOL],
-        input=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "input_text", "text": task},
-                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                ],
-            }
-        ],
-    )
+    items = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "input_text", "text": TASK},
+                {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+            ],
+        }
+    ]
 
-    for step in range(MAX_STEPS):
-        computer_call = next(
-            (o for o in (response.output or []) if o.type == "computer_call"), None
+    for step in range(1, 76):
+        response = client.responses.create(
+            model="tzafon.northstar-cua-fast",
+            tools=[TOOL, DONE_TOOL],
+            input=items,
         )
+        items.extend(response.output or [])
 
-        # No action or a pause signal — ask the human.
+        calls, call_ids = get_computer_calls(response.output, TOOL)
+        messages = get_messages(response.output)
+
         needs_human = (
-            not computer_call
-            or computer_call.action.type in PAUSE_SIGNALS
-            or (FORCE_HUMAN_STEP and step == 0)
+            not calls
+            or any(is_terminal_action(c) for c in calls)
+            or (FORCE_HUMAN_STEP and step == 1)
         )
 
         if needs_human:
-            action = computer_call.action if computer_call else None
-            human_input = ask_human(step, action, response.output)
+            action_dict = calls[0] if calls else None
+            human_input = ask_human(step, action_dict, messages)
 
             if human_input.lower() == "q":
                 print("Quitting.")
@@ -152,59 +98,37 @@ with client.computer.create(kind="browser") as computer:
             elif human_input.lower().startswith("go "):
                 computer.navigate(human_input[3:])
 
-            # After human intervention, re-screenshot and tell Northstar
-            # what happened so it can continue.
             computer.wait(1)
             screenshot_url = computer.get_screenshot_url(computer.screenshot())
 
             if human_input.lower().startswith(("type ", "click ", "go ")):
-                context = f"The user manually performed: {human_input}. Continue with the original task: {task}"
+                context = f"The user manually performed: {human_input}. Continue with the original task: {TASK}"
             elif human_input:
-                context = f"The user says: {human_input}. Continue with the original task: {task}"
+                context = f"The user says: {human_input}. Continue with the original task: {TASK}"
             else:
-                context = f"The user asked you to retry. Continue with the original task: {task}"
+                context = f"The user asked you to retry. Continue with the original task: {TASK}"
 
-            response = client.responses.create(
-                model="tzafon.northstar-cua-fast",
-                tools=[TOOL],
-                input=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "input_text", "text": context},
-                            {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                        ],
-                    }
+            items.append({
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": context},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
                 ],
-            )
+            })
             continue
 
-        # Normal autonomous step.
-        action = computer_call.action
-        print(f"[{step + 1}] {action.type}", end="")
-        if action.text:
-            print(f" '{action.text}'", end="")
-        print()
+        for c in calls:
+            print(f"[{step}] {format_action(c)}")
 
-        execute_action(computer, action)
-        computer.wait(1)
+        computer.batch(calls)
+        time.sleep(1)
 
         screenshot_url = computer.get_screenshot_url(computer.screenshot())
-        response = client.responses.create(
-            model="tzafon.northstar-cua-fast",
-            previous_response_id=response.id,
-            tools=[TOOL],
-            input=[
-                {
-                    "type": "computer_call_output",
-                    "call_id": computer_call.call_id,
-                    "output": {
-                        "type": "input_image",
-                        "image_url": screenshot_url,
-                        "detail": "auto",
-                    },
-                }
-            ],
-        )
+        for call_id in call_ids:
+            items.append({
+                "type": "computer_call_output",
+                "call_id": call_id,
+                "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+            })
 
     print("Done.")

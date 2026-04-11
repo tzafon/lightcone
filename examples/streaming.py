@@ -9,21 +9,23 @@ Call:   curl -N -X POST http://localhost:8000/tasks/stream \
 import asyncio
 import json
 import os
+import time
 from collections.abc import AsyncIterator
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from tzafon import Lightcone
+from _cua import get_computer_calls, get_messages, format_action, is_terminal_action, DONE_TOOL
 
 app = FastAPI()
-client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
+client = Lightcone()
 
 TOOL = {
     "type": "computer_use",
     "display_width": 1280,
     "display_height": 720,
-    "environment": "browser",
+    "environment": "desktop",
 }
 
 
@@ -33,63 +35,12 @@ class TaskRequest(BaseModel):
     max_steps: int = 50
 
 
-def _px(coord, dim):
-    """Convert a 0–1000 model coordinate to a pixel coordinate."""
-    return int(coord / 1000 * dim)
-
-
-def execute_action(computer, action):
-    """Execute a model action on the computer session."""
-    w, h = TOOL["display_width"], TOOL["display_height"]
-    t = action.type
-    if t == "click":
-        computer.click(_px(action.x, w), _px(action.y, h))
-    elif t == "double_click":
-        computer.double_click(_px(action.x, w), _px(action.y, h))
-    elif t == "triple_click":
-        computer.click(_px(action.x, w), _px(action.y, h))
-        computer.click(_px(action.x, w), _px(action.y, h))
-        computer.click(_px(action.x, w), _px(action.y, h))
-    elif t == "right_click":
-        computer.right_click(_px(action.x, w), _px(action.y, h))
-    elif t == "type":
-        computer.type(action.text)
-    elif t in ("key", "keypress"):
-        computer.hotkey(action.keys)
-    elif t == "key_down":
-        computer.key_down(action.keys[0])
-    elif t == "key_up":
-        computer.key_up(action.keys[0])
-    elif t == "scroll":
-        computer.scroll(
-            dx=action.scroll_x or 0,
-            dy=action.scroll_y or 0,
-            x=_px(action.x or 0, w),
-            y=_px(action.y or 0, h),
-        )
-    elif t == "hscroll":
-        computer.scroll(
-            dx=action.scroll_x or 0,
-            dy=0,
-            x=_px(action.x or 0, w),
-            y=_px(action.y or 0, h),
-        )
-    elif t == "navigate":
-        computer.navigate(action.url)
-    elif t == "drag":
-        computer.drag(
-            _px(action.x, w), _px(action.y, h), _px(action.end_x, w), _px(action.end_y, h)
-        )
-    elif t == "wait":
-        computer.wait(2)
-
-
 def sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
 async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
-    with client.computer.create(kind="browser") as computer:
+    with client.computer.create(kind="desktop") as computer:
         if req.start_url:
             computer.navigate(req.start_url)
             computer.wait(2)
@@ -97,80 +48,65 @@ async def run_loop(req: TaskRequest) -> AsyncIterator[str]:
         yield sse("started", {"computer_id": computer.id})
 
         screenshot_url = computer.get_screenshot_url(computer.screenshot())
-        response = client.responses.create(
-            model="tzafon.northstar-cua-fast",
-            tools=[TOOL],
-            input=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "input_text", "text": req.instruction},
-                        {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
-                    ],
-                }
-            ],
-        )
+        items = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": req.instruction},
+                    {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                ],
+            }
+        ]
 
-        step = 0
         for step in range(req.max_steps):
-            computer_call = next(
-                (o for o in (response.output or []) if o.type == "computer_call"),
-                None,
+            response = client.responses.create(
+                model="tzafon.northstar-cua-fast",
+                tools=[TOOL, DONE_TOOL],
+                input=items,
             )
-            if not computer_call:
+            items.extend(response.output or [])
+
+            messages = get_messages(response.output)
+            for text in messages:
+                yield sse("message", {"step": step, "text": text})
+
+            calls, call_ids = get_computer_calls(response.output, TOOL)
+            if not calls:
                 break
 
-            action = computer_call.action
-            yield sse("action", {"step": step, "type": action.type})
+            for c in calls:
+                yield sse("action", {"step": step, "type": c.get("type", "?")})
 
-            if action.type in ("terminate", "done", "answer"):
-                yield sse(
-                    "completed",
-                    {
-                        "step": step,
-                        "result": action.result or action.text or action.status,
-                    },
-                )
+            if any(is_terminal_action(c) for c in calls):
+                yield sse("completed", {"step": step})
                 return
 
-            execute_action(computer, action)
-            computer.wait(1)
+            computer.batch(calls)
+            time.sleep(1)
 
             screenshot_url = computer.get_screenshot_url(computer.screenshot())
             yield sse("screenshot", {"step": step, "url": screenshot_url})
 
-            response = client.responses.create(
-                model="tzafon.northstar-cua-fast",
-                previous_response_id=response.id,
-                tools=[TOOL],
-                input=[
-                    {
-                        "type": "computer_call_output",
-                        "call_id": computer_call.call_id,
-                        "output": {
-                            "type": "input_image",
-                            "image_url": screenshot_url,
-                            "detail": "auto",
-                        },
-                    }
-                ],
-            )
+            for call_id in call_ids:
+                items.append({
+                    "type": "computer_call_output",
+                    "call_id": call_id,
+                    "output": {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
+                })
 
         yield sse("completed", {"step": step + 1})
 
 
 async def run_smoke_test() -> None:
     req = TaskRequest(
-        instruction=os.getenv("LIGHTCONE_TASK", "Go to wikipedia.org and search for Alan Turing"),
-        start_url=os.getenv("LIGHTCONE_START_URL") or None,
-        max_steps=int(os.getenv("LIGHTCONE_MAX_STEPS", "6")),
+        instruction="Go to wikipedia.org and search for Alan Turing",
+        max_steps=6,
     )
-    max_events = int(os.getenv("LIGHTCONE_MAX_EVENTS", "8"))
     count = 0
     async for event in run_loop(req):
         print(event.strip())
         count += 1
-        if count >= max_events:
+        if count >= 8:
             break
 
 
@@ -180,9 +116,6 @@ async def stream_task(req: TaskRequest):
 
 
 if __name__ == "__main__" and os.getenv("LIGHTCONE_STREAMING_SMOKE", "").lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
+    "1", "true", "yes", "on",
 }:
     asyncio.run(run_smoke_test())

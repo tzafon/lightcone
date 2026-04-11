@@ -9,27 +9,27 @@ import os
 import time
 from datetime import datetime
 from tzafon import Lightcone
+from _cua import get_messages
 
-client = Lightcone(api_key=os.environ["TZAFON_API_KEY"])
+client = Lightcone()
 
 URL = os.getenv("LIGHTCONE_URL", "https://example.com/dashboard")
-INTERVAL_SECONDS = 30
-MAX_CHECKS = 100
-PROMPT = """Describe what you see on this screen. Note any errors, warnings,
-unusual values, or changes from what you'd expect on a healthy dashboard.
-Be concise — one paragraph."""
 
 
-with client.computer.create(kind="browser") as computer:
+with client.computer.create(kind="desktop") as computer:
     computer.navigate(URL)
     computer.wait(3)
 
     previous_description = None
 
-    for i in range(MAX_CHECKS):
+    for i in range(100):
         screenshot_url = computer.get_screenshot_url(computer.screenshot())
 
-        prompt = PROMPT
+        prompt = (
+            "Describe what you see on this screen. Note any errors, warnings, "
+            "unusual values, or changes from what you'd expect on a healthy dashboard. "
+            "Be concise — one paragraph."
+        )
         if previous_description:
             prompt += f"\n\nPrevious observation: {previous_description}"
             prompt += "\n\nFlag anything that changed."
@@ -47,23 +47,17 @@ with client.computer.create(kind="browser") as computer:
             ],
         )
 
-        # Extract the model's description (it may come as a message or reasoning).
-        description = ""
-        for item in response.output or []:
-            if item.type == "message":
-                for block in item.content or []:
-                    if block.text:
-                        description += block.text
+        descriptions = get_messages(response.output)
+        description = " ".join(descriptions)
 
         timestamp = datetime.now().strftime("%H:%M:%S")
-        print(f"[{timestamp}] Check {i + 1}/{MAX_CHECKS}")
+        print(f"[{timestamp}] Check {i + 1}")
         print(f"  {description or '(no description)'}")
         print()
 
         previous_description = description
 
-        if i < MAX_CHECKS - 1:
-            # Refresh the page before the next check.
+        if i < 99:
             computer.navigate(URL)
             computer.wait(2)
-            time.sleep(INTERVAL_SECONDS)
+            time.sleep(30)

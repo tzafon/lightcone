@@ -135,7 +135,7 @@ def main() -> None:
     parser.add_argument("--url", default=DEFAULT_URL, help="Start URL")
     parser.add_argument("--instruction", default=DEFAULT_INSTRUCTION, help="Task instruction")
     parser.add_argument("--max-steps", type=int, default=25, help="Max steps")
-    parser.add_argument("--kind", default="browser", help="Environment kind (browser/desktop)")
+    parser.add_argument("--kind", default="desktop", help="Environment kind (browser/desktop)")
     parser.add_argument("--runs", type=int, default=1, help="Number of runs")
     parser.add_argument("--trace", default=None, help="Path to save JSONL trace")
     parser.add_argument(
