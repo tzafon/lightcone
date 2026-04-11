@@ -76,7 +76,6 @@ type NodeFetch3RequestInit =  NotAny<import('../node_modules/node-fetch').Reques
 /** @ts-ignore For users who use Deno */
 type FetchRequestInit = NonNullable<OverloadedParameters<typeof fetch>[1]>;
 /* eslint-enable */
-
 type RequestInits =
   | NotAny<UndiciTypesRequestInit>
   | NotAny<UndiciRequestInit>
