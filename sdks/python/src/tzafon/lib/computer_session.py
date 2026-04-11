@@ -51,9 +51,9 @@ class ComputerResource:
         """
         response = self._client.computers.create(kind=kind, **kwargs)
         assert response.id is not None
-        display = kwargs.get("display") or {}
-        width = display.get("width", 1024)
-        height = display.get("height", 768)
+        display: dict[str, Any] = kwargs.get("display") or {}
+        width: int = display.get("width", 1024)
+        height: int = display.get("height", 768)
         return ComputerSession(self._client, response.id, width=width, height=height)
 
 

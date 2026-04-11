@@ -49,6 +49,11 @@ __all__ = [
     "InputUnionMember1ResponseFileSearchToolCallParamResult",
     "InputUnionMember1ResponseComputerToolCallParam",
     "InputUnionMember1ResponseComputerToolCallParamAction",
+    "InputUnionMember1ResponseComputerToolCallParamActionActionPointAndType",
+    "InputUnionMember1ResponseComputerToolCallParamActionActionMouseDown",
+    "InputUnionMember1ResponseComputerToolCallParamActionActionMouseUp",
+    "InputUnionMember1ResponseComputerToolCallParamActionActionKeyDown",
+    "InputUnionMember1ResponseComputerToolCallParamActionActionKeyUp",
     "InputUnionMember1ResponseComputerToolCallParamPendingSafetyCheck",
     "InputUnionMember1ComputerCallOutput",
     "InputUnionMember1ComputerCallOutputOutput",
@@ -105,6 +110,11 @@ __all__ = [
     "InputUnionMember1ResponseFunctionWebSearchActionActionSearch",
     "InputUnionMember1ResponseComputerToolCall",
     "InputUnionMember1ResponseComputerToolCallAction",
+    "InputUnionMember1ResponseComputerToolCallActionActionPointAndType",
+    "InputUnionMember1ResponseComputerToolCallActionActionMouseDown",
+    "InputUnionMember1ResponseComputerToolCallActionActionMouseUp",
+    "InputUnionMember1ResponseComputerToolCallActionActionKeyDown",
+    "InputUnionMember1ResponseComputerToolCallActionActionKeyUp",
     "InputUnionMember1ResponseComputerToolCallPendingSafetyCheck",
     "InputUnionMember1ResponseReasoningItem",
     "InputUnionMember1ResponseReasoningItemContent",
@@ -428,6 +438,56 @@ class InputUnionMember1ResponseFileSearchToolCallParam(TypedDict, total=False, e
     results: Optional[Iterable[InputUnionMember1ResponseFileSearchToolCallParamResult]]
 
 
+class InputUnionMember1ResponseComputerToolCallParamActionActionPointAndType(  # type: ignore[call-arg]
+    TypedDict, total=False, extra_items=object
+):
+    """Click at a position then type text."""
+
+    text: Required[str]
+
+    type: Required[Literal["point_and_type"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallParamActionActionMouseDown(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Press and hold the left mouse button at a position."""
+
+    type: Required[Literal["mouse_down"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallParamActionActionMouseUp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Release the left mouse button at a position."""
+
+    type: Required[Literal["mouse_up"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallParamActionActionKeyDown(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Press and hold a key."""
+
+    keys: Required[SequenceNotStr[str]]
+
+    type: Required[Literal["key_down"]]
+
+
+class InputUnionMember1ResponseComputerToolCallParamActionActionKeyUp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Release a held key."""
+
+    keys: Required[SequenceNotStr[str]]
+
+    type: Required[Literal["key_up"]]
+
+
 InputUnionMember1ResponseComputerToolCallParamAction: TypeAlias = Union[
     ActionClickParam,
     ActionDoubleClickParam,
@@ -438,6 +498,11 @@ InputUnionMember1ResponseComputerToolCallParamAction: TypeAlias = Union[
     ActionScrollParam,
     ActionTypeParam,
     ActionWaitParam,
+    InputUnionMember1ResponseComputerToolCallParamActionActionPointAndType,
+    InputUnionMember1ResponseComputerToolCallParamActionActionMouseDown,
+    InputUnionMember1ResponseComputerToolCallParamActionActionMouseUp,
+    InputUnionMember1ResponseComputerToolCallParamActionActionKeyDown,
+    InputUnionMember1ResponseComputerToolCallParamActionActionKeyUp,
 ]
 
 
@@ -1117,6 +1182,54 @@ class InputUnionMember1ResponseFunctionWebSearch(TypedDict, total=False, extra_i
     type: Required[Literal["web_search_call"]]
 
 
+class InputUnionMember1ResponseComputerToolCallActionActionPointAndType(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Click at a position then type text."""
+
+    text: Required[str]
+
+    type: Required[Literal["point_and_type"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallActionActionMouseDown(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Press and hold the left mouse button at a position."""
+
+    type: Required[Literal["mouse_down"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallActionActionMouseUp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Release the left mouse button at a position."""
+
+    type: Required[Literal["mouse_up"]]
+
+    x: Required[int]
+
+    y: Required[int]
+
+
+class InputUnionMember1ResponseComputerToolCallActionActionKeyDown(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Press and hold a key."""
+
+    keys: Required[SequenceNotStr[str]]
+
+    type: Required[Literal["key_down"]]
+
+
+class InputUnionMember1ResponseComputerToolCallActionActionKeyUp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """Release a held key."""
+
+    keys: Required[SequenceNotStr[str]]
+
+    type: Required[Literal["key_up"]]
+
+
 InputUnionMember1ResponseComputerToolCallAction: TypeAlias = Union[
     ActionClickParam,
     ActionDoubleClickParam,
@@ -1127,6 +1240,11 @@ InputUnionMember1ResponseComputerToolCallAction: TypeAlias = Union[
     ActionScrollParam,
     ActionTypeParam,
     ActionWaitParam,
+    InputUnionMember1ResponseComputerToolCallActionActionPointAndType,
+    InputUnionMember1ResponseComputerToolCallActionActionMouseDown,
+    InputUnionMember1ResponseComputerToolCallActionActionMouseUp,
+    InputUnionMember1ResponseComputerToolCallActionActionKeyDown,
+    InputUnionMember1ResponseComputerToolCallActionActionKeyUp,
 ]
 
 

@@ -33,6 +33,11 @@ __all__ = [
     "OutputResponseFunctionToolCall",
     "OutputResponseComputerToolCall",
     "OutputResponseComputerToolCallAction",
+    "OutputResponseComputerToolCallActionActionPointAndType",
+    "OutputResponseComputerToolCallActionActionMouseDown",
+    "OutputResponseComputerToolCallActionActionMouseUp",
+    "OutputResponseComputerToolCallActionActionKeyDown",
+    "OutputResponseComputerToolCallActionActionKeyUp",
     "OutputResponseComputerToolCallPendingSafetyCheck",
     "Usage",
 ]
@@ -149,6 +154,114 @@ class OutputResponseFunctionToolCall(BaseModel):
         __pydantic_extra__: Dict[str, object]
 
 
+class OutputResponseComputerToolCallActionActionPointAndType(BaseModel):
+    """Click at a position then type text."""
+
+    text: str
+
+    type: Literal["point_and_type"]
+
+    x: int
+
+    y: int
+
+    if TYPE_CHECKING:
+        # Some versions of Pydantic <2.8.0 have a bug and don’t allow assigning a
+        # value to this field, so for compatibility we avoid doing it at runtime.
+        __pydantic_extra__: Dict[str, object] = FieldInfo(init=False)  # pyright: ignore[reportIncompatibleVariableOverride]
+
+        # Stub to indicate that arbitrary properties are accepted.
+        # To access properties that are not valid identifiers you can use `getattr`, e.g.
+        # `getattr(obj, '$type')`
+        def __getattr__(self, attr: str) -> object: ...
+    else:
+        __pydantic_extra__: Dict[str, object]
+
+
+class OutputResponseComputerToolCallActionActionMouseDown(BaseModel):
+    """Press and hold the left mouse button at a position."""
+
+    type: Literal["mouse_down"]
+
+    x: int
+
+    y: int
+
+    if TYPE_CHECKING:
+        # Some versions of Pydantic <2.8.0 have a bug and don’t allow assigning a
+        # value to this field, so for compatibility we avoid doing it at runtime.
+        __pydantic_extra__: Dict[str, object] = FieldInfo(init=False)  # pyright: ignore[reportIncompatibleVariableOverride]
+
+        # Stub to indicate that arbitrary properties are accepted.
+        # To access properties that are not valid identifiers you can use `getattr`, e.g.
+        # `getattr(obj, '$type')`
+        def __getattr__(self, attr: str) -> object: ...
+    else:
+        __pydantic_extra__: Dict[str, object]
+
+
+class OutputResponseComputerToolCallActionActionMouseUp(BaseModel):
+    """Release the left mouse button at a position."""
+
+    type: Literal["mouse_up"]
+
+    x: int
+
+    y: int
+
+    if TYPE_CHECKING:
+        # Some versions of Pydantic <2.8.0 have a bug and don’t allow assigning a
+        # value to this field, so for compatibility we avoid doing it at runtime.
+        __pydantic_extra__: Dict[str, object] = FieldInfo(init=False)  # pyright: ignore[reportIncompatibleVariableOverride]
+
+        # Stub to indicate that arbitrary properties are accepted.
+        # To access properties that are not valid identifiers you can use `getattr`, e.g.
+        # `getattr(obj, '$type')`
+        def __getattr__(self, attr: str) -> object: ...
+    else:
+        __pydantic_extra__: Dict[str, object]
+
+
+class OutputResponseComputerToolCallActionActionKeyDown(BaseModel):
+    """Press and hold a key."""
+
+    keys: List[str]
+
+    type: Literal["key_down"]
+
+    if TYPE_CHECKING:
+        # Some versions of Pydantic <2.8.0 have a bug and don’t allow assigning a
+        # value to this field, so for compatibility we avoid doing it at runtime.
+        __pydantic_extra__: Dict[str, object] = FieldInfo(init=False)  # pyright: ignore[reportIncompatibleVariableOverride]
+
+        # Stub to indicate that arbitrary properties are accepted.
+        # To access properties that are not valid identifiers you can use `getattr`, e.g.
+        # `getattr(obj, '$type')`
+        def __getattr__(self, attr: str) -> object: ...
+    else:
+        __pydantic_extra__: Dict[str, object]
+
+
+class OutputResponseComputerToolCallActionActionKeyUp(BaseModel):
+    """Release a held key."""
+
+    keys: List[str]
+
+    type: Literal["key_up"]
+
+    if TYPE_CHECKING:
+        # Some versions of Pydantic <2.8.0 have a bug and don’t allow assigning a
+        # value to this field, so for compatibility we avoid doing it at runtime.
+        __pydantic_extra__: Dict[str, object] = FieldInfo(init=False)  # pyright: ignore[reportIncompatibleVariableOverride]
+
+        # Stub to indicate that arbitrary properties are accepted.
+        # To access properties that are not valid identifiers you can use `getattr`, e.g.
+        # `getattr(obj, '$type')`
+        def __getattr__(self, attr: str) -> object: ...
+    else:
+        __pydantic_extra__: Dict[str, object]
+
+
 OutputResponseComputerToolCallAction: TypeAlias = Union[
     ActionClick,
     ActionDoubleClick,
@@ -159,6 +272,11 @@ OutputResponseComputerToolCallAction: TypeAlias = Union[
     ActionScroll,
     ActionType,
     ActionWait,
+    OutputResponseComputerToolCallActionActionPointAndType,
+    OutputResponseComputerToolCallActionActionMouseDown,
+    OutputResponseComputerToolCallActionActionMouseUp,
+    OutputResponseComputerToolCallActionActionKeyDown,
+    OutputResponseComputerToolCallActionActionKeyUp,
 ]
 
 
