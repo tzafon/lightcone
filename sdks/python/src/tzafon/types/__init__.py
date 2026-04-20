@@ -46,7 +46,6 @@ from .computer_scroll_params import ComputerScrollParams as ComputerScrollParams
 from .response_create_params import ResponseCreateParams as ResponseCreateParams
 from .action_screenshot_param import ActionScreenshotParam as ActionScreenshotParam
 from .annotation_url_citation import AnnotationURLCitation as AnnotationURLCitation
-from .comparison_filter_param import ComparisonFilterParam as ComparisonFilterParam
 from .computer_batch_response import ComputerBatchResponse as ComputerBatchResponse
 from .computer_execute_params import ComputerExecuteParams as ComputerExecuteParams
 from .annotation_file_citation import AnnotationFileCitation as AnnotationFileCitation

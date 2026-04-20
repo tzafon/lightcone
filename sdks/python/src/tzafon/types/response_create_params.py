@@ -21,7 +21,6 @@ from .action_scroll_param import ActionScrollParam
 from .action_keypress_param import ActionKeypressParam
 from .action_open_page_param import ActionOpenPageParam
 from .action_screenshot_param import ActionScreenshotParam
-from .comparison_filter_param import ComparisonFilterParam
 from .action_double_click_param import ActionDoubleClickParam
 from .response_input_file_param import ResponseInputFileParam
 from .response_input_text_param import ResponseInputTextParam
@@ -151,43 +150,14 @@ __all__ = [
     "ToolChoiceToolChoiceAllowed",
     "ToolChoiceToolChoiceTypes",
     "ToolChoiceToolChoiceFunction",
-    "ToolChoiceToolChoiceMcp",
     "ToolChoiceToolChoiceCustom",
-    "ToolChoiceToolChoiceApplyPatch",
-    "ToolChoiceToolChoiceShell",
     "Tool",
     "ToolFunctionTool",
-    "ToolFileSearchTool",
-    "ToolFileSearchToolFilters",
-    "ToolFileSearchToolFiltersCompoundFilter",
-    "ToolFileSearchToolFiltersCompoundFilterFilter",
-    "ToolFileSearchToolRankingOptions",
-    "ToolFileSearchToolRankingOptionsHybridSearch",
-    "ToolComputerTool",
-    "ToolWebSearchTool",
-    "ToolWebSearchToolFilters",
-    "ToolWebSearchToolUserLocation",
-    "ToolMcp",
-    "ToolMcpAllowedTools",
-    "ToolMcpAllowedToolsMcpAllowedToolsMcpToolFilter",
-    "ToolMcpRequireApproval",
-    "ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilter",
-    "ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterAlways",
-    "ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterNever",
-    "ToolCodeInterpreter",
-    "ToolCodeInterpreterContainer",
-    "ToolCodeInterpreterContainerCodeInterpreterContainerCodeInterpreterToolAuto",
-    "ToolImageGeneration",
-    "ToolImageGenerationInputImageMask",
-    "ToolLocalShell",
-    "ToolFunctionShellTool",
     "ToolCustomTool",
     "ToolCustomToolFormat",
     "ToolCustomToolFormatText",
     "ToolCustomToolFormatGrammar",
-    "ToolWebSearchPreviewTool",
-    "ToolWebSearchPreviewToolUserLocation",
-    "ToolApplyPatchTool",
+    "ToolComputerTool",
 ]
 
 
@@ -1702,16 +1672,7 @@ class ToolChoiceToolChoiceTypes(TypedDict, total=False, extra_items=object):  # 
     [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
     """
 
-    type: Required[
-        Literal[
-            "file_search",
-            "web_search_preview",
-            "computer_use_preview",
-            "web_search_preview_2025_03_11",
-            "image_generation",
-            "code_interpreter",
-        ]
-    ]
+    type: Required[Literal["computer_use_preview"]]
 
 
 class ToolChoiceToolChoiceFunction(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
@@ -1722,18 +1683,6 @@ class ToolChoiceToolChoiceFunction(TypedDict, total=False, extra_items=object): 
     type: Required[Literal["function"]]
 
 
-class ToolChoiceToolChoiceMcp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Use this option to force the model to call a specific tool on a remote MCP server.
-    """
-
-    server_label: Required[str]
-
-    type: Required[Literal["mcp"]]
-
-    name: Optional[str]
-
-
 class ToolChoiceToolChoiceCustom(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
     """Use this option to force the model to call a specific custom tool."""
 
@@ -1742,27 +1691,12 @@ class ToolChoiceToolChoiceCustom(TypedDict, total=False, extra_items=object):  #
     type: Required[Literal["custom"]]
 
 
-class ToolChoiceToolChoiceApplyPatch(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Forces the model to call the apply_patch tool when executing a tool call."""
-
-    type: Required[Literal["apply_patch"]]
-
-
-class ToolChoiceToolChoiceShell(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Forces the model to call the shell tool when a tool call is required."""
-
-    type: Required[Literal["shell"]]
-
-
 ToolChoice: TypeAlias = Union[
     Literal["none", "auto", "required"],
     ToolChoiceToolChoiceAllowed,
     ToolChoiceToolChoiceTypes,
     ToolChoiceToolChoiceFunction,
-    ToolChoiceToolChoiceMcp,
     ToolChoiceToolChoiceCustom,
-    ToolChoiceToolChoiceApplyPatch,
-    ToolChoiceToolChoiceShell,
 ]
 
 
@@ -1781,294 +1715,6 @@ class ToolFunctionTool(TypedDict, total=False, extra_items=object):  # type: ign
     parameters: Optional[Dict[str, object]]
 
     strict: Optional[bool]
-
-
-ToolFileSearchToolFiltersCompoundFilterFilter: TypeAlias = Union[ComparisonFilterParam, object]
-
-
-class ToolFileSearchToolFiltersCompoundFilter(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Combine multiple filters using `and` or `or`."""
-
-    filters: Required[Iterable[ToolFileSearchToolFiltersCompoundFilterFilter]]
-
-    type: Required[Literal["and", "or"]]
-
-
-ToolFileSearchToolFilters: TypeAlias = Union[ComparisonFilterParam, ToolFileSearchToolFiltersCompoundFilter]
-
-
-class ToolFileSearchToolRankingOptionsHybridSearch(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Weights that control how reciprocal rank fusion balances semantic embedding matches versus sparse keyword matches when hybrid search is enabled.
-    """
-
-    embedding_weight: Required[float]
-
-    text_weight: Required[float]
-
-
-class ToolFileSearchToolRankingOptions(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Ranking options for search."""
-
-    hybrid_search: Optional[ToolFileSearchToolRankingOptionsHybridSearch]
-    """
-    Weights that control how reciprocal rank fusion balances semantic embedding
-    matches versus sparse keyword matches when hybrid search is enabled.
-    """
-
-    ranker: Optional[Literal["auto", "default-2024-11-15"]]
-
-    score_threshold: Optional[float]
-
-
-class ToolFileSearchTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that searches for relevant content from uploaded files.
-
-    Learn more about the [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
-    """
-
-    type: Required[Literal["file_search"]]
-
-    vector_store_ids: Required[SequenceNotStr[str]]
-
-    filters: Optional[ToolFileSearchToolFilters]
-    """
-    A filter used to compare a specified attribute key to a given value using a
-    defined comparison operation.
-    """
-
-    max_num_results: Optional[int]
-
-    ranking_options: Optional[ToolFileSearchToolRankingOptions]
-    """Ranking options for search."""
-
-
-class ToolComputerTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that controls a virtual computer.
-
-    Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-    """
-
-    display_height: Required[int]
-
-    display_width: Required[int]
-
-    environment: Required[Literal["windows", "mac", "linux", "ubuntu", "browser"]]
-
-    type: Required[Literal["computer_use_preview"]]
-
-
-class ToolWebSearchToolFilters(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Filters for the search."""
-
-    allowed_domains: Optional[SequenceNotStr[str]]
-
-
-class ToolWebSearchToolUserLocation(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """The approximate location of the user."""
-
-    city: Optional[str]
-
-    country: Optional[str]
-
-    region: Optional[str]
-
-    timezone: Optional[str]
-
-    type: Optional[Literal["approximate"]]
-
-
-class ToolWebSearchTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Search the Internet for sources related to the prompt.
-
-    Learn more about the
-    [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-    """
-
-    type: Required[Literal["web_search", "web_search_2025_08_26"]]
-
-    filters: Optional[ToolWebSearchToolFilters]
-    """Filters for the search."""
-
-    search_context_size: Optional[Literal["low", "medium", "high"]]
-
-    user_location: Optional[ToolWebSearchToolUserLocation]
-    """The approximate location of the user."""
-
-
-class ToolMcpAllowedToolsMcpAllowedToolsMcpToolFilter(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A filter object to specify which tools are allowed."""
-
-    read_only: Optional[bool]
-
-    tool_names: Optional[SequenceNotStr[str]]
-
-
-ToolMcpAllowedTools: TypeAlias = Union[SequenceNotStr[str], ToolMcpAllowedToolsMcpAllowedToolsMcpToolFilter]
-
-
-class ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterAlways(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A filter object to specify which tools are allowed."""
-
-    read_only: Optional[bool]
-
-    tool_names: Optional[SequenceNotStr[str]]
-
-
-class ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterNever(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A filter object to specify which tools are allowed."""
-
-    read_only: Optional[bool]
-
-    tool_names: Optional[SequenceNotStr[str]]
-
-
-class ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilter(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Specify which of the MCP server's tools require approval.
-
-    Can be
-    `always`, `never`, or a filter object associated with tools
-    that require approval.
-    """
-
-    always: Optional[ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterAlways]
-    """A filter object to specify which tools are allowed."""
-
-    never: Optional[ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilterNever]
-    """A filter object to specify which tools are allowed."""
-
-
-ToolMcpRequireApproval: TypeAlias = Union[
-    ToolMcpRequireApprovalMcpRequireApprovalMcpToolApprovalFilter, Literal["always", "never"]
-]
-
-
-class ToolMcp(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """
-    Give the model access to additional tools via remote Model Context Protocol
-    (MCP) servers. [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
-    """
-
-    server_label: Required[str]
-
-    type: Required[Literal["mcp"]]
-
-    allowed_tools: Optional[ToolMcpAllowedTools]
-    """A filter object to specify which tools are allowed."""
-
-    authorization: Optional[str]
-
-    connector_id: Optional[
-        Literal[
-            "connector_dropbox",
-            "connector_gmail",
-            "connector_googlecalendar",
-            "connector_googledrive",
-            "connector_microsoftteams",
-            "connector_outlookcalendar",
-            "connector_outlookemail",
-            "connector_sharepoint",
-        ]
-    ]
-
-    headers: Optional[Dict[str, str]]
-
-    require_approval: Optional[ToolMcpRequireApproval]
-    """Specify which of the MCP server's tools require approval.
-
-    Can be `always`, `never`, or a filter object associated with tools that require
-    approval.
-    """
-
-    server_description: Optional[str]
-
-    server_url: Optional[str]
-
-
-class ToolCodeInterpreterContainerCodeInterpreterContainerCodeInterpreterToolAuto(  # type: ignore[call-arg]
-    TypedDict, total=False, extra_items=object
-):
-    """Configuration for a code interpreter container.
-
-    Optionally specify the IDs of the files to run the code on.
-    """
-
-    type: Required[Literal["auto"]]
-
-    file_ids: Optional[SequenceNotStr[str]]
-
-    memory_limit: Optional[Literal["1g", "4g", "16g", "64g"]]
-
-
-ToolCodeInterpreterContainer: TypeAlias = Union[
-    str, ToolCodeInterpreterContainerCodeInterpreterContainerCodeInterpreterToolAuto
-]
-
-
-class ToolCodeInterpreter(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that runs Python code to help generate a response to a prompt."""
-
-    container: Required[ToolCodeInterpreterContainer]
-    """Configuration for a code interpreter container.
-
-    Optionally specify the IDs of the files to run the code on.
-    """
-
-    type: Required[Literal["code_interpreter"]]
-
-
-class ToolImageGenerationInputImageMask(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Optional mask for inpainting.
-
-    Contains `image_url`
-    (string, optional) and `file_id` (string, optional).
-    """
-
-    file_id: Optional[str]
-
-    image_url: Optional[str]
-
-
-class ToolImageGeneration(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that generates images using the GPT image models."""
-
-    type: Required[Literal["image_generation"]]
-
-    background: Optional[Literal["transparent", "opaque", "auto"]]
-
-    input_fidelity: Optional[Literal["high", "low"]]
-
-    input_image_mask: Optional[ToolImageGenerationInputImageMask]
-    """Optional mask for inpainting.
-
-    Contains `image_url` (string, optional) and `file_id` (string, optional).
-    """
-
-    model: Union[str, Literal["gpt-image-1", "gpt-image-1-mini"], None]
-
-    moderation: Optional[Literal["auto", "low"]]
-
-    output_compression: Optional[int]
-
-    output_format: Optional[Literal["png", "webp", "jpeg"]]
-
-    partial_images: Optional[int]
-
-    quality: Optional[Literal["low", "medium", "high", "auto"]]
-
-    size: Optional[Literal["1024x1024", "1024x1536", "1536x1024", "auto"]]
-
-
-class ToolLocalShell(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that allows the model to execute shell commands in a local environment."""
-
-    type: Required[Literal["local_shell"]]
-
-
-class ToolFunctionShellTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """A tool that allows the model to execute shell commands."""
-
-    type: Required[Literal["shell"]]
 
 
 class ToolCustomToolFormatText(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
@@ -2106,51 +1752,19 @@ class ToolCustomTool(TypedDict, total=False, extra_items=object):  # type: ignor
     """Unconstrained free-form text."""
 
 
-class ToolWebSearchPreviewToolUserLocation(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """The user's location."""
+class ToolComputerTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+    """A tool that controls a virtual computer.
 
-    type: Required[Literal["approximate"]]
-
-    city: Optional[str]
-
-    country: Optional[str]
-
-    region: Optional[str]
-
-    timezone: Optional[str]
-
-
-class ToolWebSearchPreviewTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """This tool searches the web for relevant results to use in a response.
-
-    Learn more about the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+    Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
     """
 
-    type: Required[Literal["web_search_preview", "web_search_preview_2025_03_11"]]
+    display_height: Required[int]
 
-    search_context_size: Optional[Literal["low", "medium", "high"]]
+    display_width: Required[int]
 
-    user_location: Optional[ToolWebSearchPreviewToolUserLocation]
-    """The user's location."""
+    environment: Required[Literal["windows", "mac", "linux", "ubuntu", "browser"]]
 
-
-class ToolApplyPatchTool(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
-    """Allows the assistant to create, delete, or update files using unified diffs."""
-
-    type: Required[Literal["apply_patch"]]
+    type: Required[Literal["computer_use_preview"]]
 
 
-Tool: TypeAlias = Union[
-    ToolFunctionTool,
-    ToolFileSearchTool,
-    ToolComputerTool,
-    ToolWebSearchTool,
-    ToolMcp,
-    ToolCodeInterpreter,
-    ToolImageGeneration,
-    ToolLocalShell,
-    ToolFunctionShellTool,
-    ToolCustomTool,
-    ToolWebSearchPreviewTool,
-    ToolApplyPatchTool,
-]
+Tool: TypeAlias = Union[ToolFunctionTool, ToolCustomTool, ToolComputerTool]
