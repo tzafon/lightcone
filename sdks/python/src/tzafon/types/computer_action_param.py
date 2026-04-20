@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Iterable
 from typing_extensions import TypedDict
 
 from .._types import SequenceNotStr
 
-__all__ = ["ComputerActionParam", "Debug"]
+__all__ = ["ComputerActionParam", "Debug", "Path"]
 
 
 class Debug(TypedDict, total=False):
@@ -24,6 +24,12 @@ class Debug(TypedDict, total=False):
     stream: bool
 
     timeout_seconds: int
+
+
+class Path(TypedDict, total=False):
+    x: float
+
+    y: float
 
 
 class ComputerActionParam(TypedDict, total=False):
@@ -54,15 +60,25 @@ class ComputerActionParam(TypedDict, total=False):
 
     ms: int
 
+    path: Iterable[Path]
+
     proxy_url: str
 
     request_id: str
-    """
-    RequestId is used for correlating streaming output to the originating request.
-    Set on ActionRequest, not individual action types.
+    """RequestId correlates streaming output to the originating request.
+
+    Set at the top level of the action envelope, not on individual action types.
     """
 
     scale_factor: float
+
+    scroll_x: float
+    """
+    OpenAI CUA-spec aliases for the same data; used as fallbacks when
+    dx/dy/x1/y1/x2/y2 are absent on the request.
+    """
+
+    scroll_y: float
 
     tab_id: str
     """For tab management (browser sessions only)"""

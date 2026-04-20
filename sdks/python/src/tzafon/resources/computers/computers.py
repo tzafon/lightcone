@@ -419,9 +419,16 @@ class ComputersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ActionResult:
         """
-        Execute a shell command with optional timeout and output length limits.
-        Optionally specify tab_id (browser sessions only). Deprecated: use /exec or
-        /exec/sync instead.
+        **Deprecated** — prefer `/exec` (streaming NDJSON) or `/exec/sync` (buffered
+        JSON). Executes a shell command inside the session and returns a buffered result
+        with `stdout`, `stderr`, and `exit_code`. This endpoint always runs
+        synchronously; for real-time output use `/exec`, which streams command output
+        line by line.
+
+        `tab_id` is accepted for compatibility but is only meaningful on browser-session
+        actions; debug commands run in desktop sessions. `timeout_seconds` defaults to
+        120; `max_output_length` defaults to 65536 bytes and truncates `stdout` /
+        `stderr`.
 
         Args:
           extra_headers: Send extra headers
@@ -978,8 +985,25 @@ class ComputersResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """
-        Stream real-time events using Server-Sent Events (SSE)
+        """Server-Sent Events stream carrying non-video events for a session.
+
+        Each `data:`
+        line is a JSON object describing one event. Three event categories are emitted:
+
+        - **Action requests** — an action has been queued for execution.
+        - **Action responses** — a previously requested action has completed. Includes a
+          `request_id` for correlation; for shell commands, also includes `exit_code`,
+          `stdout`, and `stderr`.
+        - **Command output chunks** — streaming output from a long-running shell command
+          started with `/exec`. Each chunk includes `request_id`, base64-encoded `data`,
+          and an `is_stderr` flag.
+
+        Video and cursor traffic is delivered on `/computers/{id}/screencast` instead
+        and is deliberately excluded from this stream so high-frequency frame data
+        doesn't drown out action responses.
+
+        On stream-setup failure the server emits a single `event: error` SSE event and
+        closes the connection.
 
         Args:
           extra_headers: Send extra headers
@@ -1012,9 +1036,24 @@ class ComputersResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """
-        Stream only screencast frames (base64 JPEG images) using Server-Sent Events
-        (SSE) for live browser viewing
+        """Server-Sent Events stream carrying the video + cursor traffic for a live
+        session.
+
+        The event shapes depend on session kind:
+
+        - **Browser sessions** emit default (unnamed) SSE events whose `data` is a JSON
+          object with a base64-encoded JPEG frame in `image_data` and a `metadata`
+          object containing timestamp and viewport dimensions.
+        - **Desktop sessions** emit three named event types: `event: h264` carries a
+          JSON object whose `nalu_data` field is a base64-encoded raw H.264 NAL-unit
+          blob suitable for feeding into a WebCodecs `VideoDecoder`;
+          `event: cursor_update` carries a cursor-sprite bitmap and hotspot, emitted
+          only when the cursor shape changes; `event: cursor_position` carries `x` / `y`
+          coordinates, emitted once per video frame while the cursor is moving.
+
+        A `: heartbeat` SSE comment is sent every 30 seconds to keep intermediaries from
+        closing the connection. Action responses and command output are delivered on
+        `/computers/{id}/events` instead and are deliberately excluded from this stream.
 
         Args:
           extra_headers: Send extra headers
@@ -1688,9 +1727,16 @@ class AsyncComputersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ActionResult:
         """
-        Execute a shell command with optional timeout and output length limits.
-        Optionally specify tab_id (browser sessions only). Deprecated: use /exec or
-        /exec/sync instead.
+        **Deprecated** — prefer `/exec` (streaming NDJSON) or `/exec/sync` (buffered
+        JSON). Executes a shell command inside the session and returns a buffered result
+        with `stdout`, `stderr`, and `exit_code`. This endpoint always runs
+        synchronously; for real-time output use `/exec`, which streams command output
+        line by line.
+
+        `tab_id` is accepted for compatibility but is only meaningful on browser-session
+        actions; debug commands run in desktop sessions. `timeout_seconds` defaults to
+        120; `max_output_length` defaults to 65536 bytes and truncates `stdout` /
+        `stderr`.
 
         Args:
           extra_headers: Send extra headers
@@ -2247,8 +2293,25 @@ class AsyncComputersResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """
-        Stream real-time events using Server-Sent Events (SSE)
+        """Server-Sent Events stream carrying non-video events for a session.
+
+        Each `data:`
+        line is a JSON object describing one event. Three event categories are emitted:
+
+        - **Action requests** — an action has been queued for execution.
+        - **Action responses** — a previously requested action has completed. Includes a
+          `request_id` for correlation; for shell commands, also includes `exit_code`,
+          `stdout`, and `stderr`.
+        - **Command output chunks** — streaming output from a long-running shell command
+          started with `/exec`. Each chunk includes `request_id`, base64-encoded `data`,
+          and an `is_stderr` flag.
+
+        Video and cursor traffic is delivered on `/computers/{id}/screencast` instead
+        and is deliberately excluded from this stream so high-frequency frame data
+        doesn't drown out action responses.
+
+        On stream-setup failure the server emits a single `event: error` SSE event and
+        closes the connection.
 
         Args:
           extra_headers: Send extra headers
@@ -2281,9 +2344,24 @@ class AsyncComputersResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """
-        Stream only screencast frames (base64 JPEG images) using Server-Sent Events
-        (SSE) for live browser viewing
+        """Server-Sent Events stream carrying the video + cursor traffic for a live
+        session.
+
+        The event shapes depend on session kind:
+
+        - **Browser sessions** emit default (unnamed) SSE events whose `data` is a JSON
+          object with a base64-encoded JPEG frame in `image_data` and a `metadata`
+          object containing timestamp and viewport dimensions.
+        - **Desktop sessions** emit three named event types: `event: h264` carries a
+          JSON object whose `nalu_data` field is a base64-encoded raw H.264 NAL-unit
+          blob suitable for feeding into a WebCodecs `VideoDecoder`;
+          `event: cursor_update` carries a cursor-sprite bitmap and hotspot, emitted
+          only when the cursor shape changes; `event: cursor_position` carries `x` / `y`
+          coordinates, emitted once per video frame while the cursor is moving.
+
+        A `: heartbeat` SSE comment is sent every 30 seconds to keep intermediaries from
+        closing the connection. Action responses and command output are delivered on
+        `/computers/{id}/events` instead and are deliberately excluded from this stream.
 
         Args:
           extra_headers: Send extra headers

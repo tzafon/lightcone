@@ -60,10 +60,22 @@ class ExecResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> JSONLDecoder[ExecCreateResponse]:
-        """Execute a shell command with real-time streaming output as NDJSON.
+        """
+        Execute a shell command (desktop sessions only) and stream output back as
+        newline-delimited JSON. Each line is a `types.ExecOutput` object whose `type` is
+        one of `stdout`, `stderr`, `exit`, or `error`. The stream terminates with a
+        single `{"type":"exit","code":<int>}` line; code `-1` indicates timeout or
+        abnormal termination.
 
-        Each line is
-        a JSON object with type (stdout/stderr/exit/error).
+        **Error model:** this endpoint always returns HTTP 200 and reports failures
+        (invalid JSON body, missing command, stream-setup failure) as a single
+        `{"type":"error","code":"<CODE>","message":"..."}` NDJSON line followed by
+        connection close. Clients MUST parse the first line rather than relying on HTTP
+        status codes.
+
+        Output is filtered server-side by request ID, so concurrent `/exec` calls on the
+        same computer don't interleave. Defaults: `cwd=/workspace`,
+        `timeout_seconds=120`.
 
         Args:
           extra_headers: Send extra headers
@@ -178,10 +190,22 @@ class AsyncExecResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> AsyncJSONLDecoder[ExecCreateResponse]:
-        """Execute a shell command with real-time streaming output as NDJSON.
+        """
+        Execute a shell command (desktop sessions only) and stream output back as
+        newline-delimited JSON. Each line is a `types.ExecOutput` object whose `type` is
+        one of `stdout`, `stderr`, `exit`, or `error`. The stream terminates with a
+        single `{"type":"exit","code":<int>}` line; code `-1` indicates timeout or
+        abnormal termination.
 
-        Each line is
-        a JSON object with type (stdout/stderr/exit/error).
+        **Error model:** this endpoint always returns HTTP 200 and reports failures
+        (invalid JSON body, missing command, stream-setup failure) as a single
+        `{"type":"error","code":"<CODE>","message":"..."}` NDJSON line followed by
+        connection close. Clients MUST parse the first line rather than relying on HTTP
+        status codes.
+
+        Output is filtered server-side by request ID, so concurrent `/exec` calls on the
+        same computer don't interleave. Defaults: `cwd=/workspace`,
+        `timeout_seconds=120`.
 
         Args:
           extra_headers: Send extra headers
