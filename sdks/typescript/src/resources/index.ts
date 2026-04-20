@@ -63,7 +63,6 @@ export {
   type AnnotationFileCitation,
   type AnnotationFilePath,
   type AnnotationURLCitation,
-  type ComparisonFilter,
   type Logprob,
   type McpApprovalRequest,
   type OutputImage,

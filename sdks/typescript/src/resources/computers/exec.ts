@@ -9,8 +9,21 @@ import { path } from '../../internal/utils/path';
 
 export class Exec extends APIResource {
   /**
-   * Execute a shell command with real-time streaming output as NDJSON. Each line is
-   * a JSON object with type (stdout/stderr/exit/error).
+   * Execute a shell command (desktop sessions only) and stream output back as
+   * newline-delimited JSON. Each line is a `types.ExecOutput` object whose `type` is
+   * one of `stdout`, `stderr`, `exit`, or `error`. The stream terminates with a
+   * single `{"type":"exit","code":<int>}` line; code `-1` indicates timeout or
+   * abnormal termination.
+   *
+   * **Error model:** this endpoint always returns HTTP 200 and reports failures
+   * (invalid JSON body, missing command, stream-setup failure) as a single
+   * `{"type":"error","code":"<CODE>","message":"..."}` NDJSON line followed by
+   * connection close. Clients MUST parse the first line rather than relying on HTTP
+   * status codes.
+   *
+   * Output is filtered server-side by request ID, so concurrent `/exec` calls on the
+   * same computer don't interleave. Defaults: `cwd=/workspace`,
+   * `timeout_seconds=120`.
    *
    * @example
    * ```ts

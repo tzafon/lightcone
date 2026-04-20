@@ -28,9 +28,9 @@ export class Tabs extends APIResource {
 
   /**
    * Get a list of open tabs with IDs, URLs, titles, and main tab status (browser
-   * sessions only). Includes external CDP pages (e.g., Playwright). Excludes
-   * devtools:// and chrome:// tabs. Results may be eventually consistent for newly
-   * created tabs.
+   * sessions only). Includes pages opened by external automation tooling (e.g.,
+   * Playwright-controlled tabs). Excludes devtools:// and chrome:// internal tabs.
+   * Results may be eventually consistent for newly created tabs.
    *
    * @example
    * ```ts

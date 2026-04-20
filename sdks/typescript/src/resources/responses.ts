@@ -256,20 +256,6 @@ export interface AnnotationURLCitation {
 }
 
 /**
- * A filter used to compare a specified attribute key to a given value using a
- * defined comparison operation.
- */
-export interface ComparisonFilter {
-  key: string;
-
-  type: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte';
-
-  value: string | number | boolean | Array<string | number>;
-
-  [k: string]: unknown;
-}
-
-/**
  * The log probability of a token.
  */
 export interface Logprob {
@@ -795,24 +781,10 @@ export interface ResponseCreateParams {
     | ResponseCreateParams.ToolChoiceAllowed
     | ResponseCreateParams.ToolChoiceTypes
     | ResponseCreateParams.ToolChoiceFunction
-    | ResponseCreateParams.ToolChoiceMcp
-    | ResponseCreateParams.ToolChoiceCustom
-    | ResponseCreateParams.ToolChoiceApplyPatch
-    | ResponseCreateParams.ToolChoiceShell;
+    | ResponseCreateParams.ToolChoiceCustom;
 
   tools?: Array<
-    | ResponseCreateParams.FunctionTool
-    | ResponseCreateParams.FileSearchTool
-    | ResponseCreateParams.ComputerTool
-    | ResponseCreateParams.WebSearchTool
-    | ResponseCreateParams.Mcp
-    | ResponseCreateParams.CodeInterpreter
-    | ResponseCreateParams.ImageGeneration
-    | ResponseCreateParams.LocalShell
-    | ResponseCreateParams.FunctionShellTool
-    | ResponseCreateParams.CustomTool
-    | ResponseCreateParams.WebSearchPreviewTool
-    | ResponseCreateParams.ApplyPatchTool
+    ResponseCreateParams.FunctionTool | ResponseCreateParams.CustomTool | ResponseCreateParams.ComputerTool
   >;
 
   top_k?: number | null;
@@ -2506,13 +2478,7 @@ export namespace ResponseCreateParams {
    * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
    */
   export interface ToolChoiceTypes {
-    type:
-      | 'file_search'
-      | 'web_search_preview'
-      | 'computer_use_preview'
-      | 'web_search_preview_2025_03_11'
-      | 'image_generation'
-      | 'code_interpreter';
+    type: 'computer_use_preview';
 
     [k: string]: unknown;
   }
@@ -2529,44 +2495,12 @@ export namespace ResponseCreateParams {
   }
 
   /**
-   * Use this option to force the model to call a specific tool on a remote MCP
-   * server.
-   */
-  export interface ToolChoiceMcp {
-    server_label: string;
-
-    type: 'mcp';
-
-    name?: string | null;
-
-    [k: string]: unknown;
-  }
-
-  /**
    * Use this option to force the model to call a specific custom tool.
    */
   export interface ToolChoiceCustom {
     name: string;
 
     type: 'custom';
-
-    [k: string]: unknown;
-  }
-
-  /**
-   * Forces the model to call the apply_patch tool when executing a tool call.
-   */
-  export interface ToolChoiceApplyPatch {
-    type: 'apply_patch';
-
-    [k: string]: unknown;
-  }
-
-  /**
-   * Forces the model to call the shell tool when a tool call is required.
-   */
-  export interface ToolChoiceShell {
-    type: 'shell';
 
     [k: string]: unknown;
   }
@@ -2587,349 +2521,6 @@ export namespace ResponseCreateParams {
     parameters?: { [key: string]: unknown } | null;
 
     strict?: boolean | null;
-
-    [k: string]: unknown;
-  }
-
-  /**
-   * A tool that searches for relevant content from uploaded files.
-   *
-   * Learn more about the
-   * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
-   */
-  export interface FileSearchTool {
-    type: 'file_search';
-
-    vector_store_ids: Array<string>;
-
-    /**
-     * A filter used to compare a specified attribute key to a given value using a
-     * defined comparison operation.
-     */
-    filters?: ResponsesAPI.ComparisonFilter | FileSearchTool.CompoundFilter | null;
-
-    max_num_results?: number | null;
-
-    /**
-     * Ranking options for search.
-     */
-    ranking_options?: FileSearchTool.RankingOptions | null;
-
-    [k: string]: unknown;
-  }
-
-  export namespace FileSearchTool {
-    /**
-     * Combine multiple filters using `and` or `or`.
-     */
-    export interface CompoundFilter {
-      filters: Array<ResponsesAPI.ComparisonFilter | unknown>;
-
-      type: 'and' | 'or';
-
-      [k: string]: unknown;
-    }
-
-    /**
-     * Ranking options for search.
-     */
-    export interface RankingOptions {
-      /**
-       * Weights that control how reciprocal rank fusion balances semantic embedding
-       * matches versus sparse keyword matches when hybrid search is enabled.
-       */
-      hybrid_search?: RankingOptions.HybridSearch | null;
-
-      ranker?: 'auto' | 'default-2024-11-15' | null;
-
-      score_threshold?: number | null;
-
-      [k: string]: unknown;
-    }
-
-    export namespace RankingOptions {
-      /**
-       * Weights that control how reciprocal rank fusion balances semantic embedding
-       * matches versus sparse keyword matches when hybrid search is enabled.
-       */
-      export interface HybridSearch {
-        embedding_weight: number;
-
-        text_weight: number;
-
-        [k: string]: unknown;
-      }
-    }
-  }
-
-  /**
-   * A tool that controls a virtual computer.
-   *
-   * Learn more about the
-   * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-   */
-  export interface ComputerTool {
-    display_height: number;
-
-    display_width: number;
-
-    environment: 'windows' | 'mac' | 'linux' | 'ubuntu' | 'browser';
-
-    type: 'computer_use_preview';
-
-    [k: string]: unknown;
-  }
-
-  /**
-   * Search the Internet for sources related to the prompt.
-   *
-   * Learn more about the
-   * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-   */
-  export interface WebSearchTool {
-    type: 'web_search' | 'web_search_2025_08_26';
-
-    /**
-     * Filters for the search.
-     */
-    filters?: WebSearchTool.Filters | null;
-
-    search_context_size?: 'low' | 'medium' | 'high' | null;
-
-    /**
-     * The approximate location of the user.
-     */
-    user_location?: WebSearchTool.UserLocation | null;
-
-    [k: string]: unknown;
-  }
-
-  export namespace WebSearchTool {
-    /**
-     * Filters for the search.
-     */
-    export interface Filters {
-      allowed_domains?: Array<string> | null;
-
-      [k: string]: unknown;
-    }
-
-    /**
-     * The approximate location of the user.
-     */
-    export interface UserLocation {
-      city?: string | null;
-
-      country?: string | null;
-
-      region?: string | null;
-
-      timezone?: string | null;
-
-      type?: 'approximate' | null;
-
-      [k: string]: unknown;
-    }
-  }
-
-  /**
-   * Give the model access to additional tools via remote Model Context Protocol
-   * (MCP) servers.
-   * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
-   */
-  export interface Mcp {
-    server_label: string;
-
-    type: 'mcp';
-
-    /**
-     * A filter object to specify which tools are allowed.
-     */
-    allowed_tools?: Array<string> | Mcp.McpAllowedToolsMcpToolFilter | null;
-
-    authorization?: string | null;
-
-    connector_id?:
-      | 'connector_dropbox'
-      | 'connector_gmail'
-      | 'connector_googlecalendar'
-      | 'connector_googledrive'
-      | 'connector_microsoftteams'
-      | 'connector_outlookcalendar'
-      | 'connector_outlookemail'
-      | 'connector_sharepoint'
-      | null;
-
-    headers?: { [key: string]: string } | null;
-
-    /**
-     * Specify which of the MCP server's tools require approval.
-     *
-     * Can be `always`, `never`, or a filter object associated with tools that require
-     * approval.
-     */
-    require_approval?: Mcp.McpRequireApprovalMcpToolApprovalFilter | 'always' | 'never' | null;
-
-    server_description?: string | null;
-
-    server_url?: string | null;
-
-    [k: string]: unknown;
-  }
-
-  export namespace Mcp {
-    /**
-     * A filter object to specify which tools are allowed.
-     */
-    export interface McpAllowedToolsMcpToolFilter {
-      read_only?: boolean | null;
-
-      tool_names?: Array<string> | null;
-
-      [k: string]: unknown;
-    }
-
-    /**
-     * Specify which of the MCP server's tools require approval.
-     *
-     * Can be `always`, `never`, or a filter object associated with tools that require
-     * approval.
-     */
-    export interface McpRequireApprovalMcpToolApprovalFilter {
-      /**
-       * A filter object to specify which tools are allowed.
-       */
-      always?: McpRequireApprovalMcpToolApprovalFilter.Always | null;
-
-      /**
-       * A filter object to specify which tools are allowed.
-       */
-      never?: McpRequireApprovalMcpToolApprovalFilter.Never | null;
-
-      [k: string]: unknown;
-    }
-
-    export namespace McpRequireApprovalMcpToolApprovalFilter {
-      /**
-       * A filter object to specify which tools are allowed.
-       */
-      export interface Always {
-        read_only?: boolean | null;
-
-        tool_names?: Array<string> | null;
-
-        [k: string]: unknown;
-      }
-
-      /**
-       * A filter object to specify which tools are allowed.
-       */
-      export interface Never {
-        read_only?: boolean | null;
-
-        tool_names?: Array<string> | null;
-
-        [k: string]: unknown;
-      }
-    }
-  }
-
-  /**
-   * A tool that runs Python code to help generate a response to a prompt.
-   */
-  export interface CodeInterpreter {
-    /**
-     * Configuration for a code interpreter container.
-     *
-     * Optionally specify the IDs of the files to run the code on.
-     */
-    container: string | CodeInterpreter.CodeInterpreterContainerCodeInterpreterToolAuto;
-
-    type: 'code_interpreter';
-
-    [k: string]: unknown;
-  }
-
-  export namespace CodeInterpreter {
-    /**
-     * Configuration for a code interpreter container.
-     *
-     * Optionally specify the IDs of the files to run the code on.
-     */
-    export interface CodeInterpreterContainerCodeInterpreterToolAuto {
-      type: 'auto';
-
-      file_ids?: Array<string> | null;
-
-      memory_limit?: '1g' | '4g' | '16g' | '64g' | null;
-
-      [k: string]: unknown;
-    }
-  }
-
-  /**
-   * A tool that generates images using the GPT image models.
-   */
-  export interface ImageGeneration {
-    type: 'image_generation';
-
-    background?: 'transparent' | 'opaque' | 'auto' | null;
-
-    input_fidelity?: 'high' | 'low' | null;
-
-    /**
-     * Optional mask for inpainting.
-     *
-     * Contains `image_url` (string, optional) and `file_id` (string, optional).
-     */
-    input_image_mask?: ImageGeneration.InputImageMask | null;
-
-    model?: (string & {}) | 'gpt-image-1' | 'gpt-image-1-mini' | null;
-
-    moderation?: 'auto' | 'low' | null;
-
-    output_compression?: number | null;
-
-    output_format?: 'png' | 'webp' | 'jpeg' | null;
-
-    partial_images?: number | null;
-
-    quality?: 'low' | 'medium' | 'high' | 'auto' | null;
-
-    size?: '1024x1024' | '1024x1536' | '1536x1024' | 'auto' | null;
-
-    [k: string]: unknown;
-  }
-
-  export namespace ImageGeneration {
-    /**
-     * Optional mask for inpainting.
-     *
-     * Contains `image_url` (string, optional) and `file_id` (string, optional).
-     */
-    export interface InputImageMask {
-      file_id?: string | null;
-
-      image_url?: string | null;
-
-      [k: string]: unknown;
-    }
-  }
-
-  /**
-   * A tool that allows the model to execute shell commands in a local environment.
-   */
-  export interface LocalShell {
-    type: 'local_shell';
-
-    [k: string]: unknown;
-  }
-
-  /**
-   * A tool that allows the model to execute shell commands.
-   */
-  export interface FunctionShellTool {
-    type: 'shell';
 
     [k: string]: unknown;
   }
@@ -2980,48 +2571,19 @@ export namespace ResponseCreateParams {
   }
 
   /**
-   * This tool searches the web for relevant results to use in a response.
+   * A tool that controls a virtual computer.
    *
    * Learn more about the
-   * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+   * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
    */
-  export interface WebSearchPreviewTool {
-    type: 'web_search_preview' | 'web_search_preview_2025_03_11';
+  export interface ComputerTool {
+    display_height: number;
 
-    search_context_size?: 'low' | 'medium' | 'high' | null;
+    display_width: number;
 
-    /**
-     * The user's location.
-     */
-    user_location?: WebSearchPreviewTool.UserLocation | null;
+    environment: 'windows' | 'mac' | 'linux' | 'ubuntu' | 'browser';
 
-    [k: string]: unknown;
-  }
-
-  export namespace WebSearchPreviewTool {
-    /**
-     * The user's location.
-     */
-    export interface UserLocation {
-      type: 'approximate';
-
-      city?: string | null;
-
-      country?: string | null;
-
-      region?: string | null;
-
-      timezone?: string | null;
-
-      [k: string]: unknown;
-    }
-  }
-
-  /**
-   * Allows the assistant to create, delete, or update files using unified diffs.
-   */
-  export interface ApplyPatchTool {
-    type: 'apply_patch';
+    type: 'computer_use_preview';
 
     [k: string]: unknown;
   }
@@ -3051,7 +2613,6 @@ export declare namespace Responses {
     type AnnotationFileCitation as AnnotationFileCitation,
     type AnnotationFilePath as AnnotationFilePath,
     type AnnotationURLCitation as AnnotationURLCitation,
-    type ComparisonFilter as ComparisonFilter,
     type Logprob as Logprob,
     type McpApprovalRequest as McpApprovalRequest,
     type OutputImage as OutputImage,
