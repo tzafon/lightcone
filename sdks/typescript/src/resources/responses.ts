@@ -18,11 +18,7 @@ export class Responses extends APIResource {
   /**
    * Retrieve Responses
    */
-  retrieve(
-    responseID: string,
-    query: ResponseRetrieveParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<unknown> {
+  retrieve(responseID: string, query: ResponseRetrieveParams | null | undefined = {}, options?: RequestOptions): APIPromise<unknown> {
     return this._client.get(path`/v1/responses/${responseID}`, { query, ...options });
   }
 
@@ -46,7 +42,7 @@ export interface ActionClick {
 
   y: number;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -59,7 +55,7 @@ export interface ActionDoubleClick {
 
   y: number;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -70,7 +66,7 @@ export interface ActionDrag {
 
   type: 'drag';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 export namespace ActionDrag {
@@ -82,7 +78,7 @@ export namespace ActionDrag {
 
     y: number;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 }
 
@@ -96,7 +92,7 @@ export interface ActionFind {
 
   url: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -107,7 +103,7 @@ export interface ActionKeypress {
 
   type: 'keypress';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -120,7 +116,7 @@ export interface ActionMove {
 
   y: number;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -131,7 +127,7 @@ export interface ActionOpenPage {
 
   url: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -140,7 +136,7 @@ export interface ActionOpenPage {
 export interface ActionScreenshot {
   type: 'screenshot';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -157,7 +153,7 @@ export interface ActionScroll {
 
   y: number;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -168,7 +164,7 @@ export interface ActionSearchSource {
 
   url: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -179,7 +175,7 @@ export interface ActionType {
 
   type: 'type';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -188,7 +184,7 @@ export interface ActionType {
 export interface ActionWait {
   type: 'wait';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -207,7 +203,7 @@ export interface AnnotationContainerFileCitation {
 
   type: 'container_file_citation';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -222,7 +218,7 @@ export interface AnnotationFileCitation {
 
   type: 'file_citation';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -235,7 +231,7 @@ export interface AnnotationFilePath {
 
   type: 'file_path';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -252,7 +248,7 @@ export interface AnnotationURLCitation {
 
   url: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -267,7 +263,7 @@ export interface Logprob {
 
   top_logprobs: Array<Logprob.TopLogprob>;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 export namespace Logprob {
@@ -281,7 +277,7 @@ export namespace Logprob {
 
     logprob: number;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 }
 
@@ -299,7 +295,7 @@ export interface McpApprovalRequest {
 
   type: 'mcp_approval_request';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -310,7 +306,7 @@ export interface OutputImage {
 
   url: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -321,7 +317,7 @@ export interface OutputLogs {
 
   type: 'logs';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -338,7 +334,7 @@ export interface ResponseInputFileParam {
 
   filename?: string;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -355,7 +351,7 @@ export interface ResponseInputImageParam {
 
   image_url?: string | null;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -366,7 +362,7 @@ export interface ResponseInputTextParam {
 
   type: 'input_text';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -377,7 +373,7 @@ export interface Summary {
 
   type: 'summary_text';
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 /**
@@ -392,12 +388,7 @@ export interface ResponseCreateResponse {
 
   object: 'response';
 
-  output: Array<
-    | ResponseCreateResponse.ResponseOutputMessage
-    | ResponseCreateResponse.ResponseFunctionToolCall
-    | ResponseCreateResponse.ResponseComputerToolCall
-    | { [key: string]: unknown }
-  >;
+  output: Array<ResponseCreateResponse.ResponseOutputMessage | ResponseCreateResponse.ResponseFunctionToolCall | ResponseCreateResponse.ResponseComputerToolCall | { [key: string]: unknown }>;
 
   status: 'completed' | 'failed' | 'in_progress' | 'incomplete' | 'cancelled';
 
@@ -407,7 +398,7 @@ export interface ResponseCreateResponse {
 
   usage?: ResponseCreateResponse.Usage | null;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 export namespace ResponseCreateResponse {
@@ -425,7 +416,7 @@ export namespace ResponseCreateResponse {
 
     type: 'message';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseOutputMessage {
@@ -433,12 +424,7 @@ export namespace ResponseCreateResponse {
      * A text output from the model.
      */
     export interface ResponseOutputText {
-      annotations: Array<
-        | ResponsesAPI.AnnotationFileCitation
-        | ResponsesAPI.AnnotationURLCitation
-        | ResponsesAPI.AnnotationContainerFileCitation
-        | ResponsesAPI.AnnotationFilePath
-      >;
+      annotations: Array<ResponsesAPI.AnnotationFileCitation | ResponsesAPI.AnnotationURLCitation | ResponsesAPI.AnnotationContainerFileCitation | ResponsesAPI.AnnotationFilePath>;
 
       text: string;
 
@@ -446,7 +432,7 @@ export namespace ResponseCreateResponse {
 
       logprobs?: Array<ResponsesAPI.Logprob> | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -457,7 +443,7 @@ export namespace ResponseCreateResponse {
 
       type: 'refusal';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -481,7 +467,7 @@ export namespace ResponseCreateResponse {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -497,21 +483,7 @@ export namespace ResponseCreateResponse {
     /**
      * A click action.
      */
-    action:
-      | ResponsesAPI.ActionClick
-      | ResponsesAPI.ActionDoubleClick
-      | ResponsesAPI.ActionDrag
-      | ResponsesAPI.ActionKeypress
-      | ResponsesAPI.ActionMove
-      | ResponsesAPI.ActionScreenshot
-      | ResponsesAPI.ActionScroll
-      | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait
-      | ResponseComputerToolCall.ActionPointAndType
-      | ResponseComputerToolCall.ActionMouseDown
-      | ResponseComputerToolCall.ActionMouseUp
-      | ResponseComputerToolCall.ActionKeyDown
-      | ResponseComputerToolCall.ActionKeyUp;
+    action: ResponsesAPI.ActionClick | ResponsesAPI.ActionDoubleClick | ResponsesAPI.ActionDrag | ResponsesAPI.ActionKeypress | ResponsesAPI.ActionMove | ResponsesAPI.ActionScreenshot | ResponsesAPI.ActionScroll | ResponsesAPI.ActionType | ResponsesAPI.ActionWait | ResponseComputerToolCall.ActionPointAndType | ResponseComputerToolCall.ActionMouseDown | ResponseComputerToolCall.ActionMouseUp | ResponseComputerToolCall.ActionKeyDown | ResponseComputerToolCall.ActionKeyUp;
 
     call_id: string;
 
@@ -521,7 +493,7 @@ export namespace ResponseCreateResponse {
 
     type: 'computer_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseComputerToolCall {
@@ -537,7 +509,7 @@ export namespace ResponseCreateResponse {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -550,7 +522,7 @@ export namespace ResponseCreateResponse {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -563,7 +535,7 @@ export namespace ResponseCreateResponse {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -574,7 +546,7 @@ export namespace ResponseCreateResponse {
 
       type: 'key_down';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -585,7 +557,7 @@ export namespace ResponseCreateResponse {
 
       type: 'key_up';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -598,7 +570,7 @@ export namespace ResponseCreateResponse {
 
       message?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -609,63 +581,16 @@ export namespace ResponseCreateResponse {
 
     total_tokens?: number;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 }
 
-export type ResponseRetrieveResponse = unknown;
+export type ResponseRetrieveResponse = unknown
 
-export type ResponseCancelResponse = unknown;
+export type ResponseCancelResponse = unknown
 
 export interface ResponseCreateParams {
-  input:
-    | string
-    | Array<
-        | ResponseCreateParams.EasyInputMessageParam
-        | ResponseCreateParams.Message
-        | ResponseCreateParams.ResponseOutputMessageParam
-        | ResponseCreateParams.ResponseFileSearchToolCallParam
-        | ResponseCreateParams.ResponseComputerToolCallParam
-        | ResponseCreateParams.ComputerCallOutput
-        | ResponseCreateParams.ResponseFunctionWebSearchParam
-        | ResponseCreateParams.ResponseFunctionToolCallParam
-        | ResponseCreateParams.FunctionCallOutput
-        | ResponseCreateParams.ResponseReasoningItemParam
-        | ResponseCreateParams.ResponseCompactionItemParamParam
-        | ResponseCreateParams.ImageGenerationCall
-        | ResponseCreateParams.ResponseCodeInterpreterToolCallParam
-        | ResponseCreateParams.LocalShellCall
-        | ResponseCreateParams.LocalShellCallOutput
-        | ResponseCreateParams.ShellCall
-        | ResponseCreateParams.ShellCallOutput
-        | ResponseCreateParams.ApplyPatchCall
-        | ResponseCreateParams.ApplyPatchCallOutput
-        | ResponseCreateParams.McpListTools
-        | McpApprovalRequest
-        | ResponseCreateParams.McpApprovalResponse
-        | ResponseCreateParams.McpCall
-        | ResponseCreateParams.ResponseCustomToolCallOutputParam
-        | ResponseCreateParams.ResponseCustomToolCallParam
-        | ResponseCreateParams.ItemReference
-        | ResponseCreateParams.ResponseOutputMessage
-        | ResponseCreateParams.ResponseFileSearchToolCall
-        | ResponseCreateParams.ResponseFunctionToolCall
-        | ResponseCreateParams.ResponseFunctionWebSearch
-        | ResponseCreateParams.ResponseComputerToolCall
-        | ResponseCreateParams.ResponseReasoningItem
-        | ResponseCreateParams.ResponseCompactionItem
-        | ResponseCreateParams.ImageGenerationCall
-        | ResponseCreateParams.ResponseCodeInterpreterToolCall
-        | ResponseCreateParams.LocalShellCall
-        | ResponseCreateParams.ResponseFunctionShellToolCall
-        | ResponseCreateParams.ResponseFunctionShellToolCallOutput
-        | ResponseCreateParams.ResponseApplyPatchToolCall
-        | ResponseCreateParams.ResponseApplyPatchToolCallOutput
-        | ResponseCreateParams.McpCall
-        | ResponseCreateParams.McpListTools
-        | McpApprovalRequest
-        | ResponseCreateParams.ResponseCustomToolCall
-      >;
+  input: string | Array<ResponseCreateParams.EasyInputMessageParam | ResponseCreateParams.Message | ResponseCreateParams.ResponseOutputMessageParam | ResponseCreateParams.ResponseFileSearchToolCallParam | ResponseCreateParams.ResponseComputerToolCallParam | ResponseCreateParams.ComputerCallOutput | ResponseCreateParams.ResponseFunctionWebSearchParam | ResponseCreateParams.ResponseFunctionToolCallParam | ResponseCreateParams.FunctionCallOutput | ResponseCreateParams.ResponseReasoningItemParam | ResponseCreateParams.ResponseCompactionItemParamParam | ResponseCreateParams.ImageGenerationCall | ResponseCreateParams.ResponseCodeInterpreterToolCallParam | ResponseCreateParams.LocalShellCall | ResponseCreateParams.LocalShellCallOutput | ResponseCreateParams.ShellCall | ResponseCreateParams.ShellCallOutput | ResponseCreateParams.ApplyPatchCall | ResponseCreateParams.ApplyPatchCallOutput | ResponseCreateParams.McpListTools | McpApprovalRequest | ResponseCreateParams.McpApprovalResponse | ResponseCreateParams.McpCall | ResponseCreateParams.ResponseCustomToolCallOutputParam | ResponseCreateParams.ResponseCustomToolCallParam | ResponseCreateParams.ItemReference | ResponseCreateParams.ResponseOutputMessage | ResponseCreateParams.ResponseFileSearchToolCall | ResponseCreateParams.ResponseFunctionToolCall | ResponseCreateParams.ResponseFunctionWebSearch | ResponseCreateParams.ResponseComputerToolCall | ResponseCreateParams.ResponseReasoningItem | ResponseCreateParams.ResponseCompactionItem | ResponseCreateParams.ImageGenerationCall | ResponseCreateParams.ResponseCodeInterpreterToolCall | ResponseCreateParams.LocalShellCall | ResponseCreateParams.ResponseFunctionShellToolCall | ResponseCreateParams.ResponseFunctionShellToolCallOutput | ResponseCreateParams.ResponseApplyPatchToolCall | ResponseCreateParams.ResponseApplyPatchToolCallOutput | ResponseCreateParams.McpCall | ResponseCreateParams.McpListTools | McpApprovalRequest | ResponseCreateParams.ResponseCustomToolCall>;
 
   background?: boolean | null;
 
@@ -683,14 +608,7 @@ export interface ResponseCreateParams {
    */
   enable_response_messages?: boolean;
 
-  include?: Array<
-    | 'code_interpreter_call.outputs'
-    | 'computer_call_output.output.image_url'
-    | 'file_search_call.results'
-    | 'message.input_image.image_url'
-    | 'message.output_text.logprobs'
-    | 'reasoning.encrypted_content'
-  > | null;
+  include?: Array<'code_interpreter_call.outputs' | 'computer_call_output.output.image_url' | 'file_search_call.results' | 'message.input_image.image_url' | 'message.output_text.logprobs' | 'reasoning.encrypted_content'> | null;
 
   include_stop_str_in_output?: boolean;
 
@@ -774,18 +692,9 @@ export interface ResponseCreateParams {
   /**
    * Constrains the tools available to the model to a pre-defined set.
    */
-  tool_choice?:
-    | 'none'
-    | 'auto'
-    | 'required'
-    | ResponseCreateParams.ToolChoiceAllowed
-    | ResponseCreateParams.ToolChoiceTypes
-    | ResponseCreateParams.ToolChoiceFunction
-    | ResponseCreateParams.ToolChoiceCustom;
+  tool_choice?: 'none' | 'auto' | 'required' | ResponseCreateParams.ToolChoiceAllowed | ResponseCreateParams.ToolChoiceTypes | ResponseCreateParams.ToolChoiceFunction | ResponseCreateParams.ToolChoiceCustom;
 
-  tools?: Array<
-    ResponseCreateParams.FunctionTool | ResponseCreateParams.CustomTool | ResponseCreateParams.ComputerTool
-  >;
+  tools?: Array<ResponseCreateParams.FunctionTool | ResponseCreateParams.CustomTool | ResponseCreateParams.ComputerTool>;
 
   top_k?: number | null;
 
@@ -797,7 +706,7 @@ export interface ResponseCreateParams {
 
   user?: string | null;
 
-  [k: string]: unknown;
+[k: string]: unknown
 }
 
 export namespace ResponseCreateParams {
@@ -809,19 +718,13 @@ export namespace ResponseCreateParams {
    * interactions.
    */
   export interface EasyInputMessageParam {
-    content:
-      | string
-      | Array<
-          | ResponsesAPI.ResponseInputTextParam
-          | ResponsesAPI.ResponseInputImageParam
-          | ResponsesAPI.ResponseInputFileParam
-        >;
+    content: string | Array<ResponsesAPI.ResponseInputTextParam | ResponsesAPI.ResponseInputImageParam | ResponsesAPI.ResponseInputFileParam>;
 
     role: 'user' | 'assistant' | 'system' | 'developer';
 
     type?: 'message';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -830,11 +733,7 @@ export namespace ResponseCreateParams {
    * precedence over instructions given with the `user` role.
    */
   export interface Message {
-    content: Array<
-      | ResponsesAPI.ResponseInputTextParam
-      | ResponsesAPI.ResponseInputImageParam
-      | ResponsesAPI.ResponseInputFileParam
-    >;
+    content: Array<ResponsesAPI.ResponseInputTextParam | ResponsesAPI.ResponseInputImageParam | ResponsesAPI.ResponseInputFileParam>;
 
     role: 'user' | 'system' | 'developer';
 
@@ -842,7 +741,7 @@ export namespace ResponseCreateParams {
 
     type?: 'message';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -851,10 +750,7 @@ export namespace ResponseCreateParams {
   export interface ResponseOutputMessageParam {
     id: string;
 
-    content: Array<
-      | ResponseOutputMessageParam.ResponseOutputTextParam
-      | ResponseOutputMessageParam.ResponseOutputRefusalParam
-    >;
+    content: Array<ResponseOutputMessageParam.ResponseOutputTextParam | ResponseOutputMessageParam.ResponseOutputRefusalParam>;
 
     role: 'assistant';
 
@@ -862,7 +758,7 @@ export namespace ResponseCreateParams {
 
     type: 'message';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseOutputMessageParam {
@@ -870,12 +766,7 @@ export namespace ResponseCreateParams {
      * A text output from the model.
      */
     export interface ResponseOutputTextParam {
-      annotations: Array<
-        | ResponsesAPI.AnnotationFileCitation
-        | ResponsesAPI.AnnotationURLCitation
-        | ResponsesAPI.AnnotationContainerFileCitation
-        | ResponsesAPI.AnnotationFilePath
-      >;
+      annotations: Array<ResponsesAPI.AnnotationFileCitation | ResponsesAPI.AnnotationURLCitation | ResponsesAPI.AnnotationContainerFileCitation | ResponsesAPI.AnnotationFilePath>;
 
       text: string;
 
@@ -883,7 +774,7 @@ export namespace ResponseCreateParams {
 
       logprobs?: Array<ResponsesAPI.Logprob>;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -894,7 +785,7 @@ export namespace ResponseCreateParams {
 
       type: 'refusal';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -916,7 +807,7 @@ export namespace ResponseCreateParams {
 
     results?: Array<ResponseFileSearchToolCallParam.Result> | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFileSearchToolCallParam {
@@ -931,7 +822,7 @@ export namespace ResponseCreateParams {
 
       text?: string;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -948,21 +839,7 @@ export namespace ResponseCreateParams {
     /**
      * A click action.
      */
-    action:
-      | ResponsesAPI.ActionClick
-      | ResponsesAPI.ActionDoubleClick
-      | ResponsesAPI.ActionDrag
-      | ResponsesAPI.ActionKeypress
-      | ResponsesAPI.ActionMove
-      | ResponsesAPI.ActionScreenshot
-      | ResponsesAPI.ActionScroll
-      | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait
-      | ResponseComputerToolCallParam.ActionPointAndType
-      | ResponseComputerToolCallParam.ActionMouseDown
-      | ResponseComputerToolCallParam.ActionMouseUp
-      | ResponseComputerToolCallParam.ActionKeyDown
-      | ResponseComputerToolCallParam.ActionKeyUp;
+    action: ResponsesAPI.ActionClick | ResponsesAPI.ActionDoubleClick | ResponsesAPI.ActionDrag | ResponsesAPI.ActionKeypress | ResponsesAPI.ActionMove | ResponsesAPI.ActionScreenshot | ResponsesAPI.ActionScroll | ResponsesAPI.ActionType | ResponsesAPI.ActionWait | ResponseComputerToolCallParam.ActionPointAndType | ResponseComputerToolCallParam.ActionMouseDown | ResponseComputerToolCallParam.ActionMouseUp | ResponseComputerToolCallParam.ActionKeyDown | ResponseComputerToolCallParam.ActionKeyUp;
 
     call_id: string;
 
@@ -972,7 +849,7 @@ export namespace ResponseCreateParams {
 
     type: 'computer_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseComputerToolCallParam {
@@ -988,7 +865,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1001,7 +878,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1014,7 +891,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1025,7 +902,7 @@ export namespace ResponseCreateParams {
 
       type: 'key_down';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1036,7 +913,7 @@ export namespace ResponseCreateParams {
 
       type: 'key_up';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1049,7 +926,7 @@ export namespace ResponseCreateParams {
 
       message?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1072,7 +949,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ComputerCallOutput {
@@ -1086,7 +963,7 @@ export namespace ResponseCreateParams {
 
       image_url?: string;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1099,7 +976,7 @@ export namespace ResponseCreateParams {
 
       message?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1116,16 +993,13 @@ export namespace ResponseCreateParams {
     /**
      * Action type "search" - Performs a web search query.
      */
-    action:
-      | ResponseFunctionWebSearchParam.ActionSearch
-      | ResponsesAPI.ActionOpenPage
-      | ResponsesAPI.ActionFind;
+    action: ResponseFunctionWebSearchParam.ActionSearch | ResponsesAPI.ActionOpenPage | ResponsesAPI.ActionFind;
 
     status: 'in_progress' | 'searching' | 'completed' | 'failed';
 
     type: 'web_search_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFunctionWebSearchParam {
@@ -1141,7 +1015,7 @@ export namespace ResponseCreateParams {
 
       sources?: Array<ResponsesAPI.ActionSearchSource>;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1165,7 +1039,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1174,13 +1048,7 @@ export namespace ResponseCreateParams {
   export interface FunctionCallOutput {
     call_id: string;
 
-    output:
-      | string
-      | Array<
-          | FunctionCallOutput.ResponseInputTextContentParam
-          | FunctionCallOutput.ResponseInputImageContentParam
-          | FunctionCallOutput.ResponseInputFileContentParam
-        >;
+    output: string | Array<FunctionCallOutput.ResponseInputTextContentParam | FunctionCallOutput.ResponseInputImageContentParam | FunctionCallOutput.ResponseInputFileContentParam>;
 
     type: 'function_call_output';
 
@@ -1188,7 +1056,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace FunctionCallOutput {
@@ -1200,7 +1068,7 @@ export namespace ResponseCreateParams {
 
       type: 'input_text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1217,7 +1085,7 @@ export namespace ResponseCreateParams {
 
       image_url?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1234,7 +1102,7 @@ export namespace ResponseCreateParams {
 
       filename?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1257,7 +1125,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseReasoningItemParam {
@@ -1269,7 +1137,7 @@ export namespace ResponseCreateParams {
 
       type: 'reasoning_text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1284,7 +1152,7 @@ export namespace ResponseCreateParams {
 
     id?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1299,7 +1167,7 @@ export namespace ResponseCreateParams {
 
     type: 'image_generation_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1318,7 +1186,7 @@ export namespace ResponseCreateParams {
 
     type: 'code_interpreter_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1338,7 +1206,7 @@ export namespace ResponseCreateParams {
 
     type: 'local_shell_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace LocalShellCall {
@@ -1358,7 +1226,7 @@ export namespace ResponseCreateParams {
 
       working_directory?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1374,7 +1242,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1394,7 +1262,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ShellCall {
@@ -1408,7 +1276,7 @@ export namespace ResponseCreateParams {
 
       timeout_ms?: number | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1426,7 +1294,7 @@ export namespace ResponseCreateParams {
 
     max_output_length?: number | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ShellCallOutput {
@@ -1443,7 +1311,7 @@ export namespace ResponseCreateParams {
 
       stdout: string;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     export namespace Output {
@@ -1453,7 +1321,7 @@ export namespace ResponseCreateParams {
       export interface OutcomeTimeout {
         type: 'timeout';
 
-        [k: string]: unknown;
+      [k: string]: unknown
       }
 
       /**
@@ -1464,7 +1332,7 @@ export namespace ResponseCreateParams {
 
         type: 'exit';
 
-        [k: string]: unknown;
+      [k: string]: unknown
       }
     }
   }
@@ -1479,10 +1347,7 @@ export namespace ResponseCreateParams {
     /**
      * Instruction for creating a new file via the apply_patch tool.
      */
-    operation:
-      | ApplyPatchCall.ApplyPatchCallOperationCreateFile
-      | ApplyPatchCall.ApplyPatchCallOperationDeleteFile
-      | ApplyPatchCall.ApplyPatchCallOperationUpdateFile;
+    operation: ApplyPatchCall.ApplyPatchCallOperationCreateFile | ApplyPatchCall.ApplyPatchCallOperationDeleteFile | ApplyPatchCall.ApplyPatchCallOperationUpdateFile;
 
     status: 'in_progress' | 'completed';
 
@@ -1490,7 +1355,7 @@ export namespace ResponseCreateParams {
 
     id?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ApplyPatchCall {
@@ -1504,7 +1369,7 @@ export namespace ResponseCreateParams {
 
       type: 'create_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1515,7 +1380,7 @@ export namespace ResponseCreateParams {
 
       type: 'delete_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1528,7 +1393,7 @@ export namespace ResponseCreateParams {
 
       type: 'update_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1546,7 +1411,7 @@ export namespace ResponseCreateParams {
 
     output?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1563,7 +1428,7 @@ export namespace ResponseCreateParams {
 
     error?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace McpListTools {
@@ -1579,7 +1444,7 @@ export namespace ResponseCreateParams {
 
       description?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1597,7 +1462,7 @@ export namespace ResponseCreateParams {
 
     reason?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1622,7 +1487,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | 'calling' | 'failed';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1631,19 +1496,13 @@ export namespace ResponseCreateParams {
   export interface ResponseCustomToolCallOutputParam {
     call_id: string;
 
-    output:
-      | string
-      | Array<
-          | ResponsesAPI.ResponseInputTextParam
-          | ResponsesAPI.ResponseInputImageParam
-          | ResponsesAPI.ResponseInputFileParam
-        >;
+    output: string | Array<ResponsesAPI.ResponseInputTextParam | ResponsesAPI.ResponseInputImageParam | ResponsesAPI.ResponseInputFileParam>;
 
     type: 'custom_tool_call_output';
 
     id?: string;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1660,7 +1519,7 @@ export namespace ResponseCreateParams {
 
     id?: string;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1671,7 +1530,7 @@ export namespace ResponseCreateParams {
 
     type?: 'item_reference' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1688,7 +1547,7 @@ export namespace ResponseCreateParams {
 
     type: 'message';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseOutputMessage {
@@ -1696,12 +1555,7 @@ export namespace ResponseCreateParams {
      * A text output from the model.
      */
     export interface ResponseOutputText {
-      annotations: Array<
-        | ResponsesAPI.AnnotationFileCitation
-        | ResponsesAPI.AnnotationURLCitation
-        | ResponsesAPI.AnnotationContainerFileCitation
-        | ResponsesAPI.AnnotationFilePath
-      >;
+      annotations: Array<ResponsesAPI.AnnotationFileCitation | ResponsesAPI.AnnotationURLCitation | ResponsesAPI.AnnotationContainerFileCitation | ResponsesAPI.AnnotationFilePath>;
 
       text: string;
 
@@ -1709,7 +1563,7 @@ export namespace ResponseCreateParams {
 
       logprobs?: Array<ResponsesAPI.Logprob> | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1720,7 +1574,7 @@ export namespace ResponseCreateParams {
 
       type: 'refusal';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1742,7 +1596,7 @@ export namespace ResponseCreateParams {
 
     results?: Array<ResponseFileSearchToolCall.Result> | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFileSearchToolCall {
@@ -1757,7 +1611,7 @@ export namespace ResponseCreateParams {
 
       text?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1781,7 +1635,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -1803,7 +1657,7 @@ export namespace ResponseCreateParams {
 
     type: 'web_search_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFunctionWebSearch {
@@ -1819,7 +1673,7 @@ export namespace ResponseCreateParams {
 
       sources?: Array<ResponsesAPI.ActionSearchSource> | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1836,21 +1690,7 @@ export namespace ResponseCreateParams {
     /**
      * A click action.
      */
-    action:
-      | ResponsesAPI.ActionClick
-      | ResponsesAPI.ActionDoubleClick
-      | ResponsesAPI.ActionDrag
-      | ResponsesAPI.ActionKeypress
-      | ResponsesAPI.ActionMove
-      | ResponsesAPI.ActionScreenshot
-      | ResponsesAPI.ActionScroll
-      | ResponsesAPI.ActionType
-      | ResponsesAPI.ActionWait
-      | ResponseComputerToolCall.ActionPointAndType
-      | ResponseComputerToolCall.ActionMouseDown
-      | ResponseComputerToolCall.ActionMouseUp
-      | ResponseComputerToolCall.ActionKeyDown
-      | ResponseComputerToolCall.ActionKeyUp;
+    action: ResponsesAPI.ActionClick | ResponsesAPI.ActionDoubleClick | ResponsesAPI.ActionDrag | ResponsesAPI.ActionKeypress | ResponsesAPI.ActionMove | ResponsesAPI.ActionScreenshot | ResponsesAPI.ActionScroll | ResponsesAPI.ActionType | ResponsesAPI.ActionWait | ResponseComputerToolCall.ActionPointAndType | ResponseComputerToolCall.ActionMouseDown | ResponseComputerToolCall.ActionMouseUp | ResponseComputerToolCall.ActionKeyDown | ResponseComputerToolCall.ActionKeyUp;
 
     call_id: string;
 
@@ -1860,7 +1700,7 @@ export namespace ResponseCreateParams {
 
     type: 'computer_call';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseComputerToolCall {
@@ -1876,7 +1716,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1889,7 +1729,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1902,7 +1742,7 @@ export namespace ResponseCreateParams {
 
       y: number;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1913,7 +1753,7 @@ export namespace ResponseCreateParams {
 
       type: 'key_down';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1924,7 +1764,7 @@ export namespace ResponseCreateParams {
 
       type: 'key_up';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -1937,7 +1777,7 @@ export namespace ResponseCreateParams {
 
       message?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1960,7 +1800,7 @@ export namespace ResponseCreateParams {
 
     status?: 'in_progress' | 'completed' | 'incomplete' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseReasoningItem {
@@ -1972,7 +1812,7 @@ export namespace ResponseCreateParams {
 
       type: 'reasoning_text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -1989,7 +1829,7 @@ export namespace ResponseCreateParams {
 
     created_by?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2021,7 +1861,7 @@ export namespace ResponseCreateParams {
 
     outputs?: Array<ResponsesAPI.OutputLogs | ResponsesAPI.OutputImage> | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2080,7 +1920,7 @@ export namespace ResponseCreateParams {
 
     created_by?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFunctionShellToolCall {
@@ -2094,7 +1934,7 @@ export namespace ResponseCreateParams {
 
       timeout_ms?: number | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -2116,7 +1956,7 @@ export namespace ResponseCreateParams {
 
     max_output_length?: number | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseFunctionShellToolCallOutput {
@@ -2135,7 +1975,7 @@ export namespace ResponseCreateParams {
 
       created_by?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     export namespace Output {
@@ -2145,7 +1985,7 @@ export namespace ResponseCreateParams {
       export interface OutputOutcomeTimeout {
         type: 'timeout';
 
-        [k: string]: unknown;
+      [k: string]: unknown
       }
 
       /**
@@ -2156,7 +1996,7 @@ export namespace ResponseCreateParams {
 
         type: 'exit';
 
-        [k: string]: unknown;
+      [k: string]: unknown
       }
     }
   }
@@ -2172,10 +2012,7 @@ export namespace ResponseCreateParams {
     /**
      * Instruction describing how to create a file via the apply_patch tool.
      */
-    operation:
-      | ResponseApplyPatchToolCall.OperationCreateFile
-      | ResponseApplyPatchToolCall.OperationDeleteFile
-      | ResponseApplyPatchToolCall.OperationUpdateFile;
+    operation: ResponseApplyPatchToolCall.OperationCreateFile | ResponseApplyPatchToolCall.OperationDeleteFile | ResponseApplyPatchToolCall.OperationUpdateFile;
 
     status: 'in_progress' | 'completed';
 
@@ -2183,7 +2020,7 @@ export namespace ResponseCreateParams {
 
     created_by?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace ResponseApplyPatchToolCall {
@@ -2197,7 +2034,7 @@ export namespace ResponseCreateParams {
 
       type: 'create_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2208,7 +2045,7 @@ export namespace ResponseCreateParams {
 
       type: 'delete_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2221,7 +2058,7 @@ export namespace ResponseCreateParams {
 
       type: 'update_file';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -2241,7 +2078,7 @@ export namespace ResponseCreateParams {
 
     output?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2311,7 +2148,7 @@ export namespace ResponseCreateParams {
 
     id?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2321,13 +2158,11 @@ export namespace ResponseCreateParams {
   export interface Prompt {
     id: string;
 
-    variables?: {
-      [key: string]: string | Prompt.ResponseInputText | Prompt.ResponseInputImage | Prompt.ResponseInputFile;
-    } | null;
+    variables?: { [key: string]: string | Prompt.ResponseInputText | Prompt.ResponseInputImage | Prompt.ResponseInputFile } | null;
 
     version?: string | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace Prompt {
@@ -2339,7 +2174,7 @@ export namespace ResponseCreateParams {
 
       type: 'input_text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2356,7 +2191,7 @@ export namespace ResponseCreateParams {
 
       image_url?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2373,7 +2208,7 @@ export namespace ResponseCreateParams {
 
       filename?: string | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -2390,7 +2225,7 @@ export namespace ResponseCreateParams {
 
     summary?: 'auto' | 'concise' | 'detailed' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2405,15 +2240,11 @@ export namespace ResponseCreateParams {
     /**
      * Default response format. Used to generate text responses.
      */
-    format?:
-      | Text.ResponseFormatText
-      | Text.ResponseFormatTextJsonSchemaConfig
-      | Text.ResponseFormatJsonObject
-      | null;
+    format?: Text.ResponseFormatText | Text.ResponseFormatTextJsonSchemaConfig | Text.ResponseFormatJsonObject | null;
 
     verbosity?: 'low' | 'medium' | 'high' | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace Text {
@@ -2423,7 +2254,7 @@ export namespace ResponseCreateParams {
     export interface ResponseFormatText {
       type: 'text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2443,7 +2274,7 @@ export namespace ResponseCreateParams {
 
       strict?: boolean | null;
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2456,7 +2287,7 @@ export namespace ResponseCreateParams {
     export interface ResponseFormatJsonObject {
       type: 'json_object';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -2470,7 +2301,7 @@ export namespace ResponseCreateParams {
 
     type: 'allowed_tools';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2480,7 +2311,7 @@ export namespace ResponseCreateParams {
   export interface ToolChoiceTypes {
     type: 'computer_use_preview';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2491,7 +2322,7 @@ export namespace ResponseCreateParams {
 
     type: 'function';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2502,7 +2333,7 @@ export namespace ResponseCreateParams {
 
     type: 'custom';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2522,7 +2353,7 @@ export namespace ResponseCreateParams {
 
     strict?: boolean | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   /**
@@ -2543,7 +2374,7 @@ export namespace ResponseCreateParams {
      */
     format?: CustomTool.Text | CustomTool.Grammar | null;
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 
   export namespace CustomTool {
@@ -2553,7 +2384,7 @@ export namespace ResponseCreateParams {
     export interface Text {
       type: 'text';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
 
     /**
@@ -2566,7 +2397,7 @@ export namespace ResponseCreateParams {
 
       type: 'grammar';
 
-      [k: string]: unknown;
+    [k: string]: unknown
     }
   }
 
@@ -2585,7 +2416,7 @@ export namespace ResponseCreateParams {
 
     type: 'computer_use_preview';
 
-    [k: string]: unknown;
+  [k: string]: unknown
   }
 }
 
@@ -2625,6 +2456,6 @@ export declare namespace Responses {
     type ResponseRetrieveResponse as ResponseRetrieveResponse,
     type ResponseCancelResponse as ResponseCancelResponse,
     type ResponseCreateParams as ResponseCreateParams,
-    type ResponseRetrieveParams as ResponseRetrieveParams,
+    type ResponseRetrieveParams as ResponseRetrieveParams
   };
 }

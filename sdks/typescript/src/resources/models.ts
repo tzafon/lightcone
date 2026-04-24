@@ -13,8 +13,10 @@ export class Models extends APIResource {
   }
 }
 
-export type ModelListResponse = unknown;
+export type ModelListResponse = unknown
 
 export declare namespace Models {
-  export { type ModelListResponse as ModelListResponse };
+  export {
+    type ModelListResponse as ModelListResponse
+  };
 }

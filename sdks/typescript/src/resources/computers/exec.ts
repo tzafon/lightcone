@@ -30,22 +30,8 @@ export class Exec extends APIResource {
    * const exec = await client.computers.exec.create('id');
    * ```
    */
-  create(
-    id: string,
-    body: ExecCreateParams,
-    options?: RequestOptions,
-  ): APIPromise<JSONLDecoder<ExecCreateResponse>> {
-    return this._client
-      .post(path`/computers/${id}/exec`, {
-        body,
-        ...options,
-        headers: buildHeaders([{ Accept: 'application/x-ndjson' }, options?.headers]),
-        stream: true,
-        __binaryResponse: true,
-      })
-      ._thenUnwrap((_, props) => JSONLDecoder.fromResponse(props.response, props.controller)) as APIPromise<
-      JSONLDecoder<ExecCreateResponse>
-    >;
+  create(id: string, body: ExecCreateParams, options?: RequestOptions): APIPromise<JSONLDecoder<ExecCreateResponse>> {
+    return this._client.post(path`/computers/${id}/exec`, { body, ...options, headers: buildHeaders([{Accept: 'application/x-ndjson'}, options?.headers]), stream: true, __binaryResponse: true })._thenUnwrap((_, props) => JSONLDecoder.fromResponse(props.response, props.controller)) as APIPromise<JSONLDecoder<ExecCreateResponse>>;
   }
 
   /**
@@ -117,6 +103,6 @@ export declare namespace Exec {
     type ExecCreateResponse as ExecCreateResponse,
     type ExecSyncResponse as ExecSyncResponse,
     type ExecCreateParams as ExecCreateParams,
-    type ExecSyncParams as ExecSyncParams,
+    type ExecSyncParams as ExecSyncParams
   };
 }
