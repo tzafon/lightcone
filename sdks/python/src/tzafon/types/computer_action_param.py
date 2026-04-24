@@ -19,8 +19,6 @@ class Debug(TypedDict, total=False):
 
     max_output_length: int
 
-    request_id: str
-
     stream: bool
 
     timeout_seconds: int
