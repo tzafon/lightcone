@@ -18,11 +18,7 @@ export class Tabs extends APIResource {
    * );
    * ```
    */
-  create(
-    id: string,
-    body: TabCreateParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<ComputersAPI.ActionResult> {
+  create(id: string, body: TabCreateParams | null | undefined = {}, options?: RequestOptions): APIPromise<ComputersAPI.ActionResult> {
     return this._client.post(path`/computers/${id}/tabs`, { body, ...options });
   }
 
@@ -53,12 +49,8 @@ export class Tabs extends APIResource {
    * );
    * ```
    */
-  delete(
-    tabID: string,
-    params: TabDeleteParams,
-    options?: RequestOptions,
-  ): APIPromise<ComputersAPI.ActionResult> {
-    const { id } = params;
+  delete(tabID: string, params: TabDeleteParams, options?: RequestOptions): APIPromise<ComputersAPI.ActionResult> {
+    const { id } = params
     return this._client.delete(path`/computers/${id}/tabs/${tabID}`, options);
   }
 
@@ -74,12 +66,8 @@ export class Tabs extends APIResource {
    * );
    * ```
    */
-  switch(
-    tabID: string,
-    params: TabSwitchParams,
-    options?: RequestOptions,
-  ): APIPromise<ComputersAPI.ActionResult> {
-    const { id } = params;
+  switch(tabID: string, params: TabSwitchParams, options?: RequestOptions): APIPromise<ComputersAPI.ActionResult> {
+    const { id } = params
     return this._client.post(path`/computers/${id}/tabs/${tabID}/switch`, options);
   }
 }
@@ -106,6 +94,6 @@ export declare namespace Tabs {
   export {
     type TabCreateParams as TabCreateParams,
     type TabDeleteParams as TabDeleteParams,
-    type TabSwitchParams as TabSwitchParams,
+    type TabSwitchParams as TabSwitchParams
   };
 }

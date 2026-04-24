@@ -28,10 +28,7 @@ export class Computers extends APIResource {
    * const computerResponse = await client.computers.create();
    * ```
    */
-  create(
-    body: ComputerCreateParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<ComputerResponse> {
+  create(body: ComputerCreateParams | null | undefined = {}, options?: RequestOptions): APIPromise<ComputerResponse> {
     return this._client.post('/computers', { body, ...options });
   }
 
@@ -58,10 +55,7 @@ export class Computers extends APIResource {
    * const computerResponses = await client.computers.list();
    * ```
    */
-  list(
-    query: ComputerListParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<ComputerListResponse> {
+  list(query: ComputerListParams | null | undefined = {}, options?: RequestOptions): APIPromise<ComputerListResponse> {
     return this._client.get('/computers', { query, ...options });
   }
 
@@ -75,10 +69,7 @@ export class Computers extends APIResource {
    * ```
    */
   delete(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.delete(path`/computers/${id}`, {
-      ...options,
-      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
-    });
+    return this._client.delete(path`/computers/${id}`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
   }
 
   /**
@@ -103,11 +94,7 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  changeProxy(
-    id: string,
-    body: ComputerChangeProxyParams,
-    options?: RequestOptions,
-  ): APIPromise<ActionResult> {
+  changeProxy(id: string, body: ComputerChangeProxyParams, options?: RequestOptions): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/change-proxy`, { body, ...options });
   }
 
@@ -158,11 +145,7 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  doubleClick(
-    id: string,
-    body: ComputerDoubleClickParams,
-    options?: RequestOptions,
-  ): APIPromise<ActionResult> {
+  doubleClick(id: string, body: ComputerDoubleClickParams, options?: RequestOptions): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/double-click`, { body, ...options });
   }
 
@@ -214,11 +197,7 @@ export class Computers extends APIResource {
    * const actionResult = await client.computers.html('id');
    * ```
    */
-  html(
-    id: string,
-    body: ComputerHTMLParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<ActionResult> {
+  html(id: string, body: ComputerHTMLParams | null | undefined = {}, options?: RequestOptions): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/html`, { body, ...options });
   }
 
@@ -355,10 +334,7 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveEvents(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/events`, {
-      ...options,
-      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
-    });
+    return this._client.get(path`/computers/${id}/events`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
   }
 
   /**
@@ -385,10 +361,7 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveScreencast(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/screencast`, {
-      ...options,
-      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
-    });
+    return this._client.get(path`/computers/${id}/screencast`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
   }
 
   /**
@@ -414,10 +387,7 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveWs(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/ws`, {
-      ...options,
-      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
-    });
+    return this._client.get(path`/computers/${id}/ws`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
   }
 
   /**
@@ -446,11 +416,7 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  screenshot(
-    id: string,
-    body: ComputerScreenshotParams | null | undefined = {},
-    options?: RequestOptions,
-  ): APIPromise<ActionResult> {
+  screenshot(id: string, body: ComputerScreenshotParams | null | undefined = {}, options?: RequestOptions): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/screenshot`, { body, ...options });
   }
 
@@ -642,8 +608,6 @@ export namespace ComputerAction {
 
     max_output_length?: number;
 
-    request_id?: string;
-
     stream?: boolean;
 
     timeout_seconds?: number;
@@ -685,11 +649,11 @@ export interface ComputerResponse {
   status?: string;
 }
 
-export type ComputerListResponse = Array<ComputerResponse>;
+export type ComputerListResponse = Array<ComputerResponse>
 
-export type ComputerBatchResponse = { [key: string]: unknown };
+export type ComputerBatchResponse = { [key: string]: unknown }
 
-export type ComputerKeepaliveResponse = { [key: string]: unknown };
+export type ComputerKeepaliveResponse = { [key: string]: unknown }
 
 export interface ComputerRetrieveStatusResponse {
   id?: string;
@@ -965,7 +929,7 @@ export declare namespace Computers {
     type ComputerScreenshotParams as ComputerScreenshotParams,
     type ComputerScrollParams as ComputerScrollParams,
     type ComputerTypeParams as ComputerTypeParams,
-    type ComputerViewportParams as ComputerViewportParams,
+    type ComputerViewportParams as ComputerViewportParams
   };
 
   export {
@@ -973,13 +937,13 @@ export declare namespace Computers {
     type ExecCreateResponse as ExecCreateResponse,
     type ExecSyncResponse as ExecSyncResponse,
     type ExecCreateParams as ExecCreateParams,
-    type ExecSyncParams as ExecSyncParams,
+    type ExecSyncParams as ExecSyncParams
   };
 
   export {
     Tabs as Tabs,
     type TabCreateParams as TabCreateParams,
     type TabDeleteParams as TabDeleteParams,
-    type TabSwitchParams as TabSwitchParams,
+    type TabSwitchParams as TabSwitchParams
   };
 }

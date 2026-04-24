@@ -11,11 +11,7 @@ export class Tasks extends APIResource {
   /**
    * Injects a message into a running agent task.
    */
-  injectMessage(
-    id: string,
-    body: TaskInjectMessageParams,
-    options?: RequestOptions,
-  ): APIPromise<TaskInjectMessageResponse> {
+  injectMessage(id: string, body: TaskInjectMessageParams, options?: RequestOptions): APIPromise<TaskInjectMessageResponse> {
     return this._client.post(path`/agent/tasks/${id}/messages`, { body, ...options });
   }
 
@@ -51,16 +47,8 @@ export class Tasks extends APIResource {
    * Starts an agent task and streams events via SSE (Content-Type:
    * text/event-stream).
    */
-  startStream(
-    body: TaskStartStreamParams,
-    options?: RequestOptions,
-  ): APIPromise<Stream<TaskStartStreamResponse>> {
-    return this._client.post('/agent/tasks/stream', {
-      body,
-      ...options,
-      headers: buildHeaders([{ Accept: 'text/event-stream' }, options?.headers]),
-      stream: true,
-    }) as APIPromise<Stream<TaskStartStreamResponse>>;
+  startStream(body: TaskStartStreamParams, options?: RequestOptions): APIPromise<Stream<TaskStartStreamResponse>> {
+    return this._client.post('/agent/tasks/stream', { body, ...options, headers: buildHeaders([{Accept: 'text/event-stream'}, options?.headers]), stream: true }) as APIPromise<Stream<TaskStartStreamResponse>>;
   }
 }
 
@@ -90,7 +78,7 @@ export interface TaskStartResponse {
   task_id?: string;
 }
 
-export type TaskStartStreamResponse = string;
+export type TaskStartStreamResponse = string
 
 export interface TaskInjectMessageParams {
   message?: string;
@@ -154,6 +142,6 @@ export declare namespace Tasks {
     type TaskStartStreamResponse as TaskStartStreamResponse,
     type TaskInjectMessageParams as TaskInjectMessageParams,
     type TaskStartParams as TaskStartParams,
-    type TaskStartStreamParams as TaskStartStreamParams,
+    type TaskStartStreamParams as TaskStartStreamParams
   };
 }

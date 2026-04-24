@@ -2,18 +2,7 @@
 
 import { APIResource } from '../../core/resource';
 import * as TasksAPI from './tasks';
-import {
-  TaskInjectMessageParams,
-  TaskInjectMessageResponse,
-  TaskPauseResponse,
-  TaskResumeResponse,
-  TaskRetrieveStatusResponse,
-  TaskStartParams,
-  TaskStartResponse,
-  TaskStartStreamParams,
-  TaskStartStreamResponse,
-  Tasks,
-} from './tasks';
+import { TaskInjectMessageParams, TaskInjectMessageResponse, TaskPauseResponse, TaskResumeResponse, TaskRetrieveStatusResponse, TaskStartParams, TaskStartResponse, TaskStartStreamParams, TaskStartStreamResponse, Tasks } from './tasks';
 
 export class Agent extends APIResource {
   tasks: TasksAPI.Tasks = new TasksAPI.Tasks(this._client);
@@ -32,6 +21,6 @@ export declare namespace Agent {
     type TaskStartStreamResponse as TaskStartStreamResponse,
     type TaskInjectMessageParams as TaskInjectMessageParams,
     type TaskStartParams as TaskStartParams,
-    type TaskStartStreamParams as TaskStartStreamParams,
+    type TaskStartStreamParams as TaskStartStreamParams
   };
 }
