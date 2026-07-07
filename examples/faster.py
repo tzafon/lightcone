@@ -1,10 +1,15 @@
-"""Simple CUA loop — screenshot, think, act, repeat."""
+"""CUA loop timing test for northstar-cua-faster-1.6
 
-import json
-import os
+Usage:
+    uv run examples/faster.py                                  # northstar-cua-faster-1.6
+"""
+
+import sys
 import time
 from tzafon import Lightcone
-from _cua import get_computer_calls, is_done, print_messages, format_action, DONE_TOOL
+from _cua import get_computer_calls, is_done, format_action, DONE_TOOL
+
+MODEL = sys.argv[1] if len(sys.argv) > 1 else "tzafon.northstar-cua-faster-1.6"
 
 client = Lightcone()
 
@@ -15,6 +20,8 @@ TOOL = {
     "environment": "desktop",
 }
 
+TASK = "Go to wikipedia.org and search for 'Alan Turing', then scroll to the bottom of the page and tell me what you see"
+
 
 with client.computer.create(kind="desktop") as computer:
     screenshot_url = computer.get_screenshot_url(computer.screenshot())
@@ -23,7 +30,7 @@ with client.computer.create(kind="desktop") as computer:
         {
             "role": "user",
             "content": [
-                {"type": "input_text", "text": "Go to wikipedia.org and search for 'Alan Turing', then scroll to the bottom of the page and tell me what you see"},
+                {"type": "input_text", "text": TASK},
                 {"type": "input_image", "image_url": screenshot_url, "detail": "auto"},
             ],
         }
@@ -37,7 +44,7 @@ with client.computer.create(kind="desktop") as computer:
         t0 = time.perf_counter()
         response = client.responses.create(
             instructions="For full-page scrolling, prefer key('End')/key('Home')/key('PageDown')/key('PageUp') over repeated scroll actions.",
-            model="tzafon.northstar-cua-fast-1.6",
+            model=MODEL,
             tools=[TOOL, DONE_TOOL],
             input=items,
         )
@@ -79,7 +86,6 @@ with client.computer.create(kind="desktop") as computer:
         t0 = time.perf_counter()
         screenshot_url = computer.get_screenshot_url(computer.screenshot())
         t_screenshot = time.perf_counter() - t0
-        print(f"[{step + 1}] Screenshot URL: {screenshot_url}")
         for call_id in call_ids:
             items.append({
                 "type": "computer_call_output",
@@ -93,7 +99,7 @@ with client.computer.create(kind="desktop") as computer:
 
     print(f"Final state: {screenshot_url}")
 
-    print("\n=== Turn timing summary ===")
+    print(f"\n=== Turn timing summary — {MODEL} ===")
     print(f"{'step':>4}  {'model':>7}  {'batch':>7}  {'shot':>7}  {'total':>7}")
     for t in timings:
         print(f"{t['step']:>4}  {t['model']:>7.2f}  {t['batch']:>7.2f}  {t['screenshot']:>7.2f}  {t['total']:>7.2f}")
