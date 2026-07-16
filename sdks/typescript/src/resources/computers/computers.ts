@@ -28,7 +28,10 @@ export class Computers extends APIResource {
    * const computerResponse = await client.computers.create();
    * ```
    */
-  create(body: ComputerCreateParams | null | undefined = {}, options?: RequestOptions): APIPromise<ComputerResponse> {
+  create(
+    body: ComputerCreateParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<ComputerResponse> {
     return this._client.post('/computers', { body, ...options });
   }
 
@@ -55,7 +58,10 @@ export class Computers extends APIResource {
    * const computerResponses = await client.computers.list();
    * ```
    */
-  list(query: ComputerListParams | null | undefined = {}, options?: RequestOptions): APIPromise<ComputerListResponse> {
+  list(
+    query: ComputerListParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<ComputerListResponse> {
     return this._client.get('/computers', { query, ...options });
   }
 
@@ -69,7 +75,10 @@ export class Computers extends APIResource {
    * ```
    */
   delete(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.delete(path`/computers/${id}`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
+    return this._client.delete(path`/computers/${id}`, {
+      ...options,
+      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
+    });
   }
 
   /**
@@ -94,7 +103,11 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  changeProxy(id: string, body: ComputerChangeProxyParams, options?: RequestOptions): APIPromise<ActionResult> {
+  changeProxy(
+    id: string,
+    body: ComputerChangeProxyParams,
+    options?: RequestOptions,
+  ): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/change-proxy`, { body, ...options });
   }
 
@@ -145,7 +158,11 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  doubleClick(id: string, body: ComputerDoubleClickParams, options?: RequestOptions): APIPromise<ActionResult> {
+  doubleClick(
+    id: string,
+    body: ComputerDoubleClickParams,
+    options?: RequestOptions,
+  ): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/double-click`, { body, ...options });
   }
 
@@ -197,7 +214,11 @@ export class Computers extends APIResource {
    * const actionResult = await client.computers.html('id');
    * ```
    */
-  html(id: string, body: ComputerHTMLParams | null | undefined = {}, options?: RequestOptions): APIPromise<ActionResult> {
+  html(
+    id: string,
+    body: ComputerHTMLParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/html`, { body, ...options });
   }
 
@@ -334,7 +355,10 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveEvents(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/events`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
+    return this._client.get(path`/computers/${id}/events`, {
+      ...options,
+      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
+    });
   }
 
   /**
@@ -361,7 +385,10 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveScreencast(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/screencast`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
+    return this._client.get(path`/computers/${id}/screencast`, {
+      ...options,
+      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
+    });
   }
 
   /**
@@ -387,7 +414,10 @@ export class Computers extends APIResource {
    * ```
    */
   retrieveWs(id: string, options?: RequestOptions): APIPromise<void> {
-    return this._client.get(path`/computers/${id}/ws`, { ...options, headers: buildHeaders([{Accept: '*/*'}, options?.headers]) });
+    return this._client.get(path`/computers/${id}/ws`, {
+      ...options,
+      headers: buildHeaders([{ Accept: '*/*' }, options?.headers]),
+    });
   }
 
   /**
@@ -416,7 +446,11 @@ export class Computers extends APIResource {
    * );
    * ```
    */
-  screenshot(id: string, body: ComputerScreenshotParams | null | undefined = {}, options?: RequestOptions): APIPromise<ActionResult> {
+  screenshot(
+    id: string,
+    body: ComputerScreenshotParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<ActionResult> {
     return this._client.post(path`/computers/${id}/screenshot`, { body, ...options });
   }
 
@@ -465,7 +499,7 @@ export interface ActionResult {
 
   executed_tab_id?: string;
 
-  page_context?: ActionResult.PageContext;
+  page_context?: PageContext;
 
   request_id?: string;
 
@@ -474,32 +508,6 @@ export interface ActionResult {
   status?: string;
 
   timestamp?: string;
-}
-
-export namespace ActionResult {
-  export interface PageContext {
-    device_scale_factor?: number;
-
-    is_main_tab?: boolean;
-
-    page_height?: number;
-
-    page_width?: number;
-
-    scroll_x?: number;
-
-    scroll_y?: number;
-
-    tab_id?: string;
-
-    title?: string;
-
-    url?: string;
-
-    viewport_height?: number;
-
-    viewport_width?: number;
-  }
 }
 
 export interface ComputerAction {
@@ -523,6 +531,13 @@ export interface ComputerAction {
   dx?: number;
 
   dy?: number;
+
+  /**
+   * FromShm (screenshot only) asks the guest to serve the screenshot from the
+   * capture loop's latest frame instead of a fresh full-grab. Desktop VM sessions
+   * only; falls back to full-grab if no frame is available.
+   */
+  from_shm?: boolean;
 
   height?: number;
 
@@ -553,12 +568,26 @@ export interface ComputerAction {
   scale_factor?: number;
 
   /**
+   * ScreenshotAfter, when true, asks the engine to capture a screenshot immediately
+   * after the action and return its URL in the same response (act+observe in one
+   * round-trip). Feature-flagged, defaults off.
+   */
+  screenshot_after?: boolean;
+
+  /**
    * OpenAI CUA-spec aliases for the same data; used as fallbacks when
    * dx/dy/x1/y1/x2/y2 are absent on the request.
    */
   scroll_x?: number;
 
   scroll_y?: number;
+
+  /**
+   * SettleMs overrides, per-action, the settle time (ms) the guest waits between
+   * input sub-steps. Absent => guest process default. Lower = faster but riskier on
+   * slow-rendering targets.
+   */
+  settle_ms?: number;
 
   /**
    * For tab management (browser sessions only)
@@ -632,6 +661,13 @@ export interface ComputerResponse {
 
   endpoints?: { [key: string]: string };
 
+  /**
+   * EnvironmentID is the source environment (snapshot) this computer was created
+   * from, when known. Lets clients find an existing live session for a given
+   * environment instead of starting a duplicate.
+   */
+  environment_id?: string;
+
   expires_at?: string;
 
   idle_expires_at?: string;
@@ -649,11 +685,35 @@ export interface ComputerResponse {
   status?: string;
 }
 
-export type ComputerListResponse = Array<ComputerResponse>
+export interface PageContext {
+  device_scale_factor?: number;
 
-export type ComputerBatchResponse = { [key: string]: unknown }
+  is_main_tab?: boolean;
 
-export type ComputerKeepaliveResponse = { [key: string]: unknown }
+  page_height?: number;
+
+  page_width?: number;
+
+  scroll_x?: number;
+
+  scroll_y?: number;
+
+  tab_id?: string;
+
+  title?: string;
+
+  url?: string;
+
+  viewport_height?: number;
+
+  viewport_width?: number;
+}
+
+export type ComputerListResponse = Array<ComputerResponse>;
+
+export type ComputerBatchResponse = { [key: string]: unknown };
+
+export type ComputerKeepaliveResponse = { [key: string]: unknown };
 
 export interface ComputerRetrieveStatusResponse {
   id?: string;
@@ -905,6 +965,7 @@ export declare namespace Computers {
     type ActionResult as ActionResult,
     type ComputerAction as ComputerAction,
     type ComputerResponse as ComputerResponse,
+    type PageContext as PageContext,
     type ComputerListResponse as ComputerListResponse,
     type ComputerBatchResponse as ComputerBatchResponse,
     type ComputerKeepaliveResponse as ComputerKeepaliveResponse,
@@ -929,7 +990,7 @@ export declare namespace Computers {
     type ComputerScreenshotParams as ComputerScreenshotParams,
     type ComputerScrollParams as ComputerScrollParams,
     type ComputerTypeParams as ComputerTypeParams,
-    type ComputerViewportParams as ComputerViewportParams
+    type ComputerViewportParams as ComputerViewportParams,
   };
 
   export {
@@ -937,13 +998,13 @@ export declare namespace Computers {
     type ExecCreateResponse as ExecCreateResponse,
     type ExecSyncResponse as ExecSyncResponse,
     type ExecCreateParams as ExecCreateParams,
-    type ExecSyncParams as ExecSyncParams
+    type ExecSyncParams as ExecSyncParams,
   };
 
   export {
     Tabs as Tabs,
     type TabCreateParams as TabCreateParams,
     type TabDeleteParams as TabDeleteParams,
-    type TabSwitchParams as TabSwitchParams
+    type TabSwitchParams as TabSwitchParams,
   };
 }
