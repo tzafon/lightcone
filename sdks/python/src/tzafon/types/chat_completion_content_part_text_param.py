@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ChatCompletionContentPartTextParam"]
 
 
-class ChatCompletionContentPartTextParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ChatCompletionContentPartTextParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """
     Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
     """

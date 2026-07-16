@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Optional
 from typing_extensions import Literal, Required, TypedDict
 
 __all__ = ["MessageParam", "Author"]
@@ -20,7 +20,7 @@ class MessageParam(TypedDict, total=False):
 
     channel: Optional[str]
 
-    content: Iterable[object]
+    content: Iterable[Dict[str, object]]
 
     content_type: Optional[str]
 

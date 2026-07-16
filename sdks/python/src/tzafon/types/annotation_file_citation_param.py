@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["AnnotationFileCitationParam"]
 
 
-class AnnotationFileCitationParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class AnnotationFileCitationParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A citation to a file."""
 
     file_id: Required[str]

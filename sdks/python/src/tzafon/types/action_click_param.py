@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionClickParam"]
 
 
-class ActionClickParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionClickParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A click action."""
 
     button: Required[Literal["left", "right", "wheel", "back", "forward"]]

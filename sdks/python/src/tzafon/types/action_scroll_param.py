@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionScrollParam"]
 
 
-class ActionScrollParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionScrollParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A scroll action."""
 
     scroll_x: Required[int]

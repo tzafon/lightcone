@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionMoveParam"]
 
 
-class ActionMoveParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionMoveParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A mouse move action."""
 
     type: Required[Literal["move"]]

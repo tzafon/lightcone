@@ -7,13 +7,21 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ChatCompletionContentPartImageParam", "ImageURL"]
 
 
-class ImageURL(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ImageURL(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     url: Required[str]
 
     detail: Literal["auto", "low", "high"]
 
 
-class ChatCompletionContentPartImageParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ChatCompletionContentPartImageParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """Learn about [image inputs](https://platform.openai.com/docs/guides/vision)."""
 
     image_url: Required[ImageURL]

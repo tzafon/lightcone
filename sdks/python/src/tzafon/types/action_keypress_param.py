@@ -9,7 +9,11 @@ from .._types import SequenceNotStr
 __all__ = ["ActionKeypressParam"]
 
 
-class ActionKeypressParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionKeypressParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A collection of keypresses the model would like to perform."""
 
     keys: Required[SequenceNotStr[str]]

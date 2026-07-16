@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionOpenPageParam"]
 
 
-class ActionOpenPageParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionOpenPageParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """Action type "open_page" - Opens a specific URL from search results."""
 
     type: Required[Literal["open_page"]]

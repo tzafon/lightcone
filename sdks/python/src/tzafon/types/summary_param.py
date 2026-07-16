@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["SummaryParam"]
 
 
-class SummaryParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class SummaryParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A summary text from the model."""
 
     text: Required[str]

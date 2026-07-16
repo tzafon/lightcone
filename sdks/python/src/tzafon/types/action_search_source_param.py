@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionSearchSourceParam"]
 
 
-class ActionSearchSourceParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionSearchSourceParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A source used in the search."""
 
     type: Required[Literal["url"]]

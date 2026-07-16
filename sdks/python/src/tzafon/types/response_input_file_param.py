@@ -8,7 +8,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ResponseInputFileParam"]
 
 
-class ResponseInputFileParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ResponseInputFileParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A file input to the model."""
 
     type: Required[Literal["input_file"]]

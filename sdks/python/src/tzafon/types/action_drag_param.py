@@ -8,7 +8,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionDragParam", "Path"]
 
 
-class Path(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class Path(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """An x/y coordinate pair, e.g. `{ x: 100, y: 200 }`."""
 
     x: Required[int]
@@ -16,7 +20,11 @@ class Path(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg
     y: Required[int]
 
 
-class ActionDragParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionDragParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A drag action."""
 
     path: Required[Iterable[Path]]

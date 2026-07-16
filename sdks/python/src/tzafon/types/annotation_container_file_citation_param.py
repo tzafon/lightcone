@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["AnnotationContainerFileCitationParam"]
 
 
-class AnnotationContainerFileCitationParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class AnnotationContainerFileCitationParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A citation for a container file used to generate a model response."""
 
     container_id: Required[str]

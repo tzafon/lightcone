@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["FileParam", "File"]
 
 
-class File(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class File(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     file_data: str
 
     file_id: str
@@ -15,7 +19,11 @@ class File(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg
     filename: str
 
 
-class FileParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class FileParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """
     Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
     """

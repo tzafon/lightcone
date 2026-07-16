@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ChatCompletionContentPartRefusalParam"]
 
 
-class ChatCompletionContentPartRefusalParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ChatCompletionContentPartRefusalParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     refusal: Required[str]
 
     type: Required[Literal["refusal"]]

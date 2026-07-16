@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ChatCompletionMessageFunctionToolCallParam", "Function"]
 
 
-class Function(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class Function(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """The function that the model called."""
 
     arguments: Required[str]
@@ -15,7 +19,11 @@ class Function(TypedDict, total=False, extra_items=object):  # type: ignore[call
     name: Required[str]
 
 
-class ChatCompletionMessageFunctionToolCallParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ChatCompletionMessageFunctionToolCallParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A call to a function tool created by the model."""
 
     id: Required[str]

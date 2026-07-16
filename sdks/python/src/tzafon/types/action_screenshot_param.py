@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionScreenshotParam"]
 
 
-class ActionScreenshotParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionScreenshotParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A screenshot action."""
 
     type: Required[Literal["screenshot"]]
