@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["McpApprovalRequestParam"]
 
 
-class McpApprovalRequestParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class McpApprovalRequestParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A request for human approval of a tool invocation."""
 
     id: Required[str]

@@ -17,6 +17,13 @@ class ComputerResponse(BaseModel):
 
     endpoints: Optional[Dict[str, str]] = None
 
+    environment_id: Optional[str] = None
+    """
+    EnvironmentID is the source environment (snapshot) this computer was created
+    from, when known. Lets clients find an existing live session for a given
+    environment instead of starting a duplicate.
+    """
+
     expires_at: Optional[str] = None
 
     idle_expires_at: Optional[str] = None

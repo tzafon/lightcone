@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionFindParam"]
 
 
-class ActionFindParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionFindParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """Action type "find": Searches for a pattern within a loaded page."""
 
     pattern: Required[str]

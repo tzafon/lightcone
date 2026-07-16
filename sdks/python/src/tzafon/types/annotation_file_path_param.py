@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["AnnotationFilePathParam"]
 
 
-class AnnotationFilePathParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class AnnotationFilePathParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A path to a file."""
 
     file_id: Required[str]

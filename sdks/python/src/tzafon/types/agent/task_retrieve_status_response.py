@@ -8,8 +8,8 @@ __all__ = ["TaskRetrieveStatusResponse"]
 
 
 class TaskRetrieveStatusResponse(BaseModel):
+    status: str
+
+    task_id: str
+
     exit_code: Optional[int] = None
-
-    status: Optional[str] = None
-
-    task_id: Optional[str] = None

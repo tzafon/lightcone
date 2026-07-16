@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ResponseInputTextParam"]
 
 
-class ResponseInputTextParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ResponseInputTextParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A text input to the model."""
 
     text: Required[str]

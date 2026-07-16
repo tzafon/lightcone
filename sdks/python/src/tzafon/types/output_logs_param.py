@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["OutputLogsParam"]
 
 
-class OutputLogsParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class OutputLogsParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """The logs output from the code interpreter."""
 
     logs: Required[str]

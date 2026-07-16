@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionTypeParam"]
 
 
-class ActionTypeParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionTypeParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """An action to type in text."""
 
     text: Required[str]

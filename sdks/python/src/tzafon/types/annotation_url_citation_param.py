@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["AnnotationURLCitationParam"]
 
 
-class AnnotationURLCitationParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class AnnotationURLCitationParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A citation for a web resource used to generate a model response."""
 
     end_index: Required[int]

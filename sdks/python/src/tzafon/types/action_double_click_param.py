@@ -7,7 +7,11 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ActionDoubleClickParam"]
 
 
-class ActionDoubleClickParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ActionDoubleClickParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """A double click action."""
 
     type: Required[Literal["double_click"]]

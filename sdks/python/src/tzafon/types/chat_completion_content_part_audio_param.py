@@ -7,13 +7,21 @@ from typing_extensions import Literal, Required, TypedDict
 __all__ = ["ChatCompletionContentPartAudioParam", "InputAudio"]
 
 
-class InputAudio(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class InputAudio(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     data: Required[str]
 
     format: Required[Literal["wav", "mp3"]]
 
 
-class ChatCompletionContentPartAudioParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class ChatCompletionContentPartAudioParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """Learn about [audio inputs](https://platform.openai.com/docs/guides/audio)."""
 
     input_audio: Required[InputAudio]

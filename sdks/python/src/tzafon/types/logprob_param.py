@@ -8,7 +8,11 @@ from typing_extensions import Required, TypedDict
 __all__ = ["LogprobParam", "TopLogprob"]
 
 
-class TopLogprob(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class TopLogprob(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """The top log probability of a token."""
 
     token: Required[str]
@@ -18,7 +22,11 @@ class TopLogprob(TypedDict, total=False, extra_items=object):  # type: ignore[ca
     logprob: Required[float]
 
 
-class LogprobParam(TypedDict, total=False, extra_items=object):  # type: ignore[call-arg]
+class LogprobParam(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=object,  # pyright: ignore[reportGeneralTypeIssues]
+):
     """The log probability of a token."""
 
     token: Required[str]

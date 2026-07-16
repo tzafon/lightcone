@@ -8,6 +8,10 @@ __all__ = ["TaskStartResponse"]
 
 
 class TaskStartResponse(BaseModel):
-    status: Optional[str] = None
+    status: str
 
-    task_id: Optional[str] = None
+    task_id: str
+
+    idempotency_key: Optional[str] = None
+
+    reused: Optional[bool] = None
