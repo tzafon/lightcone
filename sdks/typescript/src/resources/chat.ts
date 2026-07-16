@@ -22,7 +22,7 @@ export interface ChatCompletionContentPartAudio {
 
   type: 'input_audio';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 export namespace ChatCompletionContentPartAudio {
@@ -31,7 +31,7 @@ export namespace ChatCompletionContentPartAudio {
 
     format: 'wav' | 'mp3';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 }
 
@@ -43,7 +43,7 @@ export interface ChatCompletionContentPartImage {
 
   type: 'image_url';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 export namespace ChatCompletionContentPartImage {
@@ -52,7 +52,7 @@ export namespace ChatCompletionContentPartImage {
 
     detail?: 'auto' | 'low' | 'high';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 }
 
@@ -61,7 +61,7 @@ export interface ChatCompletionContentPartRefusal {
 
   type: 'refusal';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface ChatCompletionContentPartText {
 
   type: 'text';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 /**
@@ -89,7 +89,7 @@ export interface ChatCompletionMessageFunctionToolCall {
 
   type: 'function';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 export namespace ChatCompletionMessageFunctionToolCall {
@@ -101,7 +101,7 @@ export namespace ChatCompletionMessageFunctionToolCall {
 
     name: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 }
 
@@ -114,7 +114,7 @@ export interface File {
 
   type: 'file';
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 export namespace File {
@@ -125,7 +125,7 @@ export namespace File {
 
     filename?: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 }
 
@@ -134,7 +134,7 @@ export interface Message {
 
   channel?: string | null;
 
-  content?: Array<unknown>;
+  content?: Array<{ [key: string]: unknown }>;
 
   content_type?: string | null;
 
@@ -152,10 +152,19 @@ export namespace Message {
   }
 }
 
-export type ChatCreateCompletionResponse = unknown
+export type ChatCreateCompletionResponse = unknown;
 
 export interface ChatCreateCompletionParams {
-  messages: Array<ChatCreateCompletionParams.ChatCompletionDeveloperMessageParam | ChatCreateCompletionParams.ChatCompletionSystemMessageParam | ChatCreateCompletionParams.ChatCompletionUserMessageParam | ChatCreateCompletionParams.ChatCompletionAssistantMessageParam | ChatCreateCompletionParams.ChatCompletionToolMessageParam | ChatCreateCompletionParams.ChatCompletionFunctionMessageParam | ChatCreateCompletionParams.CustomChatCompletionMessageParam | Message>;
+  messages: Array<
+    | ChatCreateCompletionParams.ChatCompletionDeveloperMessageParam
+    | ChatCreateCompletionParams.ChatCompletionSystemMessageParam
+    | ChatCreateCompletionParams.ChatCompletionUserMessageParam
+    | ChatCreateCompletionParams.ChatCompletionAssistantMessageParam
+    | ChatCreateCompletionParams.ChatCompletionToolMessageParam
+    | ChatCreateCompletionParams.ChatCompletionFunctionMessageParam
+    | ChatCreateCompletionParams.CustomChatCompletionMessageParam
+    | Message
+  >;
 
   /**
    * If true, the generation prompt will be added to the chat template. This is a
@@ -290,7 +299,11 @@ export interface ChatCreateCompletionParams {
    */
   request_id?: string;
 
-  response_format?: ChatCreateCompletionParams.ResponseFormat | ChatCreateCompletionParams.StructuralTagResponseFormat | ChatCreateCompletionParams.LegacyStructuralTagResponseFormat | null;
+  response_format?:
+    | ChatCreateCompletionParams.ResponseFormat
+    | ChatCreateCompletionParams.StructuralTagResponseFormat
+    | ChatCreateCompletionParams.LegacyStructuralTagResponseFormat
+    | null;
 
   /**
    * If specified, the result will include token IDs alongside the generated text. In
@@ -328,7 +341,12 @@ export interface ChatCreateCompletionParams {
 
   temperature?: number | null;
 
-  tool_choice?: 'none' | 'auto' | 'required' | ChatCreateCompletionParams.ChatCompletionNamedToolChoiceParam | null;
+  tool_choice?:
+    | 'none'
+    | 'auto'
+    | 'required'
+    | ChatCreateCompletionParams.ChatCompletionNamedToolChoiceParam
+    | null;
 
   tools?: Array<ChatCreateCompletionParams.Tool> | null;
 
@@ -350,7 +368,7 @@ export interface ChatCreateCompletionParams {
    */
   vllm_xargs?: { [key: string]: string | number | Array<string | number> } | null;
 
-[k: string]: unknown
+  [k: string]: unknown;
 }
 
 export namespace ChatCreateCompletionParams {
@@ -366,7 +384,7 @@ export namespace ChatCreateCompletionParams {
 
     name?: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   /**
@@ -381,7 +399,7 @@ export namespace ChatCreateCompletionParams {
 
     name?: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   /**
@@ -389,13 +407,20 @@ export namespace ChatCreateCompletionParams {
    * information.
    */
   export interface ChatCompletionUserMessageParam {
-    content: string | Array<ChatAPI.ChatCompletionContentPartText | ChatAPI.ChatCompletionContentPartImage | ChatAPI.ChatCompletionContentPartAudio | ChatAPI.File>;
+    content:
+      | string
+      | Array<
+          | ChatAPI.ChatCompletionContentPartText
+          | ChatAPI.ChatCompletionContentPartImage
+          | ChatAPI.ChatCompletionContentPartAudio
+          | ChatAPI.File
+        >;
 
     role: 'user';
 
     name?: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   /**
@@ -410,7 +435,10 @@ export namespace ChatCreateCompletionParams {
      */
     audio?: ChatCompletionAssistantMessageParam.Audio | null;
 
-    content?: string | Array<ChatAPI.ChatCompletionContentPartText | ChatAPI.ChatCompletionContentPartRefusal> | null;
+    content?:
+      | string
+      | Array<ChatAPI.ChatCompletionContentPartText | ChatAPI.ChatCompletionContentPartRefusal>
+      | null;
 
     /**
      * Deprecated and replaced by `tool_calls`.
@@ -424,9 +452,12 @@ export namespace ChatCreateCompletionParams {
 
     refusal?: string | null;
 
-    tool_calls?: Array<ChatAPI.ChatCompletionMessageFunctionToolCall | ChatCompletionAssistantMessageParam.ChatCompletionMessageCustomToolCallParam>;
+    tool_calls?: Array<
+      | ChatAPI.ChatCompletionMessageFunctionToolCall
+      | ChatCompletionAssistantMessageParam.ChatCompletionMessageCustomToolCallParam
+    >;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace ChatCompletionAssistantMessageParam {
@@ -437,7 +468,7 @@ export namespace ChatCreateCompletionParams {
     export interface Audio {
       id: string;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -451,7 +482,7 @@ export namespace ChatCreateCompletionParams {
 
       name: string;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -467,7 +498,7 @@ export namespace ChatCreateCompletionParams {
 
       type: 'custom';
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export namespace ChatCompletionMessageCustomToolCallParam {
@@ -479,7 +510,7 @@ export namespace ChatCreateCompletionParams {
 
         name: string;
 
-      [k: string]: unknown
+        [k: string]: unknown;
       }
     }
   }
@@ -491,7 +522,7 @@ export namespace ChatCreateCompletionParams {
 
     tool_call_id: string;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export interface ChatCompletionFunctionMessageParam {
@@ -501,7 +532,7 @@ export namespace ChatCreateCompletionParams {
 
     role: 'function';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   /**
@@ -510,7 +541,24 @@ export namespace ChatCreateCompletionParams {
   export interface CustomChatCompletionMessageParam {
     role: string;
 
-    content?: string | Array<ChatAPI.ChatCompletionContentPartText | ChatAPI.ChatCompletionContentPartImage | ChatAPI.ChatCompletionContentPartAudio | ChatAPI.File | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioParam | CustomChatCompletionMessageParam.ChatCompletionContentPartVideoParam | ChatAPI.ChatCompletionContentPartRefusal | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleImageParam | CustomChatCompletionMessageParam.ChatCompletionContentPartImageEmbedsParam | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioEmbedsParam | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleAudioParam | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleVideoParam | string | CustomChatCompletionMessageParam.CustomThinkCompletionContentParam>;
+    content?:
+      | string
+      | Array<
+          | ChatAPI.ChatCompletionContentPartText
+          | ChatAPI.ChatCompletionContentPartImage
+          | ChatAPI.ChatCompletionContentPartAudio
+          | ChatAPI.File
+          | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioParam
+          | CustomChatCompletionMessageParam.ChatCompletionContentPartVideoParam
+          | ChatAPI.ChatCompletionContentPartRefusal
+          | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleImageParam
+          | CustomChatCompletionMessageParam.ChatCompletionContentPartImageEmbedsParam
+          | CustomChatCompletionMessageParam.ChatCompletionContentPartAudioEmbedsParam
+          | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleAudioParam
+          | CustomChatCompletionMessageParam.CustomChatCompletionContentSimpleVideoParam
+          | string
+          | CustomChatCompletionMessageParam.CustomThinkCompletionContentParam
+        >;
 
     name?: string;
 
@@ -522,7 +570,7 @@ export namespace ChatCreateCompletionParams {
 
     tools?: Array<CustomChatCompletionMessageParam.Tool> | null;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace CustomChatCompletionMessageParam {
@@ -531,14 +579,14 @@ export namespace ChatCreateCompletionParams {
 
       type: 'audio_url';
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export namespace ChatCompletionContentPartAudioParam {
       export interface AudioURL {
         url: string;
 
-      [k: string]: unknown
+        [k: string]: unknown;
       }
     }
 
@@ -547,14 +595,14 @@ export namespace ChatCreateCompletionParams {
 
       video_url: ChatCompletionContentPartVideoParam.VideoURL;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export namespace ChatCompletionContentPartVideoParam {
       export interface VideoURL {
         url: string;
 
-      [k: string]: unknown
+        [k: string]: unknown;
       }
     }
 
@@ -569,7 +617,7 @@ export namespace ChatCreateCompletionParams {
 
       uuid?: string | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export interface ChatCompletionContentPartImageEmbedsParam {
@@ -579,7 +627,7 @@ export namespace ChatCreateCompletionParams {
 
       uuid?: string | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export interface ChatCompletionContentPartAudioEmbedsParam {
@@ -589,7 +637,7 @@ export namespace ChatCreateCompletionParams {
 
       uuid?: string | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -600,7 +648,7 @@ export namespace ChatCreateCompletionParams {
     export interface CustomChatCompletionContentSimpleAudioParam {
       audio_url?: string | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -613,7 +661,7 @@ export namespace ChatCreateCompletionParams {
 
       video_url?: string | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -629,7 +677,7 @@ export namespace ChatCreateCompletionParams {
 
       closed?: boolean;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     /**
@@ -640,7 +688,7 @@ export namespace ChatCreateCompletionParams {
 
       type: 'function';
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
 
     export namespace Tool {
@@ -653,7 +701,7 @@ export namespace ChatCreateCompletionParams {
 
         strict?: boolean | null;
 
-      [k: string]: unknown
+        [k: string]: unknown;
       }
     }
   }
@@ -671,7 +719,7 @@ export namespace ChatCreateCompletionParams {
 
     json_schema?: ResponseFormat.JsonSchema | null;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace ResponseFormat {
@@ -684,7 +732,7 @@ export namespace ChatCreateCompletionParams {
 
       strict?: boolean | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
   }
 
@@ -693,7 +741,7 @@ export namespace ChatCreateCompletionParams {
 
     type: 'structural_tag';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export interface LegacyStructuralTagResponseFormat {
@@ -703,7 +751,7 @@ export namespace ChatCreateCompletionParams {
 
     type: 'structural_tag';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace LegacyStructuralTagResponseFormat {
@@ -714,7 +762,7 @@ export namespace ChatCreateCompletionParams {
 
       schema?: { [key: string]: unknown } | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
   }
 
@@ -723,7 +771,7 @@ export namespace ChatCreateCompletionParams {
 
     include_usage?: boolean | null;
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   /**
@@ -760,14 +808,14 @@ export namespace ChatCreateCompletionParams {
 
     type?: 'function';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace ChatCompletionNamedToolChoiceParam {
     export interface Function {
       name: string;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
   }
 
@@ -776,7 +824,7 @@ export namespace ChatCreateCompletionParams {
 
     type?: 'function';
 
-  [k: string]: unknown
+    [k: string]: unknown;
   }
 
   export namespace Tool {
@@ -787,7 +835,7 @@ export namespace ChatCreateCompletionParams {
 
       parameters?: { [key: string]: unknown } | null;
 
-    [k: string]: unknown
+      [k: string]: unknown;
     }
   }
 }
@@ -802,6 +850,6 @@ export declare namespace Chat {
     type File as File,
     type Message as Message,
     type ChatCreateCompletionResponse as ChatCreateCompletionResponse,
-    type ChatCreateCompletionParams as ChatCreateCompletionParams
+    type ChatCreateCompletionParams as ChatCreateCompletionParams,
   };
 }

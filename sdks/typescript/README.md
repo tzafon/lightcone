@@ -35,7 +35,7 @@ const client = new Lightcone({
   apiKey: process.env['TZAFON_API_KEY'], // This is the default and can be omitted
 });
 
-const response = await client.agent.tasks.start();
+const response = await client.agent.tasks.start({ instruction: 'instruction' });
 
 console.log(response.task_id);
 ```
@@ -52,7 +52,8 @@ const client = new Lightcone({
   apiKey: process.env['TZAFON_API_KEY'], // This is the default and can be omitted
 });
 
-const response: Lightcone.Agent.TaskStartResponse = await client.agent.tasks.start();
+const params: Lightcone.Agent.TaskStartParams = { instruction: 'instruction' };
+const response: Lightcone.Agent.TaskStartResponse = await client.agent.tasks.start(params);
 ```
 
 Documentation for each method, request param, and response field are available in docstrings and will appear on hover in most modern editors.
@@ -65,15 +66,17 @@ a subclass of `APIError` will be thrown:
 
 <!-- prettier-ignore -->
 ```ts
-const response = await client.agent.tasks.start().catch(async (err) => {
-  if (err instanceof Lightcone.APIError) {
-    console.log(err.status); // 400
-    console.log(err.name); // BadRequestError
-    console.log(err.headers); // {server: 'nginx', ...}
-  } else {
-    throw err;
-  }
-});
+const response = await client.agent.tasks
+  .start({ instruction: 'instruction' })
+  .catch(async (err) => {
+    if (err instanceof Lightcone.APIError) {
+      console.log(err.status); // 400
+      console.log(err.name); // BadRequestError
+      console.log(err.headers); // {server: 'nginx', ...}
+    } else {
+      throw err;
+    }
+  });
 ```
 
 Error codes are as follows:
@@ -105,7 +108,7 @@ const client = new Lightcone({
 });
 
 // Or, configure per-request:
-await client.agent.tasks.start({
+await client.agent.tasks.start({ instruction: 'instruction' }, {
   maxRetries: 5,
 });
 ```
@@ -122,7 +125,7 @@ const client = new Lightcone({
 });
 
 // Override per-request:
-await client.agent.tasks.start({
+await client.agent.tasks.start({ instruction: 'instruction' }, {
   timeout: 5 * 1000,
 });
 ```
@@ -145,11 +148,13 @@ Unlike `.asResponse()` this method consumes the body, returning once it is parse
 ```ts
 const client = new Lightcone();
 
-const response = await client.agent.tasks.start().asResponse();
+const response = await client.agent.tasks.start({ instruction: 'instruction' }).asResponse();
 console.log(response.headers.get('X-My-Header'));
 console.log(response.statusText); // access the underlying Response object
 
-const { data: response, response: raw } = await client.agent.tasks.start().withResponse();
+const { data: response, response: raw } = await client.agent.tasks
+  .start({ instruction: 'instruction' })
+  .withResponse();
 console.log(raw.headers.get('X-My-Header'));
 console.log(response.task_id);
 ```
